@@ -154,8 +154,8 @@ Public Sub CreateWarehouseSheet()
         ' Add sample customer data (simplified structure)
         ' Customer data is intentionally left blank for the user to populate.
 
-        ' Auto-fit columns
-        .Columns.AutoFit
+        ' Auto-fit columns for other sections
+        .Columns("A:L").AutoFit
 
         ' Add borders to all sections
         ' HSN data borders
