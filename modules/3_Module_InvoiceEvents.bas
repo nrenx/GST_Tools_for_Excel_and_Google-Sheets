@@ -130,17 +130,8 @@ Public Sub NewInvoiceButton()
     ' Clear all customer details (handle merged cells properly)
     On Error Resume Next
     ' Clear individual cells to avoid merged cell issues
-    ws.Range("C12").ClearContents  ' Customer Name (Receiver)
-    ws.Range("C13").ClearContents  ' Address (Receiver)
-    ws.Range("C14").ClearContents  ' GSTIN (Receiver)
-    ws.Range("C15").ClearContents  ' State (Receiver)
-    ws.Range("C16").ClearContents  ' State Code (Receiver)
-
-    ws.Range("I12").ClearContents  ' Customer Name (Consignee)
-    ws.Range("I13").ClearContents  ' Address (Consignee)
-    ws.Range("I14").ClearContents  ' GSTIN (Consignee)
-    ws.Range("I15").ClearContents  ' State (Consignee)
-    ws.Range("I16").ClearContents  ' State Code (Consignee)
+    ws.Range("C12:F16").ClearContents ' Clear Receiver details
+    ws.Range("I12:K16").ClearContents ' Clear Consignee details
     On Error GoTo ErrorHandler
 
     ' Clear item table data (rows 18-21, keep headers and formulas)
