@@ -1569,27 +1569,6 @@ End Sub
 
 
 ' Function to get state code based on state name
-Private Function GetStateCode(stateName As String) As String
-    ' Return corresponding state code for given state name
-    Dim stateList As Variant
-    Dim stateCodeList As Variant
-    Dim i As Integer
-
-    ' Define state mappings (same as in warehouse sheet)
-    stateList = Array("Andhra Pradesh", "Telangana", "Karnataka", "Tamil Nadu", "Kerala", "Maharashtra", "Gujarat", "Rajasthan", "Delhi", "Punjab")
-    stateCodeList = Array("37", "36", "29", "33", "32", "27", "24", "08", "07", "03")
-
-    ' Find matching state and return code
-    For i = 0 To UBound(stateList)
-        If UCase(Trim(stateName)) = UCase(Trim(stateList(i))) Then
-            GetStateCode = stateCodeList(i)
-            Exit Function
-        End If
-    Next i
-
-    ' If no match found, return empty string
-    GetStateCode = ""
-End Function
 
 
 
@@ -2485,44 +2464,6 @@ Private Sub UpdateMultiItemTaxCalculations(ws As Worksheet)
     On Error GoTo 0
 End Sub
 
-Private Sub ClearAllItems()
-    Dim ws As Worksheet
-    Dim response As VbMsgBoxResult
-    Dim i As Integer
-
-    On Error GoTo ErrorHandler
-
-    response = MsgBox("Are you sure you want to clear all item data? This cannot be undone.", vbYesNo + vbQuestion, "Clear All Items")
-
-    If response = vbNo Then Exit Sub
-
-    Set ws = GetOrCreateWorksheet("GST_Tax_Invoice_for_interstate")
-
-    If ws Is Nothing Then
-        MsgBox "Invoice sheet not found!", vbExclamation
-        Exit Sub
-    End If
-
-    With ws
-        ' Clear all item rows (18-21)
-        For i = 18 To 21
-            .Range("A" & i & ":K" & i).ClearContents
-            ' Reset formatting to empty row style
-            .Range("A" & i & ":K" & i).Interior.Color = IIf(i Mod 2 = 0, RGB(250, 250, 250), RGB(255, 255, 255))
-        Next i
-
-        ' Reset the first row with Sr.No. 1 and formulas
-        .Cells(18, 1).Value = "1"
-        Call SetupTaxCalculationFormulas(ws)
-        Call UpdateMultiItemTaxCalculations(ws)
-    End With
-
-    MsgBox "All items cleared successfully!", vbInformation
-    Exit Sub
-
-ErrorHandler:
-    MsgBox "Error clearing items: " & Err.Description, vbCritical
-End Sub
 
 
 
@@ -2675,25 +2616,6 @@ End Sub
 
 
 
-Private Sub PopulateCustomerDetails(ws As Worksheet, customerName As String)
-    ' Automatically populate customer details when customer is selected
-    Dim customerDetails As Variant
-
-    If customerName = "" Then Exit Sub
-
-    customerDetails = GetCustomerDetails(customerName)
-
-    With ws
-        ' Populate customer details in the party details section
-        .Range("C13").Value = customerDetails(2)  ' Address
-        .Range("C14").Value = customerDetails(8)  ' GSTIN
-        .Range("C15").Value = customerDetails(5)  ' State
-        .Range("C16").Value = customerDetails(6)  ' State Code
-
-        ' Keep state code fixed as "37" for Andhra Pradesh (don't override)
-        .Range("C10").Value = "37"  ' Always keep as 37 for Andhra Pradesh
-    End With
-End Sub
 
 Private Function GetCustomerDetails(customerName As String) As Variant
     ' Get customer details from warehouse sheet (Customer section - columns M-T)
@@ -2821,95 +2743,7 @@ ErrorHandler:
     GetHSNDetails = hsnDetails
 End Function
 
-Private Sub PopulateHSNDetails(targetCell As Range)
-    ' Auto-populate HSN details when HSN code is selected
-    Dim ws As Worksheet
-    Dim hsnCode As String
-    Dim hsnDetails As Variant
-    Dim rowNum As Long
 
-    On Error GoTo ErrorHandler
-
-    Set ws = targetCell.Worksheet
-    If ws.Name <> "GST_Tax_Invoice_for_interstate" Then Exit Sub
-
-    hsnCode = targetCell.Value
-    If hsnCode = "" Then Exit Sub
-
-    rowNum = targetCell.Row
-    hsnDetails = GetHSNDetails(hsnCode)
-
-    ' Populate description (Column B)
-    If hsnDetails(1) <> "" Then
-        ws.Cells(rowNum, 2).Value = hsnDetails(1)
-    End If
-
-    ' Populate UOM (Column E)
-    If hsnDetails(2) <> "" Then
-        ws.Cells(rowNum, 5).Value = hsnDetails(2)
-    End If
-
-    ' Populate IGST Rate (Column I) - for interstate sales
-    If hsnDetails(5) <> "" Then
-        ws.Cells(rowNum, 9).Value = hsnDetails(5)
-    End If
-
-    Exit Sub
-
-ErrorHandler:
-    MsgBox "Error populating HSN details: " & Err.Description, vbCritical
-End Sub
-
-Private Sub AddHSNToMaster()
-    ' Add new HSN code to warehouse sheet (HSN section - columns A-E)
-    Dim dropdownWs As Worksheet
-    Dim lastRow As Long
-    Dim hsnCode As String, description As String
-    Dim cgstRate As String, sgstRate As String, igstRate As String
-
-    On Error GoTo ErrorHandler
-
-    ' Ensure supporting worksheets exist
-    Call EnsureAllSupportingWorksheetsExist
-
-    Set dropdownWs = GetOrCreateWorksheet("warehouse")
-
-    If dropdownWs Is Nothing Then
-        MsgBox "warehouse sheet not found!", vbExclamation
-        Exit Sub
-    End If
-
-    ' HSN data starts at row 2, find last row in HSN section (column A)
-    lastRow = dropdownWs.Cells(dropdownWs.Rows.Count, 1).End(xlUp).Row
-
-    ' Simple input form (you can enhance this with a UserForm)
-    hsnCode = InputBox("Enter HSN/SAC Code:", "Add New HSN Code")
-    If hsnCode = "" Then Exit Sub
-
-    description = InputBox("Enter Description:", "Add New HSN Code")
-    cgstRate = InputBox("Enter CGST Rate (%):", "Add New HSN Code")
-    sgstRate = InputBox("Enter SGST Rate (%):", "Add New HSN Code")
-    igstRate = InputBox("Enter IGST Rate (%):", "Add New HSN Code")
-
-    With dropdownWs
-        ' Add HSN data to columns A-E (new structure)
-        .Cells(lastRow + 1, 1).Value = hsnCode           ' Column A - HSN_Code
-        .Cells(lastRow + 1, 2).Value = description       ' Column B - Description
-        .Cells(lastRow + 1, 3).Value = Val(cgstRate)     ' Column C - CGST_Rate
-        .Cells(lastRow + 1, 4).Value = Val(sgstRate)     ' Column D - SGST_Rate
-        .Cells(lastRow + 1, 5).Value = Val(igstRate)     ' Column E - IGST_Rate
-
-        ' Add borders
-        .Range("A" & lastRow + 1 & ":E" & lastRow + 1).Borders.LineStyle = xlContinuous
-        .Range("A" & lastRow + 1 & ":E" & lastRow + 1).Borders.Color = RGB(204, 204, 204)
-    End With
-
-    MsgBox "HSN code added successfully!", vbInformation
-    Exit Sub
-
-ErrorHandler:
-    MsgBox "Error adding HSN code: " & Err.Description, vbCritical
-End Sub
 
 ' ████████████████████████████████████████████████████████████████████████████████
 ' 🔘 BUTTON FUNCTIONS - DAILY OPERATIONS
