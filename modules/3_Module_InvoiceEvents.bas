@@ -132,8 +132,9 @@ Public Sub NewInvoiceButton()
     ' Clear individual cells to avoid merged cell issues
     ws.Range("C12:F15").ClearContents ' Clear Receiver details, preserving formulas in row 16
     ws.Range("I12:K15").ClearContents ' Clear Consignee details, preserving formulas in row 16
-    ws.Range("F8").ClearContents      ' Clear Vehicle Number
-    ws.Range("F10").ClearContents     ' Clear Place of Supply
+    ws.Range("F7").Value = "By Lorry"   ' Reset Transport Mode
+    ws.Range("F8").Value = ""           ' Clear Vehicle Number
+    ws.Range("F10").Value = ""          ' Clear Place of Supply
     On Error GoTo ErrorHandler
 
     ' Clear item table data (rows 18-21, keep headers and formulas)
@@ -282,9 +283,9 @@ UpdateRecord:
 
     MsgBox "Invoice " & invoiceNumber & " saved successfully to Master sheet!" & vbCrLf & _
            "Customer: " & customerName & vbCrLf & _
-           "Total Taxable Value: ₹" & Format(taxableTotal, "#,##0.00") & vbCrLf & _
-           "IGST Amount: ₹" & Format(igstTotal, "#,##0.00") & vbCrLf & _
-           "Total Invoice Value: ₹" & Format(grandTotal, "#,##0.00") & vbCrLf & vbCrLf & _
+           "Total Taxable Value: " & ChrW(8377) & Format(taxableTotal, "#,##0.00") & vbCrLf & _
+           "IGST Amount: " & ChrW(8377) & Format(igstTotal, "#,##0.00") & vbCrLf & _
+           "Total Invoice Value: " & ChrW(8377) & Format(grandTotal, "#,##0.00") & vbCrLf & vbCrLf & _
            "Record saved for GST audit and return filing purposes.", vbInformation, "GST Invoice Record Saved"
     Exit Sub
 
