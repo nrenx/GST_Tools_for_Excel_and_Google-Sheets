@@ -52,27 +52,6 @@ Public Sub EnsureAllSupportingWorksheetsExist()
     On Error GoTo 0
 End Sub
 
-Public Function GetStateCode(stateName As String) As String
-    ' Return corresponding state code for given state name
-    Dim stateList As Variant
-    Dim stateCodeList As Variant
-    Dim i As Integer
-
-    ' Define state mappings (same as in warehouse sheet)
-    stateList = Array("Andhra Pradesh", "Telangana", "Karnataka", "Tamil Nadu", "Kerala", "Maharashtra", "Gujarat", "Rajasthan", "Delhi", "Punjab")
-    stateCodeList = Array("37", "36", "29", "33", "32", "27", "24", "08", "07", "03")
-
-    ' Find matching state and return code
-    For i = 0 To UBound(stateList)
-        If UCase(Trim(stateName)) = UCase(Trim(stateList(i))) Then
-            GetStateCode = stateCodeList(i)
-            Exit Function
-        End If
-    Next i
-
-    ' If no match found, return empty string
-    GetStateCode = ""
-End Function
 
 Public Function CleanText(inputText As String) As String
     Dim cleanedText As String

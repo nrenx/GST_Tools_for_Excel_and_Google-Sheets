@@ -60,7 +60,6 @@ The main entry points for the system are located in the **`Main_Setup.bas`** mod
     *   **Save Invoice**: `SaveInvoiceButton()` saves a complete record of the invoice to the `Master` sheet for auditing and record-keeping.
     *   **Export to PDF**: `PrintAsPDFButton()` exports the invoice as a two-page PDF (Original and Duplicate).
     *   **Print Invoice**: `PrintButton()` first saves the invoice as a PDF and then sends it to the default printer.
-    *   **Clear Items**: `ClearAllItems()` provides a way to clear all item data from the invoice.
 
 ### 4. `Module_Warehouse.bas`
 
@@ -69,10 +68,7 @@ The main entry points for the system are located in the **`Main_Setup.bas`** mod
     *   **Warehouse Sheet Creation**: `CreateWarehouseSheet()` generates the `warehouse` sheet and populates it with sample data for HSN codes, UOM, transport modes, states, and customers.
     *   **Data Validation Setup**: `SetupDataValidation()` configures all dropdown lists on the invoice sheet, ensuring they are populated from the `warehouse` sheet.
     *   **Customer Dropdown**: `SetupCustomerDropdown()` specifically sets up the customer selection dropdowns.
-    *   **Customer Details Population**: `PopulateCustomerDetails()` automatically fills in the customer's address, GSTIN, and state when a customer is selected from the dropdown.
     *   **HSN Dropdown**: `SetupHSNDropdown()` sets up the HSN code dropdown for each item row.
-    *   **HSN Details Population**: `PopulateHSNDetails()` automatically fills in the item description and IGST rate when an HSN code is selected.
-    *   **Add New HSN Code**: `AddHSNToMaster()` allows users to add new HSN codes to the `warehouse` sheet through an input box.
 
 ### 5. `Module_Master.bas`
 
@@ -89,5 +85,4 @@ The main entry points for the system are located in the **`Main_Setup.bas`** mod
     *   **Worksheet Management**: Includes `WorksheetExists()` and `GetOrCreateWorksheet()` to safely handle worksheet operations.
     *   **Number to Words Conversion**: `NumberToWords()` converts the final invoice amount into its word representation.
     *   **Text Cleaning**: `CleanText()` removes problematic characters from strings to prevent errors.
-    *   **State Code Lookup**: `GetStateCode()` returns the correct state code for a given state name.
     *   **Validation Verification**: `VerifyValidationSettings()` is a utility to check and confirm that all data validation rules allow for manual override.

@@ -544,44 +544,6 @@ ErrorHandler:
     MsgBox "Error adding new item row: " & Err.Description, vbCritical
 End Sub
 
-Public Sub ClearAllItems()
-    Dim ws As Worksheet
-    Dim response As VbMsgBoxResult
-    Dim i As Integer
-
-    On Error GoTo ErrorHandler
-
-    response = MsgBox("Are you sure you want to clear all item data? This cannot be undone.", vbYesNo + vbQuestion, "Clear All Items")
-
-    If response = vbNo Then Exit Sub
-
-    Set ws = GetOrCreateWorksheet("GST_Tax_Invoice_for_interstate")
-
-    If ws Is Nothing Then
-        MsgBox "Invoice sheet not found!", vbExclamation
-        Exit Sub
-    End If
-
-    With ws
-        ' Clear all item rows (18-21)
-        For i = 18 To 21
-            .Range("A" & i & ":K" & i).ClearContents
-            ' Reset formatting to empty row style
-            .Range("A" & i & ":K" & i).Interior.Color = IIf(i Mod 2 = 0, RGB(250, 250, 250), RGB(255, 255, 255))
-        Next i
-
-        ' Reset the first row with Sr.No. 1 and formulas
-        .Cells(18, 1).Value = "1"
-        Call SetupTaxCalculationFormulas(ws)
-        Call UpdateMultiItemTaxCalculations(ws)
-    End With
-
-    MsgBox "All items cleared successfully!", vbInformation
-    Exit Sub
-
-ErrorHandler:
-    MsgBox "Error clearing items: " & Err.Description, vbCritical
-End Sub
 
 ' ===== BUTTON CREATION =====
 
