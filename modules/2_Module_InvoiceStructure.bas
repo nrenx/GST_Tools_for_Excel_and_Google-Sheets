@@ -341,7 +341,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A16").Interior.Color = RGB(245, 245, 245)
         .Range("A16").Font.Color = RGB(26, 26, 26)
         .Range("C16:F16").Merge
-        .Range("C16").Value = ""
+        .Range("C16").Formula = "=VLOOKUP(C15, warehouse!J2:K37, 2, FALSE)"
         .Range("C16").HorizontalAlignment = xlLeft
 
         .Range("G16:H16").Merge
@@ -351,7 +351,7 @@ Public Sub CreateInvoiceSheet()
         .Range("G16").Interior.Color = RGB(245, 245, 245)
         .Range("G16").Font.Color = RGB(26, 26, 26)
         .Range("I16:K16").Merge
-        .Range("I16").Value = ""
+        .Range("I16").Formula = "=VLOOKUP(I15, warehouse!J2:K37, 2, FALSE)"
         .Range("I16").HorizontalAlignment = xlLeft
 
         ' Apply borders and formatting for rows 12-16 with professional color
@@ -944,8 +944,8 @@ Private Sub AutoFillConsigneeFromReceiver(ws As Worksheet)
         ' Copy State from Receiver (C15:F15) to Consignee (I15:K15)
         .Range("I15").Value = .Range("C15").Value
 
-        ' Copy State Code from Receiver (C16:F16) to Consignee (I16:K16)
-        .Range("I16").Value = .Range("C16").Value
+        ' State code for consignee is now handled by a VLOOKUP formula in cell I16.
+        ' This line is no longer needed as copying the state name to I15 will trigger the formula.
 
         ' Format consignee fields for manual editing (use default black font)
         .Range("I12:K12").Font.Color = RGB(26, 26, 26)  ' Standard black font

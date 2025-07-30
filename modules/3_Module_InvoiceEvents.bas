@@ -468,6 +468,78 @@ ErrorHandler:
     MsgBox "Error printing invoice: " & Err.Description, vbCritical, "Print Error"
 End Sub
 
+Public Sub SetupDataValidation(ws As Worksheet)
+    ' Setup data validation dropdowns for standardized inputs
+    Dim validationWs As Worksheet
+    On Error Resume Next
+
+    ' Ensure supporting worksheets exist
+    Call EnsureAllSupportingWorksheetsExist
+
+    Set validationWs = GetOrCreateWorksheet("warehouse")
+
+    If validationWs Is Nothing Then
+        Exit Sub
+    End If
+
+    With ws
+        ' UOM dropdown with manual text entry capability (Column E: 18-21)
+        .Range("E18:E21").Validation.Delete
+        .Range("E18:E21").Validation.Add Type:=xlValidateList, _
+            AlertStyle:=xlValidAlertInformation, _
+            Formula1:="=warehouse!$G$2:$G$11"
+        .Range("E18:E21").Validation.IgnoreBlank = True
+        .Range("E18:E21").Validation.InCellDropdown = True
+        .Range("E18:E21").Validation.ShowError = False
+
+        ' Transport Mode dropdown with manual text entry capability (F7)
+        .Range("F7").Validation.Delete
+        .Range("F7").Validation.Add Type:=xlValidateList, _
+            AlertStyle:=xlValidAlertInformation, _
+            Formula1:="=warehouse!$H$2:$H$8"
+        .Range("F7").Validation.IgnoreBlank = True
+        .Range("F7").Validation.InCellDropdown = True
+        .Range("F7").Validation.ShowError = False
+
+        ' State dropdown for Receiver (Row 15, Column C15:F15)
+        .Range("C15").Validation.Delete
+        .Range("C15").Validation.Add Type:=xlValidateList, _
+            AlertStyle:=xlValidAlertInformation, _
+            Formula1:="=warehouse!$J$2:$J$37"
+        .Range("C15").Validation.IgnoreBlank = True
+        .Range("C15").Validation.InCellDropdown = True
+        .Range("C15").Validation.ShowError = False
+
+        ' State dropdown for Consignee (Row 15, Column I15:K15)
+        .Range("I15").Validation.Delete
+        .Range("I15").Validation.Add Type:=xlValidateList, _
+            AlertStyle:=xlValidAlertInformation, _
+            Formula1:="=warehouse!$J$2:$J$37"
+        .Range("I15").Validation.IgnoreBlank = True
+        .Range("I15").Validation.InCellDropdown = True
+        .Range("I15").Validation.ShowError = False
+
+        ' GSTIN dropdown for Receiver (Row 14, Column C14)
+        .Range("C14").Validation.Delete
+        .Range("C14").Validation.Add Type:=xlValidateList, _
+            AlertStyle:=xlValidAlertInformation, _
+            Formula1:="=warehouse!$X$2:$X$2"
+        .Range("C14").Validation.IgnoreBlank = True
+        .Range("C14").Validation.InCellDropdown = True
+        .Range("C14").Validation.ShowError = False
+
+        ' GSTIN dropdown for Consignee (Row 14, Column I14)
+        .Range("I14").Validation.Delete
+        .Range("I14").Validation.Add Type:=xlValidateList, _
+            AlertStyle:=xlValidAlertInformation, _
+            Formula1:="=warehouse!$X$2:$X$2"
+        .Range("I14").Validation.IgnoreBlank = True
+        .Range("I14").Validation.InCellDropdown = True
+        .Range("I14").Validation.ShowError = False
+    End With
+
+    On Error GoTo 0
+End Sub
 ' ===== MULTI-ITEM SUPPORT SYSTEM =====
 
 Public Sub AddNewItemRow()

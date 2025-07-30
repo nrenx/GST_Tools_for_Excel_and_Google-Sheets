@@ -60,22 +60,22 @@ Public Sub CreateMasterSheet()
         .Columns.AutoFit
 
         ' Set specific column widths for GST data
-        .Columns("A").ColumnWidth = 15  ' Invoice Number
-        .Columns("B").ColumnWidth = 12  ' Invoice Date
-        .Columns("C").ColumnWidth = 20  ' Customer Name
-        .Columns("D").ColumnWidth = 18  ' Customer GSTIN
-        .Columns("E").ColumnWidth = 15  ' Customer State
-        .Columns("F").ColumnWidth = 12  ' State Code
-        .Columns("G").ColumnWidth = 15  ' Taxable Value
-        .Columns("H").ColumnWidth = 10  ' IGST Rate
-        .Columns("I").ColumnWidth = 12  ' IGST Amount
-        .Columns("J").ColumnWidth = 12  ' Total Tax
-        .Columns("K").ColumnWidth = 15  ' Invoice Value
-        .Columns("L").ColumnWidth = 15  ' HSN Codes
-        .Columns("M").ColumnWidth = 25  ' Item Description
-        .Columns("N").ColumnWidth = 10  ' Quantity
-        .Columns("O").ColumnWidth = 8   ' UOM
-        .Columns("P").ColumnWidth = 12  ' Date Created
+        .Columns("A").ColumnWidth = 20  ' Invoice Number
+        .Columns("B").ColumnWidth = 15  ' Invoice Date
+        .Columns("C").ColumnWidth = 30  ' Customer Name
+        .Columns("D").ColumnWidth = 20  ' Customer GSTIN
+        .Columns("E").ColumnWidth = 25  ' Customer State
+        .Columns("F").ColumnWidth = 15  ' State Code
+        .Columns("G").ColumnWidth = 20  ' Taxable Value
+        .Columns("H").ColumnWidth = 12  ' IGST Rate
+        .Columns("I").ColumnWidth = 15  ' IGST Amount
+        .Columns("J").ColumnWidth = 15  ' Total Tax
+        .Columns("K").ColumnWidth = 20  ' Invoice Value
+        .Columns("L").ColumnWidth = 20  ' HSN Codes
+        .Columns("M").ColumnWidth = 40  ' Item Description
+        .Columns("N").ColumnWidth = 12  ' Quantity
+        .Columns("O").ColumnWidth = 10  ' UOM
+        .Columns("P").ColumnWidth = 20  ' Date Created
 
     End With
 End Sub

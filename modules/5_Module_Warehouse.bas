@@ -48,14 +48,13 @@ Public Sub CreateWarehouseSheet()
 
         ' Add sample HSN data
         hsnData = Array( _
-            Array("4403", "Casuarina Wood", 6, 6, 12), _
-            Array("4407", "Sawn Wood", 6, 6, 12), _
-            Array("4409", "Wood Flooring", 9, 9, 18), _
-            Array("2501", "Salt", 2.5, 2.5, 5), _
-            Array("1006", "Rice", 2.5, 2.5, 5), _
-            Array("7208", "Steel Sheets", 9, 9, 18), _
-            Array("8471", "Computer", 9, 9, 18), _
-            Array("8517", "Mobile Phone", 9, 9, 18) _
+            Array("4401", "Fuel wood, firewood, sawdust, wood waste and scrap", 2.5, 2.5, 5), _
+            Array("4402", "Wood charcoal", 2.5, 2.5, 5), _
+            Array("4403", "Wood in the rough (logs, unprocessed timber)", 9, 9, 18), _
+            Array("4407", "Wood sawn or chipped", 9, 9, 18), _
+            Array("4412", "Plywood, veneered panels, laminated wood", 9, 9, 18), _
+            Array("9965", "Goods transport services", 2.5, 2.5, 5), _
+            Array("9986", "Support services to agriculture, forestry, fishing, animal husbandry", 9, 9, 18) _
         )
 
         For i = 0 To UBound(hsnData)
@@ -93,7 +92,7 @@ Public Sub CreateWarehouseSheet()
         .Range("J1").Interior.Color = RGB(47, 80, 97)
         .Range("J1").Font.Color = RGB(255, 255, 255)
 
-        stateList = Array("Andhra Pradesh", "Telangana", "Karnataka", "Tamil Nadu", "Kerala", "Maharashtra", "Gujarat", "Rajasthan", "Delhi", "Punjab")
+        stateList = Array("Jammu and Kashmir", "Himachal Pradesh", "Punjab", "Chandigarh", "Uttarakhand", "Haryana", "Delhi", "Rajasthan", "Uttar Pradesh", "Bihar", "Sikkim", "Arunachal Pradesh", "Nagaland", "Manipur", "Mizoram", "Tripura", "Meghalaya", "Assam", "West Bengal", "Jharkhand", "Odisha", "Chhattisgarh", "Madhya Pradesh", "Gujarat", "Dadra and Nagar Haveli and Daman and Diu (merged)", "Maharashtra", "Karnataka", "Goa", "Lakshadweep", "Kerala", "Tamil Nadu", "Puducherry", "Andaman and Nicobar Islands", "Telangana", "Andhra Pradesh", "Ladakh")
         For i = 0 To UBound(stateList)
             .Cells(i + 2, 10).Value = stateList(i)
         Next i
@@ -104,7 +103,7 @@ Public Sub CreateWarehouseSheet()
         .Range("K1").Interior.Color = RGB(47, 80, 97)
         .Range("K1").Font.Color = RGB(255, 255, 255)
 
-        stateCodeList = Array("37", "36", "29", "33", "32", "27", "24", "08", "07", "03")
+        stateCodeList = Array("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "26", "27", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38")
         For i = 0 To UBound(stateCodeList)
             .Cells(i + 2, 11).Value = stateCodeList(i)
         Next i
@@ -120,6 +119,16 @@ Public Sub CreateWarehouseSheet()
         .Range("S1").Value = "Email"
         .Range("T1").Value = "Contact_Person"
 
+        ' GST Type List (Column X)
+        .Range("X1").Value = "GST_Type"
+        .Range("X1").Font.Bold = True
+        .Range("X1").Interior.Color = RGB(47, 80, 97)
+        .Range("X1").Font.Color = RGB(255, 255, 255)
+        .Range("X2").Value = "UNREGISTERED"
+
+        ' Increase column widths for customer data
+        .Columns("M:T").ColumnWidth = 25
+
         ' Format customer headers
         .Range("M1:T1").Font.Bold = True
         .Range("M1:T1").Interior.Color = RGB(47, 80, 97)
@@ -127,17 +136,7 @@ Public Sub CreateWarehouseSheet()
         .Range("M1:T1").HorizontalAlignment = xlCenter
 
         ' Add sample customer data (simplified structure)
-        customerData = Array( _
-            Array("ABC Industries Ltd", "123 Industrial Area, Sector 15, Tirupati", "Andhra Pradesh", "37", "37ABCDE1234F1Z5", "9876543210", "abc@industries.com", "Mr. Sharma"), _
-            Array("XYZ Trading Co", "456 Market Street, Near Bus Stand, Vijayawada", "Andhra Pradesh", "37", "37XYZAB5678G2H6", "9876543211", "xyz@trading.com", "Ms. Patel"), _
-            Array("PQR Enterprises", "789 Commercial Complex, Phase 2, Visakhapatnam", "Andhra Pradesh", "37", "37PQRST9012I3J7", "9876543212", "pqr@enterprises.com", "Mr. Kumar") _
-        )
-
-        For i = 0 To UBound(customerData)
-            For j = 0 To UBound(customerData(i))
-                .Cells(i + 2, j + 13).Value = customerData(i)(j)  ' Starting at column M (13)
-            Next j
-        Next i
+        ' Customer data is intentionally left blank for the user to populate.
 
         ' Auto-fit columns
         .Columns.AutoFit
@@ -154,96 +153,13 @@ Public Sub CreateWarehouseSheet()
         .Range("K1:K" & UBound(stateCodeList) + 2).Borders.LineStyle = xlContinuous
 
         ' Customer data borders
-        .Range("M1:T" & UBound(customerData) + 2).Borders.LineStyle = xlContinuous
-        .Range("M1:T" & UBound(customerData) + 2).Borders.Color = RGB(204, 204, 204)
+        .Range("M1:T1").Borders.LineStyle = xlContinuous
+        .Range("M1:T1").Borders.Color = RGB(204, 204, 204)
     End With
 End Sub
 
-Public Sub SetupDataValidation(ws As Worksheet)
-    ' Setup data validation dropdowns for standardized inputs
-    Dim validationWs As Worksheet
-    On Error Resume Next
-
-    ' Ensure supporting worksheets exist
-    Call EnsureAllSupportingWorksheetsExist
-
-    Set validationWs = GetOrCreateWorksheet("warehouse")
-
-    If validationWs Is Nothing Then
-        Exit Sub
-    End If
-
-    With ws
-        ' UOM dropdown with manual text entry capability (Column E: 18-21)
-        ' Allow both dropdown selection AND manual text entry
-        .Range("E18:E21").Validation.Delete
-        .Range("E18:E21").Validation.Add Type:=xlValidateList, _
-            AlertStyle:=xlValidAlertInformation, _
-            Formula1:="=warehouse!$G$2:$G$11"  ' UOM list from column G
-        .Range("E18:E21").Validation.IgnoreBlank = True
-        .Range("E18:E21").Validation.InCellDropdown = True
-        .Range("E18:E21").Validation.ShowError = False  ' Allow manual text entry
-        .Range("E18:E21").Font.Color = RGB(26, 26, 26)  ' Standard black font
-
-        ' Transport Mode dropdown with manual text entry capability (F7)
-        ' Allow both dropdown selection AND manual text entry
-        .Range("F7").Validation.Delete
-        .Range("F7").Validation.Add Type:=xlValidateList, _
-            AlertStyle:=xlValidAlertInformation, _
-            Formula1:="=warehouse!$H$2:$H$8"  ' Transport modes from column H
-        .Range("F7").Validation.IgnoreBlank = True
-        .Range("F7").Validation.InCellDropdown = True
-        .Range("F7").Validation.ShowError = False  ' Allow manual text entry
-
-        ' Set default transport mode
-        If .Range("F7").Value = "" Then
-            .Range("F7").Value = "By Lorry"
-        End If
-
-        ' State dropdown for Receiver (Row 15, Column C15:F15)
-        .Range("C15").Validation.Delete
-        .Range("C15").Validation.Add Type:=xlValidateList, _
-            AlertStyle:=xlValidAlertInformation, _
-            Formula1:="=warehouse!$J$2:$J$11"  ' State list from column J
-        .Range("C15").Validation.IgnoreBlank = True
-        .Range("C15").Validation.InCellDropdown = True
-        .Range("C15").Validation.ShowError = False  ' Allow manual text entry
-        .Range("C15").Font.Color = RGB(26, 26, 26)  ' Standard black font
-
-        ' State dropdown for Consignee (Row 15, Column I15:K15)
-        .Range("I15").Validation.Delete
-        .Range("I15").Validation.Add Type:=xlValidateList, _
-            AlertStyle:=xlValidAlertInformation, _
-            Formula1:="=warehouse!$J$2:$J$11"  ' State list from column J
-        .Range("I15").Validation.IgnoreBlank = True
-        .Range("I15").Validation.InCellDropdown = True
-        .Range("I15").Validation.ShowError = False  ' Allow manual text entry
-        .Range("I15").Font.Color = RGB(26, 26, 26)  ' Standard black font
-
-        ' State Code dropdown for Receiver (Row 16, Column C16) - shows simple numeric codes
-        .Range("C16").Validation.Delete
-        .Range("C16").Validation.Add Type:=xlValidateList, _
-            AlertStyle:=xlValidAlertInformation, _
-            Formula1:="=warehouse!$K$2:$K$11"  ' Simple state code list from column K
-        .Range("C16").Validation.IgnoreBlank = True
-        .Range("C16").Validation.InCellDropdown = True
-        .Range("C16").Validation.ShowError = False  ' Allow manual text entry
-        .Range("C16").Font.Color = RGB(26, 26, 26)  ' Standard black font
-
-        ' State Code dropdown for Consignee (Row 16, Column I16) - shows simple numeric codes
-        .Range("I16").Validation.Delete
-        .Range("I16").Validation.Add Type:=xlValidateList, _
-            AlertStyle:=xlValidAlertInformation, _
-            Formula1:="=warehouse!$K$2:$K$11"  ' Simple state code list from column K
-        .Range("I16").Validation.IgnoreBlank = True
-        .Range("I16").Validation.InCellDropdown = True
-        .Range("I16").Validation.ShowError = False  ' Allow manual text entry
-        .Range("I16").Font.Color = RGB(26, 26, 26)  ' Standard black font
-
-    End With
-
-    On Error GoTo 0
-End Sub
+' Note: The SetupDataValidation subroutine has been moved to Module_InvoiceEvents
+' to better align with its role in managing UI interactions on the invoice sheet.
 
 ' ===== CUSTOMER DATABASE INTEGRATION =====
 
@@ -424,4 +340,3 @@ Public Function GetHSNDetails(hsnCode As String) As Variant
 ErrorHandler:
     GetHSNDetails = hsnDetails
 End Function
-
