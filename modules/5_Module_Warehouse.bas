@@ -51,10 +51,19 @@ Public Sub CreateWarehouseSheet()
             Array("4401", "Fuel wood, firewood, sawdust, wood waste and scrap", 2.5, 2.5, 5), _
             Array("4402", "Wood charcoal", 2.5, 2.5, 5), _
             Array("4403", "Wood in the rough (logs, unprocessed timber)", 9, 9, 18), _
+            Array("4404", "Split poles, pickets, sticks, hoopwood, etc.", 6, 6, 12), _
+            Array("4405", "Wood flour and wood wool", 6, 6, 12), _
+            Array("4406", "Wooden railway or tramway sleepers", 6, 6, 12), _
             Array("4407", "Wood sawn or chipped", 9, 9, 18), _
+            Array("4408", "Veneered wood and wood continuously shaped", 9, 9, 18), _
+            Array("4409", "Moulded wood, flooring strips", 9, 9, 18), _
+            Array("4410", "Particle board, oriented strand board (OSB), similar boards", 9, 9, 18), _
             Array("4412", "Plywood, veneered panels, laminated wood", 9, 9, 18), _
-            Array("9965", "Goods transport services", 2.5, 2.5, 5), _
-            Array("9986", "Support services to agriculture, forestry, fishing, animal husbandry", 9, 9, 18) _
+            Array("4413", "Densified wood", 9, 9, 18), _
+            Array("4414", "Wooden frames for mirrors, photos, paintings", 9, 9, 18), _
+            Array("4416", "Wooden barrels, casks, and other cooper’s products", 6, 6, 12), _
+            Array("4417", "Wooden tools, tool handles, broom handles", 6, 6, 12), _
+            Array("4418", "Builders’ joinery and carpentry of wood (doors, windows, etc.)", 9, 9, 18) _
         )
 
         For i = 0 To UBound(hsnData)
@@ -125,6 +134,13 @@ Public Sub CreateWarehouseSheet()
         .Range("X1").Interior.Color = RGB(47, 80, 97)
         .Range("X1").Font.Color = RGB(255, 255, 255)
         .Range("X2").Value = "UNREGISTERED"
+        
+        ' Description List (Column Z)
+        .Range("Z1").Value = "Description"
+        .Range("Z1").Font.Bold = True
+        .Range("Z1").Interior.Color = RGB(47, 80, 97)
+        .Range("Z1").Font.Color = RGB(255, 255, 255)
+        .Range("Z2").Value = "Casurina Wood"
 
         ' Increase column widths for customer data
         .Columns("M:T").ColumnWidth = 25
@@ -287,7 +303,7 @@ Public Sub SetupHSNDropdown(ws As Worksheet)
         .Range("C18:C21").Validation.Delete
         .Range("C18:C21").Validation.Add Type:=xlValidateList, _
             AlertStyle:=xlValidAlertInformation, _
-            Formula1:="=warehouse!$A$2:$A$20"  ' HSN codes from column A
+            Formula1:="=warehouse!$A$2:$A$17"  ' HSN codes from column A
         .Range("C18:C21").Validation.IgnoreBlank = True
         .Range("C18:C21").Validation.InCellDropdown = True
         .Range("C18:C21").Validation.ShowError = False  ' Allow manual text entry

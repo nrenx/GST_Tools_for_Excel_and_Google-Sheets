@@ -130,8 +130,10 @@ Public Sub NewInvoiceButton()
     ' Clear all customer details (handle merged cells properly)
     On Error Resume Next
     ' Clear individual cells to avoid merged cell issues
-    ws.Range("C12:F16").ClearContents ' Clear Receiver details
-    ws.Range("I12:K16").ClearContents ' Clear Consignee details
+    ws.Range("C12:F15").ClearContents ' Clear Receiver details, preserving formulas in row 16
+    ws.Range("I12:K15").ClearContents ' Clear Consignee details, preserving formulas in row 16
+    ws.Range("F8").ClearContents      ' Clear Vehicle Number
+    ws.Range("F10").ClearContents     ' Clear Place of Supply
     On Error GoTo ErrorHandler
 
     ' Clear item table data (rows 18-21, keep headers and formulas)
@@ -536,6 +538,15 @@ Public Sub SetupDataValidation(ws As Worksheet)
         .Range("I14").Validation.IgnoreBlank = True
         .Range("I14").Validation.InCellDropdown = True
         .Range("I14").Validation.ShowError = False
+        
+        ' Description dropdown for item (Row 18, Column B)
+        .Range("B18").Validation.Delete
+        .Range("B18").Validation.Add Type:=xlValidateList, _
+            AlertStyle:=xlValidAlertInformation, _
+            Formula1:="=warehouse!$Z$2:$Z$10"
+        .Range("B18").Validation.IgnoreBlank = True
+        .Range("B18").Validation.InCellDropdown = True
+        .Range("B18").Validation.ShowError = False
     End With
 
     On Error GoTo 0
@@ -587,7 +598,7 @@ Public Sub AddNewItemRow()
         ' Setup formulas for the new row
         .Range("G" & newRowNum).Formula = "=IF(AND(D" & newRowNum & "<>"""",F" & newRowNum & "<>""""),D" & newRowNum & "*F" & newRowNum & ","""")"
         .Range("H" & newRowNum).Formula = "=IF(G" & newRowNum & "<>"""",G" & newRowNum & ","""")"
-        .Range("I" & newRowNum).Value = "12"
+        .Range("I" & newRowNum).Formula = "=VLOOKUP(C" & newRowNum & ", warehouse!A:E, 5, FALSE)"
         .Range("J" & newRowNum).Formula = "=IF(AND(H" & newRowNum & "<>"""",I" & newRowNum & "<>""""),H" & newRowNum & "*I" & newRowNum & "/100,"""")"
         .Range("K" & newRowNum).Formula = "=IF(AND(H" & newRowNum & "<>"""",J" & newRowNum & "<>""""),H" & newRowNum & "+J" & newRowNum & ","""")"
 
