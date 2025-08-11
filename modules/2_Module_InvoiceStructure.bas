@@ -429,34 +429,34 @@ Public Sub CreateInvoiceSheet()
         ' TWO-ROW HEADER STRUCTURE WITH PROPER TAX COLUMN MERGING
         On Error Resume Next
 
-        ' STEP 1: Create individual cell headers first (before merging)
-        ' Row 17: Individual cells for non-merged columns
-        .Cells(17, 1).Value = "Sr.No."
-        .Cells(17, 2).Value = "Description of"
-        .Cells(17, 3).Value = "HSN/SAC"
-        .Cells(17, 4).Value = "Quantity"
-        .Cells(17, 5).Value = "UOM"
-        .Cells(17, 6).Value = "Rate"
-        .Cells(17, 7).Value = "Amount"
-        .Cells(17, 8).Value = "Taxable"
-        .Cells(17, 15).Value = "Total"
+    ' STEP 1: Create individual cell headers first (before merging)
+    ' Row 17: Set header texts (will merge non-tax columns vertically)
+    .Cells(17, 1).Value = "Sr.No."
+    .Cells(17, 2).Value = "Description of Goods/Services"
+    .Cells(17, 3).Value = "HSN/SAC Code"
+    .Cells(17, 4).Value = "Quantity"
+    .Cells(17, 5).Value = "UOM"
+    .Cells(17, 6).Value = "Rate"
+    .Cells(17, 7).Value = "Amount"
+    .Cells(17, 8).Value = "Taxable Value"
+    .Cells(17, 15).Value = "Total Amount"
 
-        ' Row 18: Individual cells for non-merged columns
-        .Cells(18, 1).Value = ""
-        .Cells(18, 2).Value = "Goods/Services"
-        .Cells(18, 3).Value = "Code"
-        .Cells(18, 4).Value = ""
-        .Cells(18, 5).Value = ""
-        .Cells(18, 6).Value = "(Rs.)"
-        .Cells(18, 7).Value = "(Rs.)"
-        .Cells(18, 8).Value = "Value (Rs.)"
-        .Cells(18, 9).Value = "Rate (%)"
-        .Cells(18, 10).Value = "Amount (Rs.)"
-        .Cells(18, 11).Value = "Rate (%)"
-        .Cells(18, 12).Value = "Amount (Rs.)"
-        .Cells(18, 13).Value = "Rate (%)"
-        .Cells(18, 14).Value = "Amount (Rs.)"
-        .Cells(18, 15).Value = "Amount (Rs.)"
+    ' Row 18: Set only tax column sub-headers; non-tax will be merged vertically
+    .Cells(18, 1).Value = ""
+    .Cells(18, 2).Value = ""
+    .Cells(18, 3).Value = ""
+    .Cells(18, 4).Value = ""
+    .Cells(18, 5).Value = ""
+    .Cells(18, 6).Value = ""
+    .Cells(18, 7).Value = ""
+    .Cells(18, 8).Value = ""
+    .Cells(18, 9).Value = "Rate (%)"
+    .Cells(18, 10).Value = "Amount (Rs.)"
+    .Cells(18, 11).Value = "Rate (%)"
+    .Cells(18, 12).Value = "Amount (Rs.)"
+    .Cells(18, 13).Value = "Rate (%)"
+    .Cells(18, 14).Value = "Amount (Rs.)"
+    .Cells(18, 15).Value = ""
 
         ' STEP 2: Apply formatting to all header cells
         .Range("A17:O18").Font.Bold = True
@@ -471,6 +471,25 @@ Public Sub CreateInvoiceSheet()
         .Range("A17:O18").Borders.LineStyle = xlContinuous
         .Range("A17:O18").Borders.Color = RGB(204, 204, 204)
 
+        ' STEP 3: Merge non-tax columns vertically across Rows 17-18 for consistent two-row header
+        .Range("A17:A18").Merge
+        .Range("B17:B18").Merge
+        .Range("C17:C18").Merge
+        .Range("D17:D18").Merge
+        .Range("E17:E18").Merge
+        .Range("F17:F18").Merge
+        .Range("G17:G18").Merge
+        .Range("H17:H18").Merge
+        .Range("O17:O18").Merge
+
+        ' Ensure merged non-tax columns use the light gray background and centered alignment
+        With .Range("A17:A18,B17:B18,C17:C18,D17:D18,E17:E18,F17:F18,G17:G18,H17:H18,O17:O18")
+            .Interior.Color = RGB(245, 245, 245)
+            .HorizontalAlignment = xlCenter
+            .VerticalAlignment = xlCenter
+        End With
+
+        ' STEP 4: Create merged cells for tax columns in Row 17 (unchanged)
         ' STEP 3: Create merged cells for tax columns in Row 17
         ' CGST: Merge columns I,J (9,10)
         .Range("I17:J17").Merge
@@ -490,7 +509,7 @@ Public Sub CreateInvoiceSheet()
         .Range("M17").HorizontalAlignment = xlCenter
         .Range("M17").VerticalAlignment = xlCenter
 
-        ' Set optimal row heights for two-row header
+    ' Set optimal row heights for two-row header
         .Rows(17).RowHeight = 30
         .Rows(18).RowHeight = 30
 
