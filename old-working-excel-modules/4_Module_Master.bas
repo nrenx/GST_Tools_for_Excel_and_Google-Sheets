@@ -25,8 +25,8 @@ Public Sub CreateMasterSheet()
     ws.Name = "Master"
 
     With ws
-        ' ===== GST INVOICE RECORDS FOR AUDIT & RETURN FILING (A1:T1) - EXPANDED FOR NEW TAX FIELDS =====
-        ' GST-compliant headers for complete invoice records with CGST/SGST support
+        ' ===== GST INVOICE RECORDS FOR AUDIT & RETURN FILING (A1:P1) =====
+        ' GST-compliant headers for complete invoice records
         .Range("A1").Value = "Invoice_Number"
         .Range("B1").Value = "Invoice_Date"
         .Range("C1").Value = "Customer_Name"
@@ -34,37 +34,32 @@ Public Sub CreateMasterSheet()
         .Range("E1").Value = "Customer_State"
         .Range("F1").Value = "Customer_State_Code"
         .Range("G1").Value = "Total_Taxable_Value"
-        .Range("H1").Value = "Sale_Type"
-        .Range("I1").Value = "IGST_Rate"
-        .Range("J1").Value = "IGST_Amount"
-        .Range("K1").Value = "CGST_Rate"
-        .Range("L1").Value = "CGST_Amount"
-        .Range("M1").Value = "SGST_Rate"
-        .Range("N1").Value = "SGST_Amount"
-        .Range("O1").Value = "Total_Tax_Amount"
-        .Range("P1").Value = "Total_Invoice_Value"
-        .Range("Q1").Value = "HSN_Codes"
-        .Range("R1").Value = "Item_Description"
-        .Range("S1").Value = "Quantity"
-        .Range("T1").Value = "UOM"
-        .Range("U1").Value = "Date_Created"
+        .Range("H1").Value = "IGST_Rate"
+        .Range("I1").Value = "IGST_Amount"
+        .Range("J1").Value = "Total_Tax_Amount"
+        .Range("K1").Value = "Total_Invoice_Value"
+        .Range("L1").Value = "HSN_Codes"
+        .Range("M1").Value = "Item_Description"
+        .Range("N1").Value = "Quantity"
+        .Range("O1").Value = "UOM"
+        .Range("P1").Value = "Date_Created"
 
-        ' Format GST audit headers - EXPANDED TO COLUMN U
-        .Range("A1:U1").Font.Bold = True
-        .Range("A1:U1").Interior.Color = RGB(47, 80, 97)
-        .Range("A1:U1").Font.Color = RGB(255, 255, 255)
-        .Range("A1:U1").HorizontalAlignment = xlCenter
-        .Range("A1:U1").WrapText = True
+        ' Format GST audit headers
+        .Range("A1:P1").Font.Bold = True
+        .Range("A1:P1").Interior.Color = RGB(47, 80, 97)
+        .Range("A1:P1").Font.Color = RGB(255, 255, 255)
+        .Range("A1:P1").HorizontalAlignment = xlCenter
+        .Range("A1:P1").WrapText = True
         .Rows(1).RowHeight = 30
 
         ' Add borders to header
-        .Range("A1:U1").Borders.LineStyle = xlContinuous
-        .Range("A1:U1").Borders.Color = RGB(204, 204, 204)
+        .Range("A1:P1").Borders.LineStyle = xlContinuous
+        .Range("A1:P1").Borders.Color = RGB(204, 204, 204)
 
         ' Auto-fit columns for better visibility
         .Columns.AutoFit
 
-        ' Set specific column widths for GST data - UPDATED FOR NEW TAX FIELDS
+        ' Set specific column widths for GST data
         .Columns("A").ColumnWidth = 20  ' Invoice Number
         .Columns("B").ColumnWidth = 15  ' Invoice Date
         .Columns("C").ColumnWidth = 30  ' Customer Name
@@ -72,20 +67,15 @@ Public Sub CreateMasterSheet()
         .Columns("E").ColumnWidth = 25  ' Customer State
         .Columns("F").ColumnWidth = 15  ' State Code
         .Columns("G").ColumnWidth = 20  ' Taxable Value
-        .Columns("H").ColumnWidth = 15  ' Sale Type
-        .Columns("I").ColumnWidth = 12  ' IGST Rate
-        .Columns("J").ColumnWidth = 15  ' IGST Amount
-        .Columns("K").ColumnWidth = 12  ' CGST Rate
-        .Columns("L").ColumnWidth = 15  ' CGST Amount
-        .Columns("M").ColumnWidth = 12  ' SGST Rate
-        .Columns("N").ColumnWidth = 15  ' SGST Amount
-        .Columns("O").ColumnWidth = 15  ' Total Tax
-        .Columns("P").ColumnWidth = 20  ' Invoice Value
-        .Columns("Q").ColumnWidth = 20  ' HSN Codes
-        .Columns("R").ColumnWidth = 40  ' Item Description
-        .Columns("S").ColumnWidth = 12  ' Quantity
-        .Columns("T").ColumnWidth = 10  ' UOM
-        .Columns("U").ColumnWidth = 20  ' Date Created
+        .Columns("H").ColumnWidth = 12  ' IGST Rate
+        .Columns("I").ColumnWidth = 15  ' IGST Amount
+        .Columns("J").ColumnWidth = 15  ' Total Tax
+        .Columns("K").ColumnWidth = 20  ' Invoice Value
+        .Columns("L").ColumnWidth = 20  ' HSN Codes
+        .Columns("M").ColumnWidth = 40  ' Item Description
+        .Columns("N").ColumnWidth = 12  ' Quantity
+        .Columns("O").ColumnWidth = 10  ' UOM
+        .Columns("P").ColumnWidth = 20  ' Date Created
 
     End With
 End Sub

@@ -142,14 +142,6 @@ Public Sub CreateWarehouseSheet()
         .Range("Z1").Font.Color = RGB(255, 255, 255)
         .Range("Z2").Value = "Casurina Wood"
 
-        ' Sale Type List (Column AA)
-        .Range("AA1").Value = "Sale_Type_List"
-        .Range("AA1").Font.Bold = True
-        .Range("AA1").Interior.Color = RGB(47, 80, 97)
-        .Range("AA1").Font.Color = RGB(255, 255, 255)
-        .Range("AA2").Value = "Interstate"
-        .Range("AA3").Value = "Intrastate"
-
         ' Increase column widths for customer data
         .Columns("M:T").ColumnWidth = 25
 
@@ -215,18 +207,18 @@ Public Sub SetupCustomerDropdown(ws As Worksheet)
         .Range("C12").Interior.Color = RGB(255, 255, 255)  ' White background
         .Range("C12").Font.Color = RGB(26, 26, 26)  ' Standard black font
 
-        ' Customer dropdown with manual text entry capability for Consignee (row 12, column K) - UPDATED FOR EXPANDED LAYOUT
+        ' Customer dropdown with manual text entry capability for Consignee (row 12, column I)
         ' Allow both dropdown selection AND manual text entry
-        .Range("K12").Validation.Delete
-        .Range("K12").Validation.Add Type:=xlValidateList, _
+        .Range("I12").Validation.Delete
+        .Range("I12").Validation.Add Type:=xlValidateList, _
             AlertStyle:=xlValidAlertInformation, _
             Formula1:="=warehouse!$M$2:$M$10"  ' Customer names (restored to column M)
-        .Range("K12").Validation.IgnoreBlank = True
-        .Range("K12").Validation.InCellDropdown = True
-        .Range("K12").Validation.ShowError = False  ' Allow manual text entry
-        .Range("K12").Font.Bold = True
-        .Range("K12").Interior.Color = RGB(255, 255, 255)  ' White background
-        .Range("K12").Font.Color = RGB(26, 26, 26)  ' Standard black font
+        .Range("I12").Validation.IgnoreBlank = True
+        .Range("I12").Validation.InCellDropdown = True
+        .Range("I12").Validation.ShowError = False  ' Allow manual text entry
+        .Range("I12").Font.Bold = True
+        .Range("I12").Interior.Color = RGB(255, 255, 255)  ' White background
+        .Range("I12").Font.Color = RGB(26, 26, 26)  ' Standard black font
 
         ' Set fixed state code for Andhra Pradesh (no dropdown needed)
         .Range("C10").Validation.Delete  ' Remove any existing validation
@@ -235,18 +227,6 @@ Public Sub SetupCustomerDropdown(ws As Worksheet)
         .Range("C10").Interior.Color = RGB(245, 245, 245)  ' Light grey background
         .Range("C10").Font.Color = RGB(26, 26, 26)  ' Dark text
         .Range("C10").HorizontalAlignment = xlLeft
-
-        ' Sale Type dropdown with manual text entry capability (N7)
-        .Range("N7").Validation.Delete
-        .Range("N7").Validation.Add Type:=xlValidateList, _
-            AlertStyle:=xlValidAlertInformation, _
-            Formula1:="=warehouse!$AA$2:$AA$3"  ' Sale Type list
-        .Range("N7").Validation.IgnoreBlank = True
-        .Range("N7").Validation.InCellDropdown = True
-        .Range("N7").Validation.ShowError = False  ' Allow manual text entry
-        .Range("N7").Font.Bold = True
-        .Range("N7").Font.Color = RGB(220, 20, 60)  ' Red color for user input
-        .Range("N7").HorizontalAlignment = xlCenter
     End With
 
     On Error GoTo 0
@@ -318,7 +298,7 @@ Public Sub SetupHSNDropdown(ws As Worksheet)
     End If
 
     With ws
-        ' HSN Code dropdown with manual text entry capability (Column C: 18-21) - NO CHANGE NEEDED
+        ' HSN Code dropdown with manual text entry capability (Column C: 18-21)
         ' Allow both dropdown selection AND manual text entry
         .Range("C18:C21").Validation.Delete
         .Range("C18:C21").Validation.Add Type:=xlValidateList, _
@@ -328,16 +308,6 @@ Public Sub SetupHSNDropdown(ws As Worksheet)
         .Range("C18:C21").Validation.InCellDropdown = True
         .Range("C18:C21").Validation.ShowError = False  ' Allow manual text entry
         .Range("C18:C21").Font.Color = RGB(26, 26, 26)  ' Standard black font
-
-        ' UOM dropdown for expanded layout (Column E: 18-21) - NO CHANGE NEEDED
-        .Range("E18:E21").Validation.Delete
-        .Range("E18:E21").Validation.Add Type:=xlValidateList, _
-            AlertStyle:=xlValidAlertInformation, _
-            Formula1:="=warehouse!$G$2:$G$11"  ' UOM list from column G
-        .Range("E18:E21").Validation.IgnoreBlank = True
-        .Range("E18:E21").Validation.InCellDropdown = True
-        .Range("E18:E21").Validation.ShowError = False  ' Allow manual text entry
-        .Range("E18:E21").Font.Color = RGB(26, 26, 26)  ' Standard black font
     End With
 
     On Error GoTo 0
