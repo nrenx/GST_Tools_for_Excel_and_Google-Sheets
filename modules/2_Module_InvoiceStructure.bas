@@ -83,14 +83,22 @@ Public Sub CreateInvoiceSheet()
         Call CreateHeaderRow(ws, 4, "A4:O4", "GSTIN: 37HERPB7733F1Z5", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 27)
         Call CreateHeaderRow(ws, 5, "A5:O5", "Email: kotidarisetty7777@gmail.com", 11, True, RGB(245, 245, 245), RGB(26, 26, 26), 25)
 
-        ' Remove horizontal borders between header rows for print/PDF appearance - OPTIMIZED TO COLUMN O
+        ' Remove ONLY INTERNAL borders from rows 3 and 4 - PRESERVE OUTER BORDERS
         On Error Resume Next
-        ' Remove bottom border of row 2 (between row 2 and 3)
-        .Range("A2:O2").Borders(xlEdgeBottom).LineStyle = xlNone
-        ' Remove bottom border of row 3 (between row 3 and 4)
+        ' Remove internal borders from row 3 but preserve left and right outer borders
+        .Range("A3:O3").Borders(xlInsideHorizontal).LineStyle = xlNone
+        .Range("A3:O3").Borders(xlInsideVertical).LineStyle = xlNone
+        .Range("A3:O3").Borders(xlEdgeTop).LineStyle = xlNone
         .Range("A3:O3").Borders(xlEdgeBottom).LineStyle = xlNone
-        ' Remove bottom border of row 4 (between row 4 and 5)
+
+        ' Remove internal borders from row 4 but preserve left and right outer borders
+        .Range("A4:O4").Borders(xlInsideHorizontal).LineStyle = xlNone
+        .Range("A4:O4").Borders(xlInsideVertical).LineStyle = xlNone
+        .Range("A4:O4").Borders(xlEdgeTop).LineStyle = xlNone
         .Range("A4:O4").Borders(xlEdgeBottom).LineStyle = xlNone
+
+        ' Also remove bottom border of row 2 (between row 2 and 3)
+        .Range("A2:O2").Borders(xlEdgeBottom).LineStyle = xlNone
         On Error GoTo 0
 
         ' Row 6: TAX-INVOICE header - PROPERLY PROPORTIONED FOR OPTIMIZED LAYOUT
@@ -418,32 +426,80 @@ Public Sub CreateInvoiceSheet()
         ' --- Item Table (Simplified) ---
         On Error Resume Next
 
-        ' SIMPLE SINGLE-ROW HEADER STRUCTURE - CORRECTED TO MATCH ORIGINAL LAYOUT
+        ' TWO-ROW HEADER STRUCTURE WITH PROPER TAX COLUMN MERGING
         On Error Resume Next
 
-        ' Headers - ENHANCED STRUCTURE WITH CGST/SGST COLUMNS (A-O)
-        headers = Array("Sr.No.", "Description of Goods/Services", "HSN/SAC Code", "Quantity", "UOM", "Rate (Rs.)", "Amount (Rs.)", "Taxable Value (Rs.)", "IGST Rate (%)", "IGST Amount (Rs.)", "CGST Rate (%)", "CGST Amount (Rs.)", "SGST Rate (%)", "SGST Amount (Rs.)", "Total Amount (Rs.)")
-        For i = 0 To UBound(headers)
-            With .Cells(17, i + 1)
-                .Value = headers(i)
-                .Font.Bold = True
-                .Font.Size = 10
-                .Interior.Color = RGB(245, 245, 245)
-                .Font.Color = RGB(26, 26, 26)
-                .WrapText = True
-                .HorizontalAlignment = xlCenter
-                .Borders.LineStyle = xlContinuous
-                .Borders.Color = RGB(204, 204, 204)
-            End With
-        Next i
-        .Rows(17).RowHeight = 58
+        ' STEP 1: Create individual cell headers first (before merging)
+        ' Row 17: Individual cells for non-merged columns
+        .Cells(17, 1).Value = "Sr.No."
+        .Cells(17, 2).Value = "Description of"
+        .Cells(17, 3).Value = "HSN/SAC"
+        .Cells(17, 4).Value = "Quantity"
+        .Cells(17, 5).Value = "UOM"
+        .Cells(17, 6).Value = "Rate"
+        .Cells(17, 7).Value = "Amount"
+        .Cells(17, 8).Value = "Taxable"
+        .Cells(17, 15).Value = "Total"
+
+        ' Row 18: Individual cells for non-merged columns
+        .Cells(18, 1).Value = ""
+        .Cells(18, 2).Value = "Goods/Services"
+        .Cells(18, 3).Value = "Code"
+        .Cells(18, 4).Value = ""
+        .Cells(18, 5).Value = ""
+        .Cells(18, 6).Value = "(Rs.)"
+        .Cells(18, 7).Value = "(Rs.)"
+        .Cells(18, 8).Value = "Value (Rs.)"
+        .Cells(18, 9).Value = "Rate (%)"
+        .Cells(18, 10).Value = "Amount (Rs.)"
+        .Cells(18, 11).Value = "Rate (%)"
+        .Cells(18, 12).Value = "Amount (Rs.)"
+        .Cells(18, 13).Value = "Rate (%)"
+        .Cells(18, 14).Value = "Amount (Rs.)"
+        .Cells(18, 15).Value = "Amount (Rs.)"
+
+        ' STEP 2: Apply formatting to all header cells
+        .Range("A17:O18").Font.Bold = True
+        .Range("A17:O17").Font.Size = 10
+        .Range("A18:O18").Font.Size = 9
+        .Range("A17:O17").Interior.Color = RGB(245, 245, 245)
+        .Range("A18:O18").Interior.Color = RGB(250, 250, 250)
+        .Range("A17:O18").Font.Color = RGB(26, 26, 26)
+        .Range("A17:O18").WrapText = True
+        .Range("A17:O18").HorizontalAlignment = xlCenter
+        .Range("A17:O18").VerticalAlignment = xlCenter
+        .Range("A17:O18").Borders.LineStyle = xlContinuous
+        .Range("A17:O18").Borders.Color = RGB(204, 204, 204)
+
+        ' STEP 3: Create merged cells for tax columns in Row 17
+        ' CGST: Merge columns I,J (9,10)
+        .Range("I17:J17").Merge
+        .Range("I17").Value = "CGST"
+        .Range("I17").HorizontalAlignment = xlCenter
+        .Range("I17").VerticalAlignment = xlCenter
+
+        ' SGST: Merge columns K,L (11,12)
+        .Range("K17:L17").Merge
+        .Range("K17").Value = "SGST"
+        .Range("K17").HorizontalAlignment = xlCenter
+        .Range("K17").VerticalAlignment = xlCenter
+
+        ' IGST: Merge columns M,N (13,14)
+        .Range("M17:N17").Merge
+        .Range("M17").Value = "IGST"
+        .Range("M17").HorizontalAlignment = xlCenter
+        .Range("M17").VerticalAlignment = xlCenter
+
+        ' Set optimal row heights for two-row header
+        .Rows(17).RowHeight = 30
+        .Rows(18).RowHeight = 30
 
         On Error GoTo 0
 
-        ' Item data - ENHANCED STRUCTURE (ROW 18, COLUMNS A-O)
+        ' Item data - ENHANCED STRUCTURE (ROW 19, COLUMNS A-O) - UPDATED FOR TWO-ROW HEADER
         itemData = Array("1", "Casuarina Wood", "", "", "", "", "", "", "", "", "", "", "", "", "")
         For i = 0 To UBound(itemData)
-            With .Cells(18, i + 1)
+            With .Cells(19, i + 1)
                 .Value = itemData(i)
                 .Borders.LineStyle = xlContinuous
                 .Borders.Color = RGB(204, 204, 204)
@@ -459,13 +515,13 @@ Public Sub CreateInvoiceSheet()
                 End If
             End With
         Next i
-        .Rows(18).RowHeight = 35
+        .Rows(19).RowHeight = 35
 
         ' Setup automatic tax calculation formulas
         Call SetupTaxCalculationFormulas(ws)
 
-        ' Empty rows with alternating colors - ENHANCED STRUCTURE (6 PRODUCT ROWS)
-        For i = 19 To 23  ' Rows 19-23 (item rows 2-6), row 24 is totals
+        ' Empty rows with alternating colors - ENHANCED STRUCTURE (6 PRODUCT ROWS) - UPDATED FOR TWO-ROW HEADER
+        For i = 20 To 24  ' Rows 20-24 (item rows 2-6), row 25 is totals
             .Range("A" & i & ":O" & i).Borders.LineStyle = xlContinuous
             .Range("A" & i & ":O" & i).Borders.Color = RGB(204, 204, 204)
             If i Mod 2 = 0 Then
@@ -477,122 +533,108 @@ Public Sub CreateInvoiceSheet()
         Next i
         On Error GoTo 0
 
-        ' --- Row 24 Total Quantity Section - ENHANCED STRUCTURE (6 PRODUCT ROWS) ---
+        ' --- Row 25 Total Quantity Section - ENHANCED STRUCTURE (6 PRODUCT ROWS) - UPDATED FOR TWO-ROW HEADER ---
         On Error Resume Next
 
         ' Apply borders to entire row first
-        .Range("A24:O24").Borders.LineStyle = xlContinuous
-        .Range("A24:O24").Borders.Color = RGB(204, 204, 204)
-        .Range("A24:O24").Interior.Color = RGB(234, 234, 234)
-        .Rows(24).RowHeight = 30
+        .Range("A25:O25").Borders.LineStyle = xlContinuous
+        .Range("A25:O25").Borders.Color = RGB(204, 204, 204)
+        .Range("A25:O25").Interior.Color = RGB(234, 234, 234)
+        .Rows(25).RowHeight = 30
 
-        ' Merge A24:C24 for "Total Quantity" label
-        .Range("A24:C24").Merge
-        .Range("A24").Value = "Total Quantity"
-        .Range("A24").Font.Bold = True
-        .Range("A24").HorizontalAlignment = xlCenter
-        .Range("A24").VerticalAlignment = xlCenter
-        .Range("A24").Font.Color = RGB(26, 26, 26)
+        ' Merge A25:C25 for "Total Quantity" label
+        .Range("A25:C25").Merge
+        .Range("A25").Value = "Total Quantity"
+        .Range("A25").Font.Bold = True
+        .Range("A25").HorizontalAlignment = xlCenter
+        .Range("A25").VerticalAlignment = xlCenter
+        .Range("A25").Font.Color = RGB(26, 26, 26)
 
-        ' Cell D24 for quantity value
-        .Range("D24").Value = ""
-        .Range("D24").Font.Bold = True
-        .Range("D24").HorizontalAlignment = xlCenter
+        ' Cell D25 for quantity value
+        .Range("D25").Value = ""
+        .Range("D25").Font.Bold = True
+        .Range("D25").HorizontalAlignment = xlCenter
 
-        ' Merge E24:F24 for "Sub Total" label
-        .Range("E24:F24").Merge
-        .Range("E24").Value = "Sub Total:"
-        .Range("E24").Font.Bold = True
-        .Range("E24").HorizontalAlignment = xlRight
-        .Range("E24").Font.Color = RGB(26, 26, 26)
+        ' Merge E25:F25 for "Sub Total" label
+        .Range("E25:F25").Merge
+        .Range("E25").Value = "Sub Total:"
+        .Range("E25").Font.Bold = True
+        .Range("E25").HorizontalAlignment = xlRight
+        .Range("E25").Font.Color = RGB(26, 26, 26)
 
         ' Individual cells for amounts (G, H for Amount and Taxable Value)
-        .Range("G24").Value = ""
-        .Range("G24").Font.Bold = True
-        .Range("G24").HorizontalAlignment = xlRight
+        .Range("G25").Value = ""
+        .Range("G25").Font.Bold = True
+        .Range("G25").HorizontalAlignment = xlRight
 
-        .Range("H24").Value = ""
-        .Range("H24").Font.Bold = True
-        .Range("H24").HorizontalAlignment = xlRight
+        .Range("H25").Value = ""
+        .Range("H25").Font.Bold = True
+        .Range("H25").HorizontalAlignment = xlRight
 
         ' Tax amount cells - ENHANCED STRUCTURE (I-N for all tax types)
-        .Range("I24").Value = ""  ' IGST Rate
-        .Range("I24").Font.Bold = True
-        .Range("I24").HorizontalAlignment = xlRight
+        .Range("I25").Value = ""  ' IGST Rate
+        .Range("I25").Font.Bold = True
+        .Range("I25").HorizontalAlignment = xlRight
 
-        .Range("J24").Value = ""  ' IGST Amount
-        .Range("J24").Font.Bold = True
-        .Range("J24").HorizontalAlignment = xlRight
+        .Range("J25").Value = ""  ' IGST Amount
+        .Range("J25").Font.Bold = True
+        .Range("J25").HorizontalAlignment = xlRight
 
-        .Range("K24").Value = ""  ' CGST Rate
-        .Range("K24").Font.Bold = True
-        .Range("K24").HorizontalAlignment = xlRight
-
-        .Range("L24").Value = ""  ' CGST Amount
-        .Range("L24").Font.Bold = True
-        .Range("L24").HorizontalAlignment = xlRight
-
-        .Range("M24").Value = ""  ' SGST Rate
-        .Range("M24").Font.Bold = True
-        .Range("M24").HorizontalAlignment = xlRight
-
-        .Range("N24").Value = ""  ' SGST Amount
-        .Range("N24").Font.Bold = True
-        .Range("N24").HorizontalAlignment = xlRight
-
-        ' Cell O24 for total amount
-        .Range("O24").Value = ""
-        .Range("O24").Font.Bold = True
-        .Range("O24").HorizontalAlignment = xlRight
-
-        On Error GoTo 0
-
-        ' --- Row 25-27 Total Invoice Amount in Words Section - ENHANCED STRUCTURE ---
-        On Error Resume Next
-
-        ' Row 25: Header for "Total Invoice Amount in Words"
-        .Range("A25:J25").Merge
-        .Range("A25").Value = "Total Invoice Amount in Words"
-        .Range("A25").Font.Bold = True
-        .Range("A25").Font.Size = 13 ' Increased font size
-        .Range("A25").HorizontalAlignment = xlCenter
-        .Range("A25").Interior.Color = RGB(255, 255, 0)
-        .Range("A25:J25").Borders.LineStyle = xlContinuous
-        .Rows(25).RowHeight = 25
-
-        ' Rows 26-27: Amount in words content (merged across 2 rows)
-        .Range("A26:J27").Merge
-        .Range("A26").Value = ""
-        .Range("A26").Font.Bold = True
-        .Range("A26").Font.Size = 15 ' Increased font size
-        .Range("A26").HorizontalAlignment = xlCenter
-        .Range("A26").VerticalAlignment = xlCenter
-        .Range("A26").Interior.Color = RGB(255, 255, 230)
-        .Range("A26").Borders.LineStyle = xlContinuous
-        .Range("A26").WrapText = True
-        .Rows(26).RowHeight = 25 ' Increased height
-        .Rows(27).RowHeight = 25 ' Increased height
-
-        ' Tax summary on the right (columns K-O, rows 25-30) - ENHANCED STRUCTURE
-        ' FIXED POSITIONING: Tax summary starts at row 25 to avoid overlap
-
-        ' Row 25: Total Before Tax
-        .Range("K25:N25").Merge
-        .Range("K25").Value = "Total Amount Before Tax:"
+        .Range("K25").Value = ""  ' CGST Rate
         .Range("K25").Font.Bold = True
-        .Range("K25").Font.Size = 11 ' Increased font size
-        .Range("K25").HorizontalAlignment = xlLeft
-        .Range("K25").Interior.Color = RGB(245, 245, 245)
-        .Range("K25").Font.Color = RGB(26, 26, 26)
+        .Range("K25").HorizontalAlignment = xlRight
 
+        .Range("L25").Value = ""  ' CGST Amount
+        .Range("L25").Font.Bold = True
+        .Range("L25").HorizontalAlignment = xlRight
+
+        .Range("M25").Value = ""  ' SGST Rate
+        .Range("M25").Font.Bold = True
+        .Range("M25").HorizontalAlignment = xlRight
+
+        .Range("N25").Value = ""  ' SGST Amount
+        .Range("N25").Font.Bold = True
+        .Range("N25").HorizontalAlignment = xlRight
+
+        ' Cell O25 for total amount
         .Range("O25").Value = ""
         .Range("O25").Font.Bold = True
         .Range("O25").HorizontalAlignment = xlRight
-        .Range("O25").Interior.Color = RGB(216, 222, 233)
 
-        ' Row 26: CGST
+        On Error GoTo 0
+
+        ' --- Row 26-28 Total Invoice Amount in Words Section - ENHANCED STRUCTURE - UPDATED FOR TWO-ROW HEADER ---
+        On Error Resume Next
+
+        ' Row 26: Header for "Total Invoice Amount in Words"
+        .Range("A26:J26").Merge
+        .Range("A26").Value = "Total Invoice Amount in Words"
+        .Range("A26").Font.Bold = True
+        .Range("A26").Font.Size = 13 ' Increased font size
+        .Range("A26").HorizontalAlignment = xlCenter
+        .Range("A26").Interior.Color = RGB(255, 255, 0)
+        .Range("A26:J26").Borders.LineStyle = xlContinuous
+        .Rows(26).RowHeight = 25
+
+        ' Rows 27-28: Amount in words content (merged across 2 rows)
+        .Range("A27:J28").Merge
+        .Range("A27").Value = ""
+        .Range("A27").Font.Bold = True
+        .Range("A27").Font.Size = 15 ' Increased font size
+        .Range("A27").HorizontalAlignment = xlCenter
+        .Range("A27").VerticalAlignment = xlCenter
+        .Range("A27").Interior.Color = RGB(255, 255, 230)
+        .Range("A27").Borders.LineStyle = xlContinuous
+        .Range("A27").WrapText = True
+        .Rows(27).RowHeight = 25 ' Increased height
+        .Rows(28).RowHeight = 25 ' Increased height
+
+        ' Tax summary on the right (columns K-O, rows 26-32) - ENHANCED STRUCTURE - UPDATED FOR TWO-ROW HEADER
+        ' FIXED POSITIONING: Tax summary starts at row 26 to avoid overlap
+
+        ' Row 26: Total Before Tax
         .Range("K26:N26").Merge
-        .Range("K26").Value = "CGST :"
+        .Range("K26").Value = "Total Amount Before Tax:"
         .Range("K26").Font.Bold = True
         .Range("K26").Font.Size = 11 ' Increased font size
         .Range("K26").HorizontalAlignment = xlLeft
@@ -604,9 +646,9 @@ Public Sub CreateInvoiceSheet()
         .Range("O26").HorizontalAlignment = xlRight
         .Range("O26").Interior.Color = RGB(216, 222, 233)
 
-        ' Row 27: SGST
+        ' Row 27: CGST
         .Range("K27:N27").Merge
-        .Range("K27").Value = "SGST :"
+        .Range("K27").Value = "CGST :"
         .Range("K27").Font.Bold = True
         .Range("K27").Font.Size = 11 ' Increased font size
         .Range("K27").HorizontalAlignment = xlLeft
@@ -618,37 +660,51 @@ Public Sub CreateInvoiceSheet()
         .Range("O27").HorizontalAlignment = xlRight
         .Range("O27").Interior.Color = RGB(216, 222, 233)
 
-        ' Row 28: IGST (highlighted)
+        ' Row 28: SGST
         .Range("K28:N28").Merge
-        .Range("K28").Value = "IGST :"
+        .Range("K28").Value = "SGST :"
         .Range("K28").Font.Bold = True
         .Range("K28").Font.Size = 11 ' Increased font size
         .Range("K28").HorizontalAlignment = xlLeft
-        .Range("K28").Interior.Color = RGB(255, 255, 200)
+        .Range("K28").Interior.Color = RGB(245, 245, 245)
         .Range("K28").Font.Color = RGB(26, 26, 26)
 
         .Range("O28").Value = ""
         .Range("O28").Font.Bold = True
         .Range("O28").HorizontalAlignment = xlRight
-        .Range("O28").Interior.Color = RGB(255, 255, 200)
+        .Range("O28").Interior.Color = RGB(216, 222, 233)
 
-        ' Row 29: CESS
+        ' Row 29: IGST (highlighted)
         .Range("K29:N29").Merge
-        .Range("K29").Value = "CESS :"
+        .Range("K29").Value = "IGST :"
         .Range("K29").Font.Bold = True
         .Range("K29").Font.Size = 11 ' Increased font size
         .Range("K29").HorizontalAlignment = xlLeft
-        .Range("K29").Interior.Color = RGB(245, 245, 245)
+        .Range("K29").Interior.Color = RGB(255, 255, 200)
         .Range("K29").Font.Color = RGB(26, 26, 26)
 
         .Range("O29").Value = ""
         .Range("O29").Font.Bold = True
         .Range("O29").HorizontalAlignment = xlRight
-        .Range("O29").Interior.Color = RGB(216, 222, 233)
+        .Range("O29").Interior.Color = RGB(255, 255, 200)
 
-        ' Row 30: Total Tax (highlighted) - ENHANCED STRUCTURE
+        ' Row 30: CESS
         .Range("K30:N30").Merge
-        With .Range("K30")
+        .Range("K30").Value = "CESS :"
+        .Range("K30").Font.Bold = True
+        .Range("K30").Font.Size = 11 ' Increased font size
+        .Range("K30").HorizontalAlignment = xlLeft
+        .Range("K30").Interior.Color = RGB(245, 245, 245)
+        .Range("K30").Font.Color = RGB(26, 26, 26)
+
+        .Range("O30").Value = ""
+        .Range("O30").Font.Bold = True
+        .Range("O30").HorizontalAlignment = xlRight
+        .Range("O30").Interior.Color = RGB(216, 222, 233)
+
+        ' Row 31: Total Tax (highlighted) - ENHANCED STRUCTURE - UPDATED FOR TWO-ROW HEADER
+        .Range("K31:N31").Merge
+        With .Range("K31")
             .Value = "Total Tax:"
             .Font.Bold = True
             .Font.Size = 11 ' Increased font size
@@ -658,67 +714,75 @@ Public Sub CreateInvoiceSheet()
             .VerticalAlignment = xlCenter
         End With
 
-        .Range("O30").Value = ""
-        .Range("O30").Font.Bold = True
-        .Range("O30").HorizontalAlignment = xlRight
-        .Range("O30").Interior.Color = RGB(240, 240, 240)
-
-        ' Row 31: Total Amount After Tax (single row for better layout) - ENHANCED STRUCTURE
-        .Range("K31:N31").Merge
-        .Range("K31").Value = "Total Amount After Tax:"
-        .Range("K31").Font.Bold = True
-        .Range("K31").Font.Size = 11 ' Increased font size
-        .Range("K31").HorizontalAlignment = xlLeft
-        .Range("K31").VerticalAlignment = xlCenter
-        .Range("K31").Interior.Color = RGB(255, 255, 180)
-        .Range("K31").Font.Color = RGB(26, 26, 26)
-
         .Range("O31").Value = ""
         .Range("O31").Font.Bold = True
-        .Range("O31").Font.Size = 11 ' Increased font size
         .Range("O31").HorizontalAlignment = xlRight
-        .Range("O31").VerticalAlignment = xlCenter
-        .Range("O31").Interior.Color = RGB(255, 255, 180)
+        .Range("O31").Interior.Color = RGB(240, 240, 240)
 
-        ' Set row heights for tax summary section
-        .Rows(25).RowHeight = 20
+        ' Rows 32-33: Total Amount After Tax - ENHANCED TWO-ROW PROMINENCE MATCHING REFERENCE LAYOUT
+        ' Merge K32:N33 for the label
+        .Range("K32:N33").Merge
+        .Range("K32").Value = "Total Amount After Tax:"
+        .Range("K32").Font.Bold = True
+        .Range("K32").Font.Size = 12 ' Larger font size for prominence
+        .Range("K32").HorizontalAlignment = xlCenter
+        .Range("K32").VerticalAlignment = xlCenter
+        .Range("K32").Interior.Color = RGB(255, 215, 0)  ' Gold background for prominence
+        .Range("K32").Font.Color = RGB(0, 0, 0)  ' Black text for contrast
+
+        ' Merge O32:O33 for the calculated value
+        .Range("O32:O33").Merge
+        .Range("O32").Value = ""  ' Will be populated by formula
+        .Range("O32").Font.Bold = True
+        .Range("O32").Font.Size = 12 ' Larger font size for prominence
+        .Range("O32").HorizontalAlignment = xlCenter
+        .Range("O32").VerticalAlignment = xlCenter
+        .Range("O32").Interior.Color = RGB(255, 215, 0)  ' Gold background for prominence
+        .Range("O32").Font.Color = RGB(0, 0, 0)  ' Black text for contrast
+
+        ' Set row heights for two-row prominence
+        .Rows(32).RowHeight = 30
+        .Rows(33).RowHeight = 30
+
+        ' Set row heights for tax summary section - UPDATED FOR TWO-ROW HEADER
         .Rows(26).RowHeight = 20
         .Rows(27).RowHeight = 20
         .Rows(28).RowHeight = 20
         .Rows(29).RowHeight = 20
         .Rows(30).RowHeight = 20
         .Rows(31).RowHeight = 20
+        .Rows(32).RowHeight = 20
 
         On Error GoTo 0
 
         ' Setup automatic tax calculation formulas for summary section
         Call UpdateMultiItemTaxCalculations(ws)
 
-        ' --- Terms and Conditions Section (Rows 28-31) - ENHANCED STRUCTURE ---
-        ' Row 28: Header for "Terms and Conditions"
-        .Range("A28:J28").Merge
-        .Range("A28").Value = "Terms and Conditions"
-        .Range("A28").Font.Bold = True
-        .Range("A28").Font.Size = 13
-        .Range("A28").HorizontalAlignment = xlCenter
-        .Range("A28").Interior.Color = RGB(255, 255, 0)  ' Yellow background like reference
-        .Range("A28").Borders.LineStyle = xlContinuous
-        .Rows(28).RowHeight = 25
+        ' --- Terms and Conditions Section - MOVED TO CORRECT POSITION ---
+        ' Row 29: Header for "Terms and Conditions"
+        .Range("A29:J29").Merge
+        .Range("A29").Value = "Terms and Conditions"
+        .Range("A29").Font.Bold = True
+        .Range("A29").Font.Size = 13
+        .Range("A29").HorizontalAlignment = xlCenter
+        .Range("A29").Interior.Color = RGB(255, 255, 0)  ' Yellow background like reference
+        .Range("A29").Borders.LineStyle = xlContinuous
+        .Rows(29).RowHeight = 25
 
-        ' Rows 29-31: Terms and conditions content (merged across 3 rows)
-        .Range("A29:J31").Merge
-        .Range("A29").Value = "1. This is an electronically generated invoice." & vbLf & _
+        ' Rows 30-33: Terms and conditions content (merged across 4 rows for better spacing)
+        .Range("A30:J33").Merge
+        .Range("A30").Value = "1. This is an electronically generated invoice." & vbLf & _
                              "2. All disputes are subject to GUDUR jurisdiction only." & vbLf & _
                              "3. If the Consignee makes any Inter State Sale, he has to pay GST himself." & vbLf & _
                              "4. Goods once sold cannot be taken back or exchanged." & vbLf & _
                              "5. Payment terms as per agreement between buyer and seller."
-        .Range("A29").Font.Size = 11
-        .Range("A29").HorizontalAlignment = xlLeft
-        .Range("A29").VerticalAlignment = xlTop
-        .Range("A29").Interior.Color = RGB(255, 255, 245)  ' Light yellow background
-        .Range("A29").Borders.LineStyle = xlContinuous
-        .Range("A29").WrapText = True
-        For i = 29 To 31
+        .Range("A30").Font.Size = 11
+        .Range("A30").HorizontalAlignment = xlLeft
+        .Range("A30").VerticalAlignment = xlTop
+        .Range("A30").Interior.Color = RGB(255, 255, 245)  ' Light yellow background
+        .Range("A30").Borders.LineStyle = xlContinuous
+        .Range("A30").WrapText = True
+        For i = 30 To 33
             .Rows(i).RowHeight = 25
         Next i
 
@@ -726,98 +790,96 @@ Public Sub CreateInvoiceSheet()
 
         On Error GoTo 0
 
-        ' --- Signature Section with Merged Cells - ENHANCED STRUCTURE ---
+        ' --- Signature Section with Merged Cells - ENHANCED STRUCTURE - UPDATED FOR EXTRA TERMS ROW ---
         On Error Resume Next
 
-        ' Row 32: Signature headers with merged cells - ENHANCED STRUCTURE
-        .Range("A32:E32").Merge
-        .Range("A32").Value = "Transporter"
-        .Range("A32").Font.Bold = True
-        .Range("A32").HorizontalAlignment = xlCenter
-        .Range("A32").Interior.Color = RGB(220, 220, 220)
+        ' Row 34: Signature headers with merged cells - ENHANCED STRUCTURE - UPDATED FOR EXTRA TERMS ROW
+        .Range("A34:E34").Merge
+        .Range("A34").Value = "Transporter"
+        .Range("A34").Font.Bold = True
+        .Range("A34").HorizontalAlignment = xlCenter
+        .Range("A34").Interior.Color = RGB(220, 220, 220)
 
-        .Range("F32:J32").Merge
-        .Range("F32").Value = "Receiver"
-        .Range("F32").Font.Bold = True
-        .Range("F32").HorizontalAlignment = xlCenter
-        .Range("F32").Interior.Color = RGB(220, 220, 220)
+        .Range("F34:J34").Merge
+        .Range("F34").Value = "Receiver"
+        .Range("F34").Font.Bold = True
+        .Range("F34").HorizontalAlignment = xlCenter
+        .Range("F34").Interior.Color = RGB(220, 220, 220)
 
-        .Range("K32:O32").Merge
-        .Range("K32").Value = "Certified that the particulars given above are true and correct"
-        .Range("K32").Font.Bold = True
-        .Range("K32").Font.Size = 10 ' Increased font size
-        .Range("K32").HorizontalAlignment = xlCenter
-        .Range("K32").VerticalAlignment = xlCenter
-        .Range("K32").WrapText = True
-        .Range("K32").Interior.Color = RGB(220, 220, 220)
+        .Range("K34:O34").Merge
+        .Range("K34").Value = "Certified that the particulars given above are true and correct"
+        .Range("K34").Font.Bold = True
+        .Range("K34").Font.Size = 10 ' Increased font size
+        .Range("K34").HorizontalAlignment = xlCenter
+        .Range("K34").VerticalAlignment = xlCenter
+        .Range("K34").WrapText = True
+        .Range("K34").Interior.Color = RGB(220, 220, 220)
 
-        ' Rows 33-34: Mobile Number Section (merged across 2 rows) - UPDATED POSITION
-        .Range("A33:E34").Merge
-        .Range("A33").Value = "Mobile No: ___________________"
-        .Range("A33").Font.Size = 10 ' Increased font size
-        .Range("A33").HorizontalAlignment = xlCenter
-        .Range("A33").VerticalAlignment = xlCenter
-        .Range("A33").Interior.Color = RGB(250, 250, 250)
-
-        .Range("F33:J34").Merge
-        .Range("F33").Value = "Mobile No: ___________________"
-        .Range("F33").Font.Size = 10 ' Increased font size
-        .Range("F33").HorizontalAlignment = xlCenter
-        .Range("F33").VerticalAlignment = xlCenter
-        .Range("F33").Interior.Color = RGB(250, 250, 250)
-
-        .Range("K33:O34").Merge
-        .Range("K33").Value = "Mobile No: ___________________"
-        .Range("K33").Font.Size = 10 ' Increased font size
-        .Range("K33").HorizontalAlignment = xlCenter
-        .Range("K33").VerticalAlignment = xlCenter
-        .Range("K33").Interior.Color = RGB(250, 250, 250)
-
-        ' Rows 35-37: Signature Space Section (merged across 3 rows) - UPDATED POSITION
-        .Range("A35:E37").Merge
-        .Range("A35").Value = ""
+        ' Rows 35-36: Mobile Number Section (merged across 2 rows) - UPDATED FOR EXTRA TERMS ROW
+        .Range("A35:E36").Merge
+        .Range("A35").Value = "Mobile No: ___________________"
+        .Range("A35").Font.Size = 10 ' Increased font size
+        .Range("A35").HorizontalAlignment = xlCenter
+        .Range("A35").VerticalAlignment = xlCenter
         .Range("A35").Interior.Color = RGB(250, 250, 250)
 
-        .Range("F35:J37").Merge
-        .Range("F35").Value = ""
+        .Range("F35:J36").Merge
+        .Range("F35").Value = "Mobile No: ___________________"
+        .Range("F35").Font.Size = 10 ' Increased font size
+        .Range("F35").HorizontalAlignment = xlCenter
+        .Range("F35").VerticalAlignment = xlCenter
         .Range("F35").Interior.Color = RGB(250, 250, 250)
 
-        .Range("K35:O37").Merge
-        .Range("K35").Value = ""
+        .Range("K35:O36").Merge
+        .Range("K35").Value = "Mobile No: ___________________"
+        .Range("K35").Font.Size = 10 ' Increased font size
+        .Range("K35").HorizontalAlignment = xlCenter
+        .Range("K35").VerticalAlignment = xlCenter
         .Range("K35").Interior.Color = RGB(250, 250, 250)
 
-        ' Row 38: Signature Labels - UPDATED POSITION
-        .Range("A38:E38").Merge
-        .Range("A38").Value = "Transporter's Signature"
-        .Range("A38").Font.Bold = True
-        .Range("A38").Font.Size = 10 ' Increased font size
-        .Range("A38").HorizontalAlignment = xlCenter
-        .Range("A38").Interior.Color = RGB(211, 211, 211)
+        ' Rows 37-39: Signature Space Section (merged across 3 rows) - UPDATED FOR EXTRA TERMS ROW
+        .Range("A37:E39").Merge
+        .Range("A37").Value = ""
+        .Range("A37").Interior.Color = RGB(250, 250, 250)
 
-        .Range("F38:J38").Merge
-        .Range("F38").Value = "Receiver's Signature"
-        .Range("F38").Font.Bold = True
-        .Range("F38").Font.Size = 10 ' Increased font size
-        .Range("F38").HorizontalAlignment = xlCenter
-        .Range("F38").Interior.Color = RGB(211, 211, 211)
+        .Range("F37:J39").Merge
+        .Range("F37").Value = ""
+        .Range("F37").Interior.Color = RGB(250, 250, 250)
 
-        .Range("K38:O38").Merge
-        .Range("K38").Value = "Authorized Signatory"
-        .Range("K38").Font.Bold = True
-        .Range("K38").Font.Size = 10 ' Increased font size
-        .Range("K38").HorizontalAlignment = xlCenter
-        .Range("K38").Interior.Color = RGB(211, 211, 211)
+        .Range("K37:O39").Merge
+        .Range("K37").Value = ""
+        .Range("K37").Interior.Color = RGB(250, 250, 250)
 
-        ' REMOVED: Redundant border application - handled by comprehensive border fix
+        ' Row 40: Signature Labels - UPDATED FOR EXTRA TERMS ROW
+        .Range("A40:E40").Merge
+        .Range("A40").Value = "Transporter's Signature"
+        .Range("A40").Font.Bold = True
+        .Range("A40").Font.Size = 10 ' Increased font size
+        .Range("A40").HorizontalAlignment = xlCenter
+        .Range("A40").Interior.Color = RGB(211, 211, 211)
 
-        ' Set specific row height for row 32 to accommodate wrapped text
-        .Rows(32).RowHeight = 35
+        .Range("F40:J40").Merge
+        .Range("F40").Value = "Receiver's Signature"
+        .Range("F40").Font.Bold = True
+        .Range("F40").Font.Size = 10 ' Increased font size
+        .Range("F40").HorizontalAlignment = xlCenter
+        .Range("F40").Interior.Color = RGB(211, 211, 211)
+
+        .Range("K40:O40").Merge
+        .Range("K40").Value = "Authorized Signatory"
+        .Range("K40").Font.Bold = True
+        .Range("K40").Font.Size = 10 ' Increased font size
+        .Range("K40").HorizontalAlignment = xlCenter
+        .Range("K40").Interior.Color = RGB(211, 211, 211)
+
+        ' Set specific row height for row 34 to accommodate wrapped text
+        .Rows(34).RowHeight = 35
 
         ' Set standard row height for remaining signature rows
-        For i = 33 To 38
+        For i = 35 To 40
             .Rows(i).RowHeight = 25 ' Increased height
         Next i
-        .Rows(37).RowHeight = 31
+        .Rows(39).RowHeight = 31
         On Error GoTo 0
     End With
 
@@ -827,37 +889,39 @@ Public Sub CreateInvoiceSheet()
         ' Font settings moved to beginning of code to avoid overriding header fonts
         On Error GoTo 0
 
-        ' Apply professional page setup
+        ' Apply professional page setup - OPTIMIZED FOR ENHANCED LAYOUT AND SCALING
         On Error Resume Next
         With .PageSetup
+            .PrintArea = "A1:O40"  ' Set print area to include all enhanced content
             .Orientation = xlPortrait
+            .PaperSize = xlPaperA4
             .Zoom = False ' Let Excel handle scaling
             .FitToPagesWide = 1
             .FitToPagesTall = 1 ' Fit to one page vertically
-            .LeftMargin = Application.InchesToPoints(0.3)
-            .RightMargin = Application.InchesToPoints(0.3)
-            .TopMargin = Application.InchesToPoints(0.3)
-            .BottomMargin = Application.InchesToPoints(0.3)
-            .HeaderMargin = Application.InchesToPoints(0.2)
-            .FooterMargin = Application.InchesToPoints(0.2)
+            .LeftMargin = Application.InchesToPoints(0.15)  ' Reduced margins for more content space
+            .RightMargin = Application.InchesToPoints(0.15)
+            .TopMargin = Application.InchesToPoints(0.15)
+            .BottomMargin = Application.InchesToPoints(0.15)
+            .HeaderMargin = Application.InchesToPoints(0.1)
+            .FooterMargin = Application.InchesToPoints(0.1)
             .CenterHorizontally = True
-            .CenterVertically = False
+            .CenterVertically = True  ' Enable vertical centering for better appearance
         End With
         On Error GoTo 0
 
-        ' COMPREHENSIVE BORDER FIX - Apply consistent borders to entire invoice
+        ' COMPREHENSIVE BORDER FIX - Apply consistent borders to entire invoice - UPDATED FOR EXTRA TERMS ROW
         On Error Resume Next
 
         ' First, clear all existing borders to prevent conflicts
-        .Range("A1:O38").Borders.LineStyle = xlNone
+        .Range("A1:O40").Borders.LineStyle = xlNone
 
         ' Apply consistent internal borders to entire invoice area
-        .Range("A1:O38").Borders.LineStyle = xlContinuous
-        .Range("A1:O38").Borders.Weight = xlThin
-        .Range("A1:O38").Borders.Color = RGB(0, 0, 0)  ' Pure black for PDF
+        .Range("A1:O40").Borders.LineStyle = xlContinuous
+        .Range("A1:O40").Borders.Weight = xlThin
+        .Range("A1:O40").Borders.Color = RGB(0, 0, 0)  ' Pure black for PDF
 
         ' Apply outer border around entire invoice
-        With .Range("A1:O38")
+        With .Range("A1:O40")
             .Borders(xlEdgeLeft).LineStyle = xlContinuous
             .Borders(xlEdgeLeft).Weight = xlMedium
             .Borders(xlEdgeLeft).Color = RGB(0, 0, 0)
@@ -871,6 +935,21 @@ Public Sub CreateInvoiceSheet()
             .Borders(xlEdgeBottom).Weight = xlMedium
             .Borders(xlEdgeBottom).Color = RGB(0, 0, 0)
         End With
+
+        ' FINAL STEP: Remove ONLY INTERNAL borders from rows 3 and 4 - PRESERVE OUTER BORDERS
+        ' Remove internal horizontal and vertical borders but keep left and right outer borders
+        .Range("A3:O3").Borders(xlInsideHorizontal).LineStyle = xlNone
+        .Range("A3:O3").Borders(xlInsideVertical).LineStyle = xlNone
+        .Range("A3:O3").Borders(xlEdgeTop).LineStyle = xlNone
+        .Range("A3:O3").Borders(xlEdgeBottom).LineStyle = xlNone
+
+        .Range("A4:O4").Borders(xlInsideHorizontal).LineStyle = xlNone
+        .Range("A4:O4").Borders(xlInsideVertical).LineStyle = xlNone
+        .Range("A4:O4").Borders(xlEdgeTop).LineStyle = xlNone
+        .Range("A4:O4").Borders(xlEdgeBottom).LineStyle = xlNone
+
+        ' Also remove bottom border of row 2 for seamless header appearance
+        .Range("A2:O2").Borders(xlEdgeBottom).LineStyle = xlNone
 
         On Error GoTo 0
     End With
@@ -1051,97 +1130,97 @@ End Sub
 ' 🧮 TAX CALCULATION FUNCTIONS
 
 Public Sub SetupTaxCalculationFormulas(ws As Worksheet)
-    ' Set up formulas for automatic tax calculations in the item table with enhanced structure
+    ' Set up formulas for automatic tax calculations in the item table with enhanced structure - UPDATED FOR TWO-ROW HEADER
     On Error Resume Next
 
     With ws
-        ' For row 18 (first item row), set up formulas - ENHANCED STRUCTURE A-O
+        ' For row 19 (first item row), set up formulas - ENHANCED STRUCTURE A-O - UPDATED FOR TWO-ROW HEADER
         ' Column G (Amount) = Quantity * Rate
-        .Range("G18").Formula = "=IF(AND(D18<>"""",F18<>""""),D18*F18,"""")"
+        .Range("G19").Formula = "=IF(AND(D19<>"""",F19<>""""),D19*F19,"""")"
 
         ' Column H (Taxable Value) = Amount (same as Amount for simplicity)
-        .Range("H18").Formula = "=IF(G18<>"""",G18,"""")"
+        .Range("H19").Formula = "=IF(G19<>"""",G19,"""")"
 
-        ' Column I (IGST Rate) - VLOOKUP formula to get tax rate from HSN data
-        .Range("I18").Formula = "=VLOOKUP(C18, warehouse!A:E, 5, FALSE)"
+        ' Column I (CGST Rate) - VLOOKUP formula to get tax rate from HSN data (half of total rate for intrastate)
+        .Range("I19").Formula = "=IF(N7=""Intrastate"",VLOOKUP(C19, warehouse!A:E, 5, FALSE)/2,"""")"
 
-        ' Column J (IGST Amount) = Taxable Value * IGST Rate / 100
-        .Range("J18").Formula = "=IF(AND(H18<>"""",I18<>""""),H18*I18/100,"""")"
+        ' Column J (CGST Amount) = Taxable Value * CGST Rate / 100
+        .Range("J19").Formula = "=IF(AND(H19<>"""",I19<>""""),H19*I19/100,"""")"
 
-        ' Column K (CGST Rate) - VLOOKUP formula to get tax rate from HSN data (half of total rate for intrastate)
-        .Range("K18").Formula = "=IF(N7=""Intrastate"",VLOOKUP(C18, warehouse!A:E, 5, FALSE)/2,"""")"
+        ' Column K (SGST Rate) - VLOOKUP formula to get tax rate from HSN data (half of total rate for intrastate)
+        .Range("K19").Formula = "=IF(N7=""Intrastate"",VLOOKUP(C19, warehouse!A:E, 5, FALSE)/2,"""")"
 
-        ' Column L (CGST Amount) = Taxable Value * CGST Rate / 100
-        .Range("L18").Formula = "=IF(AND(H18<>"""",K18<>""""),H18*K18/100,"""")"
+        ' Column L (SGST Amount) = Taxable Value * SGST Rate / 100
+        .Range("L19").Formula = "=IF(AND(H19<>"""",K19<>""""),H19*K19/100,"""")"
 
-        ' Column M (SGST Rate) - VLOOKUP formula to get tax rate from HSN data (half of total rate for intrastate)
-        .Range("M18").Formula = "=IF(N7=""Intrastate"",VLOOKUP(C18, warehouse!A:E, 5, FALSE)/2,"""")"
+        ' Column M (IGST Rate) - VLOOKUP formula to get tax rate from HSN data (only for interstate)
+        .Range("M19").Formula = "=IF(N7=""Interstate"",VLOOKUP(C19, warehouse!A:E, 5, FALSE),"""")"
 
-        ' Column N (SGST Amount) = Taxable Value * SGST Rate / 100
-        .Range("N18").Formula = "=IF(AND(H18<>"""",M18<>""""),H18*M18/100,"""")"
+        ' Column N (IGST Amount) = Taxable Value * IGST Rate / 100 (only for interstate)
+        .Range("N19").Formula = "=IF(AND(H19<>"""",M19<>""""),H19*M19/100,"""")"
 
         ' Column O (Total Amount) = Taxable Value + Tax Amounts (IGST for interstate, CGST+SGST for intrastate)
-        .Range("O18").Formula = "=IF(N7=""Interstate"",H18+J18,IF(N7=""Intrastate"",H18+L18+N18,H18))"
+        .Range("O19").Formula = "=IF(N7=""Interstate"",H19+N19,IF(N7=""Intrastate"",H19+J19+L19,H19))"
 
         ' Format the formula cells - ENHANCED STRUCTURE
-        .Range("G18:O18").NumberFormat = "0.00"
-        .Range("I18,K18,M18").NumberFormat = "0.00"
+        .Range("G19:O19").NumberFormat = "0.00"
+        .Range("I19,K19,M19").NumberFormat = "0.00"
     End With
 
     On Error GoTo 0
 End Sub
 
 Public Sub UpdateMultiItemTaxCalculations(ws As Worksheet)
-    ' Update tax calculations to sum all item rows with enhanced structure
+    ' Update tax calculations to sum all item rows with enhanced structure - UPDATED FOR TWO-ROW HEADER
     On Error Resume Next
 
     With ws
-        ' Row 24: Total Quantity - ENHANCED STRUCTURE
-        .Range("D24").Formula = "=SUM(D18:D23)"
-        .Range("D24").NumberFormat = "#,##0.00"
+        ' Row 25: Total Quantity - ENHANCED STRUCTURE - UPDATED FOR TWO-ROW HEADER
+        .Range("D25").Formula = "=SUM(D19:D24)"
+        .Range("D25").NumberFormat = "#,##0.00"
 
-        ' Row 24: Sub Total calculations
-        .Range("G24").Formula = "=SUM(G18:G23)"  ' Amount column
-        .Range("H24").Formula = "=SUM(H18:H23)"  ' Taxable Value column
-        .Range("G24:H24").NumberFormat = "#,##0.00"
+        ' Row 25: Sub Total calculations
+        .Range("G25").Formula = "=SUM(G19:G24)"  ' Amount column
+        .Range("H25").Formula = "=SUM(H19:H24)"  ' Taxable Value column
+        .Range("G25:H25").NumberFormat = "#,##0.00"
 
-        ' Row 24: Tax amounts - ENHANCED STRUCTURE
-        .Range("I24").Formula = "=SUM(I18:I23)"  ' IGST Rate (average)
-        .Range("J24").Formula = "=SUM(J18:J23)"  ' IGST Amount
-        .Range("K24").Formula = "=SUM(K18:K23)"  ' CGST Rate (average)
-        .Range("L24").Formula = "=SUM(L18:L23)"  ' CGST Amount
-        .Range("M24").Formula = "=SUM(M18:M23)"  ' SGST Rate (average)
-        .Range("N24").Formula = "=SUM(N18:N23)"  ' SGST Amount
-        .Range("O24").Formula = "=SUM(O18:O23)"  ' Total Amount
-        .Range("I24:O24").NumberFormat = "#,##0.00"
+        ' Row 25: Tax amounts - ENHANCED STRUCTURE - UPDATED FOR CORRECT COLUMN ORDER (CGST, SGST, IGST)
+        .Range("I25").Formula = "=SUM(I19:I24)"  ' CGST Rate (average)
+        .Range("J25").Formula = "=SUM(J19:J24)"  ' CGST Amount
+        .Range("K25").Formula = "=SUM(K19:K24)"  ' SGST Rate (average)
+        .Range("L25").Formula = "=SUM(L19:L24)"  ' SGST Amount
+        .Range("M25").Formula = "=SUM(M19:M24)"  ' IGST Rate (average)
+        .Range("N25").Formula = "=SUM(N19:N24)"  ' IGST Amount
+        .Range("O25").Formula = "=SUM(O19:O24)"  ' Total Amount
+        .Range("I25:O25").NumberFormat = "#,##0.00"
 
-        ' Tax summary section (right side) - ENHANCED STRUCTURE (CORRECTED POSITIONING)
-        ' Row 25: Total Amount Before Tax
-        .Range("O25").Formula = "=SUM(H18:H23)"
+        ' Tax summary section (right side) - ENHANCED STRUCTURE - UPDATED FOR CORRECT COLUMN ORDER
+        ' Row 26: Total Amount Before Tax
+        .Range("O26").Formula = "=SUM(H19:H24)"
 
-        ' Row 26: CGST
-        .Range("O26").Formula = "=SUM(L18:L23)"
+        ' Row 27: CGST
+        .Range("O27").Formula = "=SUM(J19:J24)"
 
-        ' Row 27: SGST
-        .Range("O27").Formula = "=SUM(N18:N23)"
+        ' Row 28: SGST
+        .Range("O28").Formula = "=SUM(L19:L24)"
 
-        ' Row 28: IGST
-        .Range("O28").Formula = "=SUM(J18:J23)"
+        ' Row 29: IGST
+        .Range("O29").Formula = "=SUM(N19:N24)"
 
-        ' Row 29: CESS (0 by default)
-        .Range("O29").Value = 0
+        ' Row 30: CESS (0 by default)
+        .Range("O30").Value = 0
 
-        ' Row 30: Total Tax
-        .Range("O30").Formula = "=O26+O27+O28+O29"
+        ' Row 31: Total Tax
+        .Range("O31").Formula = "=O27+O28+O29+O30"
 
-        ' Row 31: Total Amount After Tax
-        .Range("O31").Formula = "=O25+O30"
+        ' Row 32: Total Amount After Tax
+        .Range("O32").Formula = "=O26+O31"
 
         ' Format all calculation cells
-        .Range("O25:O31").NumberFormat = "#,##0.00"
+        .Range("O26:O32").NumberFormat = "#,##0.00"
 
-        ' Update Amount in Words (A26 merged cell) - ENHANCED STRUCTURE
-        .Range("A26").Formula = "=NumberToWords(O31)"
+        ' Update Amount in Words (A27 merged cell) - ENHANCED STRUCTURE - UPDATED FOR TWO-ROW HEADER
+        .Range("A27").Formula = "=NumberToWords(O32)"
     End With
 
     On Error GoTo 0
@@ -1169,19 +1248,35 @@ Public Sub UpdateTaxFieldsDisplay(ws As Worksheet, saleType As String)
 
     With ws
         If saleType = "Interstate" Then
-            ' Clear all tax fields first for all 6 product rows
-            .Range("I18:N23").ClearContents
+            ' Clear all tax fields first for all 6 product rows - UPDATED ROW RANGE
+            .Range("I19:N24").ClearContents
 
-            ' Set up formulas for IGST fields (active for Interstate)
-            For i = 18 To 23
-                .Range("I" & i).Formula = "=IF(AND(N7=""Interstate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ", warehouse!A:E, 5, FALSE),""""),"""")"
-                .Range("J" & i).Formula = "=IF(AND(N7=""Interstate"",H" & i & "<>"""",I" & i & "<>""""),H" & i & "*I" & i & "/100,"""")"
+            ' Set up formulas for IGST fields (active for Interstate) - UPDATED COLUMN ORDER: IGST in M,N
+            For i = 19 To 24
+                .Range("M" & i).Formula = "=IF(AND(N7=""Interstate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ", warehouse!A:E, 5, FALSE),""""),"""")"
+                .Range("N" & i).Formula = "=IF(AND(N7=""Interstate"",H" & i & "<>"""",M" & i & "<>""""),H" & i & "*M" & i & "/100,"""")"
             Next i
 
             ' CGST/SGST show "N/A" only for rows with product data (inactive for Interstate)
-            For i = 18 To 23
+            For i = 19 To 24
                 ' Only show N/A if there's actually a product in this row
                 If .Range("C" & i).Value <> "" Then
+                    ' CGST columns (I,J) show N/A for Interstate
+                    .Range("I" & i).Value = "N/A"
+                    .Range("I" & i).Font.Color = RGB(220, 20, 60)  ' Red color
+                    .Range("I" & i).Font.Bold = True
+                    .Range("I" & i).Font.Size = 9
+                    .Range("I" & i).HorizontalAlignment = xlCenter
+                    .Range("I" & i).VerticalAlignment = xlCenter
+
+                    .Range("J" & i).Value = "N/A"
+                    .Range("J" & i).Font.Color = RGB(220, 20, 60)  ' Red color
+                    .Range("J" & i).Font.Bold = True
+                    .Range("J" & i).Font.Size = 9
+                    .Range("J" & i).HorizontalAlignment = xlCenter
+                    .Range("J" & i).VerticalAlignment = xlCenter
+
+                    ' SGST columns (K,L) show N/A for Interstate
                     .Range("K" & i).Value = "N/A"
                     .Range("K" & i).Font.Color = RGB(220, 20, 60)  ' Red color
                     .Range("K" & i).Font.Bold = True
@@ -1195,7 +1290,31 @@ Public Sub UpdateTaxFieldsDisplay(ws As Worksheet, saleType As String)
                     .Range("L" & i).Font.Size = 9
                     .Range("L" & i).HorizontalAlignment = xlCenter
                     .Range("L" & i).VerticalAlignment = xlCenter
+                Else
+                    ' Clear the cells if no product data
+                    .Range("I" & i & ":L" & i).ClearContents
+                End If
+            Next i
 
+        ElseIf saleType = "Intrastate" Then
+            ' Clear all tax fields first for all 6 product rows - UPDATED ROW RANGE
+            .Range("I19:N24").ClearContents
+
+            ' Set up formulas for CGST/SGST fields (active for Intrastate) - UPDATED COLUMN ORDER
+            For i = 19 To 24
+                ' CGST formulas (I,J)
+                .Range("I" & i).Formula = "=IF(AND(N7=""Intrastate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ", warehouse!A:E, 5, FALSE)/2,""""),"""")"
+                .Range("J" & i).Formula = "=IF(AND(N7=""Intrastate"",H" & i & "<>"""",I" & i & "<>""""),H" & i & "*I" & i & "/100,"""")"
+
+                ' SGST formulas (K,L)
+                .Range("K" & i).Formula = "=IF(AND(N7=""Intrastate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ", warehouse!A:E, 5, FALSE)/2,""""),"""")"
+                .Range("L" & i).Formula = "=IF(AND(N7=""Intrastate"",H" & i & "<>"""",K" & i & "<>""""),H" & i & "*K" & i & "/100,"""")"
+            Next i
+
+            ' IGST shows "N/A" only for rows with product data (inactive for Intrastate) - UPDATED COLUMN ORDER: IGST in M,N
+            For i = 19 To 24
+                ' Only show N/A if there's actually a product in this row
+                If .Range("C" & i).Value <> "" Then
                     .Range("M" & i).Value = "N/A"
                     .Range("M" & i).Font.Color = RGB(220, 20, 60)  ' Red color
                     .Range("M" & i).Font.Bold = True
@@ -1211,43 +1330,8 @@ Public Sub UpdateTaxFieldsDisplay(ws As Worksheet, saleType As String)
                     .Range("N" & i).VerticalAlignment = xlCenter
                 Else
                     ' Clear the cells if no product data
-                    .Range("K" & i & ":N" & i).ClearContents
+                    .Range("M" & i & ":N" & i).ClearContents
                 End If
-            Next i
-
-        ElseIf saleType = "Intrastate" Then
-            ' Clear all tax fields first for all 6 product rows
-            .Range("I18:N23").ClearContents
-
-            ' IGST shows "N/A" only for rows with product data (inactive for Intrastate)
-            For i = 18 To 23
-                ' Only show N/A if there's actually a product in this row
-                If .Range("C" & i).Value <> "" Then
-                    .Range("I" & i).Value = "N/A"
-                    .Range("I" & i).Font.Color = RGB(220, 20, 60)  ' Red color
-                    .Range("I" & i).Font.Bold = True
-                    .Range("I" & i).Font.Size = 9
-                    .Range("I" & i).HorizontalAlignment = xlCenter
-                    .Range("I" & i).VerticalAlignment = xlCenter
-
-                    .Range("J" & i).Value = "N/A"
-                    .Range("J" & i).Font.Color = RGB(220, 20, 60)  ' Red color
-                    .Range("J" & i).Font.Bold = True
-                    .Range("J" & i).Font.Size = 9
-                    .Range("J" & i).HorizontalAlignment = xlCenter
-                    .Range("J" & i).VerticalAlignment = xlCenter
-                Else
-                    ' Clear the cells if no product data
-                    .Range("I" & i & ":J" & i).ClearContents
-                End If
-            Next i
-
-            ' Set up formulas for CGST/SGST fields (active for Intrastate)
-            For i = 18 To 23
-                .Range("K" & i).Formula = "=IF(AND(N7=""Intrastate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ", warehouse!A:E, 5, FALSE)/2,""""),"""")"
-                .Range("L" & i).Formula = "=IF(AND(N7=""Intrastate"",H" & i & "<>"""",K" & i & "<>""""),H" & i & "*K" & i & "/100,"""")"
-                .Range("M" & i).Formula = "=IF(AND(N7=""Intrastate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ", warehouse!A:E, 5, FALSE)/2,""""),"""")"
-                .Range("N" & i).Formula = "=IF(AND(N7=""Intrastate"",H" & i & "<>"""",M" & i & "<>""""),H" & i & "*M" & i & "/100,"""")"
             Next i
 
             ' Reset formatting for active CGST/SGST fields

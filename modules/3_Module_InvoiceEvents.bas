@@ -330,6 +330,9 @@ Public Sub PrintAsPDFButton()
 
     Set originalWs = ThisWorkbook.Worksheets("GST_Tax_Invoice_for_interstate")
 
+    ' Ensure warehouse worksheet exists to prevent file dialog errors
+    Call EnsureAllSupportingWorksheetsExist
+
     ' Get invoice number for filename
     invoiceNumber = Trim(originalWs.Range("C7").Value)
 
@@ -405,52 +408,54 @@ Public Sub PrintAsPDFButton()
     duplicateWs.Range("A1").Value = "DUPLICATE"
 
     ' Ensure both sheets have identical content except for the header
-    ' Copy all data from original to duplicate (except A1)
-    originalWs.Range("A2:O38").Copy
-    duplicateWs.Range("A2:O38").PasteSpecial Paste:=xlPasteAll
+    ' Copy all data from original to duplicate (except A1) - UPDATED RANGE TO O40
+    ' Use PasteSpecial with xlPasteValues to avoid warehouse reference issues
+    On Error Resume Next
+    originalWs.Range("A2:O40").Copy
+    duplicateWs.Range("A2").PasteSpecial Paste:=xlPasteValues
+    duplicateWs.Range("A2").PasteSpecial Paste:=xlPasteFormats
     Application.CutCopyMode = False
+    On Error GoTo PDFExportError
 
     ' OPTIMIZE PDF LAYOUT - Updated for new row structure (ends at row 38)
-    ' Set print area and page setup for the original sheet - UPDATED WITH TERMS AND CONDITIONS
+    ' Set print area and page setup for the original sheet - OPTIMIZED FOR ENHANCED LAYOUT AND SCALING
     On Error Resume Next  ' Handle macOS PageSetup compatibility issues
-    originalWs.PageSetup.PrintArea = "A1:O38"  ' Only to column O, up to row 38
+    originalWs.PageSetup.PrintArea = "A1:O40"  ' Updated to include all rows up to row 40
     With originalWs.PageSetup
         .Orientation = xlPortrait
         .PaperSize = xlPaperA4
         .Zoom = False
         .FitToPagesWide = 1
         .FitToPagesTall = 1
-        .LeftMargin = Application.InchesToPoints(0.25)  ' Slightly smaller margins
-        .RightMargin = Application.InchesToPoints(0.25)
-        .TopMargin = Application.InchesToPoints(0.25)
-        .BottomMargin = Application.InchesToPoints(0.25)
-        .HeaderMargin = Application.InchesToPoints(0.2)
-        .FooterMargin = Application.InchesToPoints(0.2)
+        .LeftMargin = Application.InchesToPoints(0.15)  ' Reduced margins for more content space
+        .RightMargin = Application.InchesToPoints(0.15)
+        .TopMargin = Application.InchesToPoints(0.15)
+        .BottomMargin = Application.InchesToPoints(0.15)
+        .HeaderMargin = Application.InchesToPoints(0.1)
+        .FooterMargin = Application.InchesToPoints(0.1)
         .CenterHorizontally = True
-        .CenterVertically = False
-        ' REMOVED: .PrintQuality = 600 (not supported on macOS Excel)
+        .CenterVertically = True  ' Enable vertical centering for better appearance
         .BlackAndWhite = False  ' Ensure colors are preserved
     End With
     On Error GoTo PDFExportError  ' Resume error handling
 
-    ' Set print area and page setup for the duplicate sheet - UPDATED WITH TERMS AND CONDITIONS
+    ' Set print area and page setup for the duplicate sheet - OPTIMIZED FOR ENHANCED LAYOUT AND SCALING
     On Error Resume Next  ' Handle macOS PageSetup compatibility issues
-    duplicateWs.PageSetup.PrintArea = "A1:O38"  ' Only to column O, up to row 38
+    duplicateWs.PageSetup.PrintArea = "A1:O40"  ' Updated to include all rows up to row 40
     With duplicateWs.PageSetup
         .Orientation = xlPortrait
         .PaperSize = xlPaperA4
         .Zoom = False
         .FitToPagesWide = 1
         .FitToPagesTall = 1
-        .LeftMargin = Application.InchesToPoints(0.25)  ' Slightly smaller margins
-        .RightMargin = Application.InchesToPoints(0.25)
-        .TopMargin = Application.InchesToPoints(0.25)
-        .BottomMargin = Application.InchesToPoints(0.25)
-        .HeaderMargin = Application.InchesToPoints(0.2)
-        .FooterMargin = Application.InchesToPoints(0.2)
+        .LeftMargin = Application.InchesToPoints(0.15)  ' Reduced margins for more content space
+        .RightMargin = Application.InchesToPoints(0.15)
+        .TopMargin = Application.InchesToPoints(0.15)
+        .BottomMargin = Application.InchesToPoints(0.15)
+        .HeaderMargin = Application.InchesToPoints(0.1)
+        .FooterMargin = Application.InchesToPoints(0.1)
         .CenterHorizontally = True
-        .CenterVertically = False
-        ' REMOVED: .PrintQuality = 600 (not supported on macOS Excel)
+        .CenterVertically = True  ' Enable vertical centering for better appearance
         .BlackAndWhite = False  ' Ensure colors are preserved
     End With
     On Error GoTo PDFExportError  ' Resume error handling
@@ -498,6 +503,11 @@ Public Sub PrintAsPDFButton()
                                     Quality:=xlQualityStandard, _
                                     IgnorePrintAreas:=False, _
                                     OpenAfterPublish:=False
+
+    ' Restore worksheet formatting after PDF export
+    On Error Resume Next
+    Call RestoreWorksheetFormatting(originalWs)
+    On Error GoTo PDFExportError
 
     ' Clean up the temporary duplicate sheet
     Application.DisplayAlerts = False
@@ -604,38 +614,80 @@ ErrorHandler:
 End Sub
 
 Public Sub OptimizeForPDFExport(ws As Worksheet)
-    ' Optimize worksheet formatting specifically for PDF export
+    ' Optimize worksheet formatting specifically for PDF export - UPDATED FOR ENHANCED LAYOUT
     Dim cell As Range
     On Error Resume Next
 
     With ws
-        ' Ensure all borders are properly set for PDF
-        .Range("A1:O38").Borders.LineStyle = xlContinuous
-        .Range("A1:O38").Borders.Weight = xlThin
-        .Range("A1:O38").Borders.Color = RGB(0, 0, 0)  ' Pure black for PDF
+        ' Ensure all borders are properly set for PDF - UPDATED RANGE
+        .Range("A1:O40").Borders.LineStyle = xlContinuous
+        .Range("A1:O40").Borders.Weight = xlThin
+        .Range("A1:O40").Borders.Color = RGB(0, 0, 0)  ' Pure black for PDF
 
-        ' Optimize N/A display for PDF (make it less prominent)
-        For Each cell In .Range("I19:N23")
+        ' REMOVE ONLY INTERNAL BORDERS FROM ROWS 3 AND 4 - PRESERVE OUTER BORDERS
+        ' Remove internal horizontal and vertical borders but keep left and right outer borders
+        .Range("A3:O3").Borders(xlInsideHorizontal).LineStyle = xlNone
+        .Range("A3:O3").Borders(xlInsideVertical).LineStyle = xlNone
+        .Range("A3:O3").Borders(xlEdgeTop).LineStyle = xlNone
+        .Range("A3:O3").Borders(xlEdgeBottom).LineStyle = xlNone
+
+        .Range("A4:O4").Borders(xlInsideHorizontal).LineStyle = xlNone
+        .Range("A4:O4").Borders(xlInsideVertical).LineStyle = xlNone
+        .Range("A4:O4").Borders(xlEdgeTop).LineStyle = xlNone
+        .Range("A4:O4").Borders(xlEdgeBottom).LineStyle = xlNone
+
+        ' Also remove the bottom borders of rows 2 to eliminate lines between header rows
+        .Range("A2:O2").Borders(xlEdgeBottom).LineStyle = xlNone
+
+        ' Optimize N/A display for PDF (make it less prominent) - UPDATED RANGE FOR TWO-ROW HEADER
+        For Each cell In .Range("I20:N24")
             If cell.Value = "N/A" Then
                 cell.Font.Color = RGB(128, 128, 128)  ' Gray instead of red for PDF
                 cell.Font.Size = 8  ' Smaller font for N/A
             End If
         Next cell
 
-        ' Optimize yellow highlighting for PDF
-        For Each cell In .Range("A25:J27")  ' Amount in words section
+        ' Optimize yellow highlighting for PDF - UPDATED RANGE FOR ENHANCED LAYOUT
+        For Each cell In .Range("A26:J28")  ' Amount in words section
             If cell.Interior.Color = RGB(255, 255, 0) Then  ' Yellow
                 cell.Interior.Color = RGB(255, 255, 200)  ' Lighter yellow for PDF
             End If
         Next cell
 
-        ' Ensure proper font rendering
-        .Range("A1:O38").Font.Name = "Segoe UI"
+        ' Ensure proper font rendering - UPDATED RANGE
+        .Range("A1:O40").Font.Name = "Segoe UI"
 
-        ' Set optimal row heights for PDF
-        .Rows("17:18").RowHeight = 25  ' Header rows
-        .Rows("19:23").RowHeight = 30  ' Item rows
-        .Rows("24:38").RowHeight = 25  ' Footer rows
+        ' Set optimal row heights for PDF - UPDATED FOR TWO-ROW HEADER AND ENHANCED LAYOUT
+        .Rows("17:18").RowHeight = 30  ' Two-row header structure
+        .Rows("19:24").RowHeight = 30  ' Item rows
+        .Rows("25:40").RowHeight = 25  ' Footer rows
+    End With
+
+    On Error GoTo 0
+End Sub
+
+Public Sub RestoreWorksheetFormatting(ws As Worksheet)
+    ' Restore worksheet formatting after PDF export for normal editing
+    On Error Resume Next
+
+    With ws
+        ' Restore all borders for worksheet editing
+        .Range("A1:O40").Borders.LineStyle = xlContinuous
+        .Range("A1:O40").Borders.Weight = xlThin
+        .Range("A1:O40").Borders.Color = RGB(0, 0, 0)
+
+        ' Restore the original header section formatting (rows 3 and 4 should have borders for editing)
+        .Range("A3:O3").Borders.LineStyle = xlContinuous
+        .Range("A3:O3").Borders.Weight = xlThin
+        .Range("A3:O3").Borders.Color = RGB(0, 0, 0)
+
+        .Range("A4:O4").Borders.LineStyle = xlContinuous
+        .Range("A4:O4").Borders.Weight = xlThin
+        .Range("A4:O4").Borders.Color = RGB(0, 0, 0)
+
+        ' Restore original yellow highlighting for editing
+        .Range("A26").Interior.Color = RGB(255, 255, 0)  ' Terms and Conditions header
+        .Range("A29").Interior.Color = RGB(255, 255, 0)  ' Terms and Conditions header
     End With
 
     On Error GoTo 0
@@ -664,7 +716,7 @@ Public Sub PrintButton()
     ' Configure print settings - UPDATED FOR NEW LAYOUT STRUCTURE (macOS compatible)
     On Error Resume Next  ' Handle macOS PageSetup compatibility issues
     With ws.PageSetup
-        .PrintArea = "A1:O38"  ' Updated to match new layout with Terms and Conditions
+        .PrintArea = "A1:O40"  ' Updated to match new layout with enhanced structure
         .Orientation = xlPortrait
         .PaperSize = xlPaperA4
         .FitToPagesWide = 1
@@ -1204,7 +1256,7 @@ Public Sub TestPDFExportFixes()
     With ws.PageSetup
         .Orientation = xlPortrait
         .PaperSize = xlPaperA4
-        .PrintArea = "A1:O38"
+        .PrintArea = "A1:O40"
     End With
     If Err.Number = 0 Then
         testResults = testResults & "✅ PASSED" & vbCrLf
