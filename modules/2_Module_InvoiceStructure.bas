@@ -955,21 +955,29 @@ Public Sub CreateInvoiceSheet()
             .Borders(xlEdgeBottom).Color = RGB(0, 0, 0)
         End With
 
-        ' FINAL STEP: Remove ONLY INTERNAL borders from rows 3 and 4 - PRESERVE OUTER BORDERS
-        ' Remove internal horizontal and vertical borders but keep left and right outer borders
+        ' FINAL STEP: Remove ALL borders from rows 2, 3 and 4 for seamless header appearance - ENHANCED
+        ' Complete border removal to prevent black line issues in PDF export
+        On Error Resume Next
+        .Range("A2:O2").Borders(xlInsideHorizontal).LineStyle = xlNone
+        .Range("A2:O2").Borders(xlInsideVertical).LineStyle = xlNone
+        .Range("A2:O2").Borders(xlEdgeTop).LineStyle = xlNone
+        .Range("A2:O2").Borders(xlEdgeBottom).LineStyle = xlNone
+        .Range("A2:O2").Borders(xlEdgeLeft).LineStyle = xlNone
+        .Range("A2:O2").Borders(xlEdgeRight).LineStyle = xlNone
+
         .Range("A3:O3").Borders(xlInsideHorizontal).LineStyle = xlNone
         .Range("A3:O3").Borders(xlInsideVertical).LineStyle = xlNone
         .Range("A3:O3").Borders(xlEdgeTop).LineStyle = xlNone
         .Range("A3:O3").Borders(xlEdgeBottom).LineStyle = xlNone
+        .Range("A3:O3").Borders(xlEdgeLeft).LineStyle = xlNone
+        .Range("A3:O3").Borders(xlEdgeRight).LineStyle = xlNone
 
         .Range("A4:O4").Borders(xlInsideHorizontal).LineStyle = xlNone
         .Range("A4:O4").Borders(xlInsideVertical).LineStyle = xlNone
         .Range("A4:O4").Borders(xlEdgeTop).LineStyle = xlNone
         .Range("A4:O4").Borders(xlEdgeBottom).LineStyle = xlNone
-
-        ' Also remove bottom border of row 2 for seamless header appearance
-        .Range("A2:O2").Borders(xlEdgeBottom).LineStyle = xlNone
-
+        .Range("A4:O4").Borders(xlEdgeLeft).LineStyle = xlNone
+        .Range("A4:O4").Borders(xlEdgeRight).LineStyle = xlNone
         On Error GoTo 0
     End With
 
@@ -984,9 +992,6 @@ Public Sub CreateInvoiceSheet()
 
     ' Set up worksheet change events for state code extraction
     Call SetupStateCodeChangeEvents(ws)
-
-    ' Auto-fill consignee from receiver data
-    Call AutoFillConsigneeFromReceiver(ws)
 
     ' Setup dynamic tax display based on default sale type
     Call SetupDynamicTaxDisplay(ws)
@@ -1036,377 +1041,18 @@ Private Sub CreateHeaderRow(ws As Worksheet, rowNum As Integer, rangeAddr As Str
     On Error GoTo 0
 End Sub
 
-Private Sub AutoPopulateInvoiceFields(ws As Worksheet)
-    ' Auto-populate invoice number and dates with full manual override capability
-    ' ALL auto-populated values can be manually edited by users
-    Dim nextInvoiceNumber As String
-    On Error GoTo ErrorHandler
-
-    ' Auto-populate Invoice Number (Row 7, Column C)
-    nextInvoiceNumber = GetNextInvoiceNumber()
-
-    With ws.Range("C7")
-        .Value = nextInvoiceNumber
-        .Font.Bold = True
-        .Font.Color = RGB(220, 20, 60)  ' Red color for user input
-        .HorizontalAlignment = xlCenter
-        .VerticalAlignment = xlCenter
-        ' Allow manual editing - no validation restrictions
-    End With
-
-    ' Auto-populate Invoice Date (Row 8, Column C)
-    With ws.Range("C8")
-        .Value = Format(Date, "dd/mm/yyyy")
-        .Font.Bold = True
-        .HorizontalAlignment = xlLeft
-        ' Allow manual editing - no validation restrictions
-    End With
-
-    ' Auto-populate Date of Supply (Row 9, Columns F & G)
-    With ws.Range("F9")
-        .Value = Format(Date, "dd/mm/yyyy")
-        .Font.Bold = True
-        .HorizontalAlignment = xlLeft
-        ' Allow manual editing - no validation restrictions
-    End With
-
-    With ws.Range("G9")
-        .Value = Format(Date, "dd/mm/yyyy")
-        .Font.Bold = True
-        .HorizontalAlignment = xlLeft
-        ' Allow manual editing - no validation restrictions
-    End With
-
-    ' Set fixed State Code (Row 10, Column C) for Andhra Pradesh
-    With ws.Range("C10")
-        .Value = "37"
-        .Font.Bold = True
-        .Interior.Color = RGB(245, 245, 245)  ' Light grey background
-        .Font.Color = RGB(26, 26, 26)  ' Dark text
-        .HorizontalAlignment = xlLeft
-        ' No validation - fixed value
-    End With
-
-    Exit Sub
-
-ErrorHandler:
-    ' If auto-population fails, set default values
-    ws.Range("C7").Value = "INV-" & Year(Date) & "-001"
-    ws.Range("C8").Value = Format(Date, "dd/mm/yyyy")
-    ws.Range("F9").Value = Format(Date, "dd/mm/yyyy")
-    ws.Range("G9").Value = Format(Date, "dd/mm/yyyy")
-End Sub
-
-Private Sub SetupWorksheetChangeEvents(ws As Worksheet)
-    ' Set up change monitoring for customer dropdown auto-population and Sale Type handling
-    ' Since we're in a module, we'll ensure the worksheet change events are enabled
-    On Error Resume Next
-
-    ' Enable automatic calculation to ensure formulas update properly
-    Application.Calculation = xlCalculationAutomatic
-    
-    ' Note: The actual worksheet change events for Sale Type are handled by 
-    ' the HandleSaleTypeChange function in Module_InvoiceEvents
-    ' This function can be called manually when the Sale Type changes
-
-    On Error GoTo 0
-End Sub
-
-Private Sub SetupStateCodeChangeEvents(ws As Worksheet)
-    ' Simple state code setup - no automatic extraction needed
-    ' State code dropdowns will show simple numeric codes only
-    On Error GoTo 0
-End Sub
-
-Private Sub AutoFillConsigneeFromReceiver(ws As Worksheet)
-    ' Automatically copy all receiver data to consignee fields - UPDATED FOR EXPANDED LAYOUT
-    On Error GoTo ErrorHandler
-
-    With ws
-        ' Copy Name from Receiver (C12:H12) to Consignee (K12:O12)
-        .Range("K12").Value = .Range("C12").Value
-
-        ' Copy Address from Receiver (C13:H13) to Consignee (K13:O13)
-        .Range("K13").Value = .Range("C13").Value
-
-        ' Copy GSTIN from Receiver (C14:H14) to Consignee (K14:O14)
-        .Range("K14").Value = .Range("C14").Value
-
-        ' Copy State from Receiver (C15:H15) to Consignee (K15:O15)
-        .Range("K15").Value = .Range("C15").Value
-
-        ' State code for consignee is now handled by a VLOOKUP formula in cell K16.
-        ' This line is no longer needed as copying the state name to K15 will trigger the formula.
-
-        ' Format consignee fields for manual editing (use default black font)
-        .Range("K12:O12").Font.Color = RGB(26, 26, 26)  ' Standard black font
-        .Range("K13:O13").Font.Color = RGB(26, 26, 26)  ' Standard black font
-        .Range("K14:O14").Font.Color = RGB(26, 26, 26)  ' Standard black font
-        .Range("K15:O15").Font.Color = RGB(26, 26, 26)  ' Standard black font
-        .Range("K16:O16").Font.Color = RGB(26, 26, 26)  ' Standard black font
-    End With
-
-    Exit Sub
-
-ErrorHandler:
-    ' If auto-fill fails, continue silently
-    On Error GoTo 0
-End Sub
-
-' 🧮 TAX CALCULATION FUNCTIONS
-
-Public Sub SetupTaxCalculationFormulas(ws As Worksheet)
-    ' Set up formulas for automatic tax calculations in the item table with enhanced structure - UPDATED FOR TWO-ROW HEADER
-    On Error Resume Next
-
-    With ws
-        ' For row 19 (first item row), set up formulas - ENHANCED STRUCTURE A-O - UPDATED FOR TWO-ROW HEADER
-        ' Column G (Amount) = Quantity * Rate
-        .Range("G19").Formula = "=IF(AND(D19<>"""",F19<>""""),D19*F19,"""")"
-
-        ' Column H (Taxable Value) = Amount (same as Amount for simplicity)
-        .Range("H19").Formula = "=IF(G19<>"""",G19,"""")"
-
-        ' Column I (CGST Rate) - VLOOKUP formula to get tax rate from HSN data (half of total rate for intrastate)
-        .Range("I19").Formula = "=IF(N7=""Intrastate"",VLOOKUP(C19, warehouse!A:E, 5, FALSE)/2,"""")"
-
-        ' Column J (CGST Amount) = Taxable Value * CGST Rate / 100
-        .Range("J19").Formula = "=IF(AND(H19<>"""",I19<>""""),H19*I19/100,"""")"
-
-        ' Column K (SGST Rate) - VLOOKUP formula to get tax rate from HSN data (half of total rate for intrastate)
-        .Range("K19").Formula = "=IF(N7=""Intrastate"",VLOOKUP(C19, warehouse!A:E, 5, FALSE)/2,"""")"
-
-        ' Column L (SGST Amount) = Taxable Value * SGST Rate / 100
-        .Range("L19").Formula = "=IF(AND(H19<>"""",K19<>""""),H19*K19/100,"""")"
-
-        ' Column M (IGST Rate) - VLOOKUP formula to get tax rate from HSN data (only for interstate)
-        .Range("M19").Formula = "=IF(N7=""Interstate"",VLOOKUP(C19, warehouse!A:E, 5, FALSE),"""")"
-
-        ' Column N (IGST Amount) = Taxable Value * IGST Rate / 100 (only for interstate)
-        .Range("N19").Formula = "=IF(AND(H19<>"""",M19<>""""),H19*M19/100,"""")"
-
-        ' Column O (Total Amount) = Taxable Value + Tax Amounts (IGST for interstate, CGST+SGST for intrastate)
-        .Range("O19").Formula = "=IF(N7=""Interstate"",H19+N19,IF(N7=""Intrastate"",H19+J19+L19,H19))"
-
-        ' Format the formula cells - ENHANCED STRUCTURE
-        .Range("G19:O19").NumberFormat = "0.00"
-        .Range("I19,K19,M19").NumberFormat = "0.00"
-    End With
-
-    On Error GoTo 0
-End Sub
-
-Public Sub UpdateMultiItemTaxCalculations(ws As Worksheet)
-    ' Update tax calculations to sum all item rows with enhanced structure - UPDATED FOR TWO-ROW HEADER
-    On Error Resume Next
-
-    With ws
-        ' Row 25: Total Quantity - ENHANCED STRUCTURE - UPDATED FOR TWO-ROW HEADER
-        .Range("D25").Formula = "=SUM(D19:D24)"
-        .Range("D25").NumberFormat = "#,##0.00"
-
-        ' Row 25: Sub Total calculations
-        .Range("G25").Formula = "=SUM(G19:G24)"  ' Amount column
-        .Range("H25").Formula = "=SUM(H19:H24)"  ' Taxable Value column
-        .Range("G25:H25").NumberFormat = "#,##0.00"
-
-        ' Row 25: Tax amounts - ENHANCED STRUCTURE - UPDATED FOR CORRECT COLUMN ORDER (CGST, SGST, IGST)
-        .Range("I25").Formula = "=SUM(I19:I24)"  ' CGST Rate (average)
-        .Range("J25").Formula = "=SUM(J19:J24)"  ' CGST Amount
-        .Range("K25").Formula = "=SUM(K19:K24)"  ' SGST Rate (average)
-        .Range("L25").Formula = "=SUM(L19:L24)"  ' SGST Amount
-        .Range("M25").Formula = "=SUM(M19:M24)"  ' IGST Rate (average)
-        .Range("N25").Formula = "=SUM(N19:N24)"  ' IGST Amount
-        .Range("O25").Formula = "=SUM(O19:O24)"  ' Total Amount
-        .Range("I25:O25").NumberFormat = "#,##0.00"
-
-        ' Tax summary section (right side) - ENHANCED STRUCTURE - UPDATED FOR CORRECT COLUMN ORDER
-        ' Row 26: Total Amount Before Tax
-        .Range("O26").Formula = "=SUM(H19:H24)"
-
-        ' Row 27: CGST
-        .Range("O27").Formula = "=SUM(J19:J24)"
-
-        ' Row 28: SGST
-        .Range("O28").Formula = "=SUM(L19:L24)"
-
-        ' Row 29: IGST
-        .Range("O29").Formula = "=SUM(N19:N24)"
-
-        ' Row 30: CESS (0 by default)
-        .Range("O30").Value = 0
-
-        ' Row 31: Total Tax
-        .Range("O31").Formula = "=O27+O28+O29+O30"
-
-        ' Row 32: Total Amount After Tax
-        .Range("O32").Formula = "=O26+O31"
-
-        ' Format all calculation cells
-        .Range("O26:O32").NumberFormat = "#,##0.00"
-
-        ' Update Amount in Words (A27 merged cell) - ENHANCED STRUCTURE - UPDATED FOR TWO-ROW HEADER
-        .Range("A27").Formula = "=NumberToWords(O32)"
-    End With
-
-    On Error GoTo 0
-End Sub
-
-Public Sub SetupDynamicTaxDisplay(ws As Worksheet)
-    ' Set up dynamic tax field display based on sale type
-    On Error Resume Next
-
-    With ws
-        ' Set up conditional formatting for "Not Applicable" display
-        ' This will be handled through worksheet change events
-
-        ' Initialize with default Interstate setup
-        Call UpdateTaxFieldsDisplay(ws, "Interstate")
-    End With
-
-    On Error GoTo 0
-End Sub
-
-Public Sub UpdateTaxFieldsDisplay(ws As Worksheet, saleType As String)
-    ' Update tax fields display based on sale type selection - FIXED COLUMN MAPPING
-    Dim i As Long
-    On Error Resume Next
-
-    With ws
-        If saleType = "Interstate" Then
-            ' INTERSTATE: Only IGST applies, CGST and SGST are not applicable
-            
-            ' Clear all tax fields first for all 6 product rows (19-24)
-            .Range("I19:N24").ClearContents
-            
-            ' Restore proper headers for active IGST columns (M,N)
-            .Range("M17").Value = "IGST Rate (%)"
-            .Range("M17").Font.Color = RGB(26, 26, 26)  ' Black color
-            .Range("M17").Font.Bold = True
-            .Range("M17").HorizontalAlignment = xlCenter
-            
-            .Range("N17").Value = "IGST Amount (Rs.)"
-            .Range("N17").Font.Color = RGB(26, 26, 26)  ' Black color
-            .Range("N17").Font.Bold = True
-            .Range("N17").HorizontalAlignment = xlCenter
-            
-            ' Set "Not Apply" messages in red for CGST and SGST headers
-            .Range("I17").Value = "CGST Not Apply"
-            .Range("I17").Font.Color = RGB(220, 20, 60)  ' Red color
-            .Range("I17").Font.Bold = True
-            .Range("I17").HorizontalAlignment = xlCenter
-            
-            .Range("J17").Value = "CGST Not Apply"
-            .Range("J17").Font.Color = RGB(220, 20, 60)  ' Red color
-            .Range("J17").Font.Bold = True
-            .Range("J17").HorizontalAlignment = xlCenter
-            
-            .Range("K17").Value = "SGST Not Apply"
-            .Range("K17").Font.Color = RGB(220, 20, 60)  ' Red color
-            .Range("K17").Font.Bold = True
-            .Range("K17").HorizontalAlignment = xlCenter
-            
-            .Range("L17").Value = "SGST Not Apply"
-            .Range("L17").Font.Color = RGB(220, 20, 60)  ' Red color
-            .Range("L17").Font.Bold = True
-            .Range("L17").HorizontalAlignment = xlCenter
-            
-            ' Clear content completely from CGST columns (I19-I24, J19-J24)
-            .Range("I19:I24").ClearContents
-            .Range("J19:J24").ClearContents
-            
-            ' Clear content completely from SGST columns (K19-K24, L19-L24)
-            .Range("K19:K24").ClearContents
-            .Range("L19:L24").ClearContents
-            
-            ' Set up active IGST formulas (M,N columns)
-            For i = 19 To 24
-                .Range("M" & i).Formula = "=IF(AND(N7=""Interstate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ", warehouse!A:E, 5, FALSE),""""),"""")"
-                .Range("N" & i).Formula = "=IF(AND(N7=""Interstate"",H" & i & "<>"""",M" & i & "<>""""),H" & i & "*M" & i & "/100,"""")"
-            Next i
-
-        ElseIf saleType = "Intrastate" Then
-            ' INTRASTATE: Only CGST and SGST apply, IGST is not applicable
-            
-            ' Clear all tax fields first for all 6 product rows (19-24)
-            .Range("I19:N24").ClearContents
-            
-            ' Restore proper headers for active CGST columns (I,J)
-            .Range("I17").Value = "CGST Rate (%)"
-            .Range("I17").Font.Color = RGB(26, 26, 26)  ' Black color
-            .Range("I17").Font.Bold = True
-            .Range("I17").HorizontalAlignment = xlCenter
-            
-            .Range("J17").Value = "CGST Amount (Rs.)"
-            .Range("J17").Font.Color = RGB(26, 26, 26)  ' Black color
-            .Range("J17").Font.Bold = True
-            .Range("J17").HorizontalAlignment = xlCenter
-            
-            ' Restore proper headers for active SGST columns (K,L)
-            .Range("K17").Value = "SGST Rate (%)"
-            .Range("K17").Font.Color = RGB(26, 26, 26)  ' Black color
-            .Range("K17").Font.Bold = True
-            .Range("K17").HorizontalAlignment = xlCenter
-            
-            .Range("L17").Value = "SGST Amount (Rs.)"
-            .Range("L17").Font.Color = RGB(26, 26, 26)  ' Black color
-            .Range("L17").Font.Bold = True
-            .Range("L17").HorizontalAlignment = xlCenter
-            
-            ' Set "Not Apply" messages in red for IGST headers
-            .Range("M17").Value = "IGST Not Apply"
-            .Range("M17").Font.Color = RGB(220, 20, 60)  ' Red color
-            .Range("M17").Font.Bold = True
-            .Range("M17").HorizontalAlignment = xlCenter
-            
-            .Range("N17").Value = "IGST Not Apply"
-            .Range("N17").Font.Color = RGB(220, 20, 60)  ' Red color
-            .Range("N17").Font.Bold = True
-            .Range("N17").HorizontalAlignment = xlCenter
-            
-            ' Clear content completely from IGST columns (M19-M24, N19-N24)
-            .Range("M19:M24").ClearContents
-            .Range("N19:N24").ClearContents
-            
-            ' Set up active CGST formulas (I,J columns) - half of total GST rate
-            For i = 19 To 24
-                .Range("I" & i).Formula = "=IF(AND(N7=""Intrastate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ", warehouse!A:E, 5, FALSE)/2,""""),"""")"
-                .Range("J" & i).Formula = "=IF(AND(N7=""Intrastate"",H" & i & "<>"""",I" & i & "<>""""),H" & i & "*I" & i & "/100,"""")"
-            Next i
-            
-            ' Set up active SGST formulas (K,L columns) - half of total GST rate
-            For i = 19 To 24
-                .Range("K" & i).Formula = "=IF(AND(N7=""Intrastate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ", warehouse!A:E, 5, FALSE)/2,""""),"""")"
-                .Range("L" & i).Formula = "=IF(AND(N7=""Intrastate"",H" & i & "<>"""",K" & i & "<>""""),H" & i & "*K" & i & "/100,"""")"
-            Next i
-        End If
-        
-        ' Force recalculation
-        .Calculate
-    End With
-
-    On Error GoTo 0
-End Sub
-
-Public Sub CleanEmptyProductRows(ws As Worksheet)
-    ' Clean up empty product rows to remove any #N/A values or unwanted content
-    Dim i As Long
-    On Error Resume Next
-
-    With ws
-        For i = 19 To 23  ' Product rows
-            ' If no product description, clear the entire row
-            If Trim(.Range("B" & i).Value) = "" And Trim(.Range("C" & i).Value) = "" Then
-                .Range("A" & i & ":O" & i).ClearContents
-                ' Set default formatting for empty rows
-                .Range("A" & i & ":O" & i).Font.Color = RGB(26, 26, 26)
-                .Range("A" & i & ":O" & i).Font.Bold = False
-                .Range("A" & i & ":O" & i).Font.Size = 10
-                .Range("A" & i & ":O" & i).HorizontalAlignment = xlLeft
-                .Range("A" & i & ":O" & i).VerticalAlignment = xlCenter
-            End If
-        Next i
-    End With
-
-    On Error GoTo 0
-End Sub
+' ████████████████████████████████████████████████████████████████████████████████
+' 📝 REFACTORING NOTE - FUNCTIONS MOVED TO ORGANIZED MODULES
+' ████████████████████████████████████████████████████████████████████████████████
+' The following functions have been moved to separate modules for better organization:
+' • AutoPopulateInvoiceFields -> 15_DataPopulation.bas
+' • SetupWorksheetChangeEvents -> 16_WorksheetEventsSetup.bas  
+' • SetupStateCodeChangeEvents -> 16_WorksheetEventsSetup.bas
+' • SetupTaxCalculationFormulas -> 17_TaxCalculationEngine.bas
+' • UpdateMultiItemTaxCalculations -> 17_TaxCalculationEngine.bas
+' • SetupDynamicTaxDisplay -> 18_DynamicTaxDisplay.bas
+' • UpdateTaxFieldsDisplay -> 18_DynamicTaxDisplay.bas
+' • CleanEmptyProductRows -> 19_DataCleanup.bas
+'
+' These functions are automatically called during CreateInvoiceSheet() execution.
+' No manual intervention required - the system handles everything automatically.

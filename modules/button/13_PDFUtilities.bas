@@ -38,6 +38,45 @@ DirectoryError:
     On Error GoTo 0
 End Sub
 
+Public Sub OptimizeForPDFExport(ws As Worksheet)
+    ' Optimize worksheet formatting for PDF export to prevent border issues
+    On Error Resume Next
+    
+    With ws
+        ' Ensure consistent border formatting for PDF export
+        ' Remove problematic borders that can cause black lines in PDF
+        .Range("A3:O3").Borders(xlInsideHorizontal).LineStyle = xlNone
+        .Range("A3:O3").Borders(xlInsideVertical).LineStyle = xlNone
+        .Range("A3:O3").Borders(xlEdgeTop).LineStyle = xlNone
+        .Range("A3:O3").Borders(xlEdgeBottom).LineStyle = xlNone
+        .Range("A3:O3").Borders(xlEdgeLeft).LineStyle = xlNone
+        .Range("A3:O3").Borders(xlEdgeRight).LineStyle = xlNone
+        
+        .Range("A4:O4").Borders(xlInsideHorizontal).LineStyle = xlNone
+        .Range("A4:O4").Borders(xlInsideVertical).LineStyle = xlNone
+        .Range("A4:O4").Borders(xlEdgeTop).LineStyle = xlNone
+        .Range("A4:O4").Borders(xlEdgeBottom).LineStyle = xlNone
+        .Range("A4:O4").Borders(xlEdgeLeft).LineStyle = xlNone
+        .Range("A4:O4").Borders(xlEdgeRight).LineStyle = xlNone
+        
+        ' Also clean up row 2 borders
+        .Range("A2:O2").Borders(xlEdgeBottom).LineStyle = xlNone
+    End With
+    
+    On Error GoTo 0
+End Sub
+
+Public Sub RestoreWorksheetFormatting(ws As Worksheet)
+    ' Restore original worksheet formatting after PDF export
+    On Error Resume Next
+    
+    ' Note: Since we're optimizing for PDF export, we maintain the clean borders
+    ' The borders are intentionally removed for better PDF appearance
+    ' No restoration needed as the current format is preferred
+    
+    On Error GoTo 0
+End Sub
+
 Private Function GetMacOSCompatiblePDFPath() As String
     ' Get a reliable PDF export path for macOS
     Dim testPath As String

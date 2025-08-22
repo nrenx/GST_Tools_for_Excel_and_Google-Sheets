@@ -1,26 +1,69 @@
 Option Explicit
 ' ===============================================================================
-' MODULE: Module_InvoiceEvents  
-' DESCRIPTION: Handles event handlers, data validation, and user interactions
-'              on the invoice worksheet. Button functions are in separate modules.
+' MODULE: 15_DataPopulation
+' DESCRIPTION: Handles data population for invoices including customer data,
+'              HSN data, automatic field population, and data validation setup.
 ' ===============================================================================
 
 ' ████████████████████████████████████████████████████████████████████████████████
-' 📝 NOTE: BUTTON FUNCTIONS IN SEPARATE MODULES
+' 📝 DATA POPULATION FUNCTIONS
 ' ████████████████████████████████████████████████████████████████████████████████
-' Button functions are in separate .bas modules (import individually):
-' • AddCustomerToWarehouseButton.bas - Customer warehouse management
-' • NewInvoiceButton.bas - Fresh invoice generation
-' • SaveInvoiceButton.bas - Invoice record saving
-' • PrintAsPDFButton.bas - PDF export functionality
-' • PrintButton.bas - Print operations
-' • RefreshButton.bas - System refresh operations
-' • ButtonManagement.bas - Button creation/removal
-' • PDFUtilities.bas - PDF helper functions
 
-' ████████████████████████████████████████████████████████████████████████████████
-' 🔧 DATA VALIDATION & EVENT HANDLING
-' ████████████████████████████████████████████████████████████████████████████████
+Public Sub AutoPopulateInvoiceFields(ws As Worksheet)
+    ' Auto-populate invoice number and dates with full manual override capability
+    ' ALL auto-populated values can be manually edited by users
+    Dim nextInvoiceNumber As String
+    On Error GoTo ErrorHandler
+
+    ' Auto-populate Invoice Number (Row 7, Column C)
+    nextInvoiceNumber = GetNextInvoiceNumber()
+
+    With ws.Range("C7")
+        .Value = nextInvoiceNumber
+        .Font.Bold = True
+        .Font.Color = RGB(220, 20, 60)  ' Red color for user input
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        ' Allow manual editing - no validation restrictions
+    End With
+
+    ' Auto-populate Invoice Date (Row 8, Column C)
+    With ws.Range("C8")
+        .Value = Format(Date, "dd/mm/yyyy")
+        .Font.Bold = True
+        .HorizontalAlignment = xlLeft
+        ' Allow manual editing - no validation restrictions
+    End With
+
+    ' Auto-populate Date of Supply (Row 9, Columns F & G)
+    With ws.Range("F9")
+        .Value = Format(Date, "dd/mm/yyyy")
+        .HorizontalAlignment = xlLeft
+        ' Allow manual editing - no validation restrictions
+    End With
+
+    With ws.Range("G9")
+        .Value = Format(Date, "dd/mm/yyyy")
+        .HorizontalAlignment = xlLeft
+        ' Allow manual editing - no validation restrictions
+    End With
+
+    ' Set fixed State Code (Row 10, Column C) for Andhra Pradesh
+    With ws.Range("C10")
+        .Value = "37"
+        .HorizontalAlignment = xlLeft
+        ' No validation - fixed value
+    End With
+
+    Exit Sub
+
+ErrorHandler:
+    ' If auto-population fails, set default values
+    ws.Range("C7").Value = "INV-" & Year(Date) & "-001"
+    ws.Range("C8").Value = Format(Date, "dd/mm/yyyy")
+    ws.Range("F9").Value = Format(Date, "dd/mm/yyyy")
+    ws.Range("G9").Value = Format(Date, "dd/mm/yyyy")
+End Sub
 
 Public Sub SetupDataValidation(ws As Worksheet)
     ' Setup data validation dropdowns for standardized inputs
@@ -129,52 +172,4 @@ Public Sub SetupDataValidation(ws As Worksheet)
     End With
 
     On Error GoTo 0
-End Sub
-
-' ████████████████████████████████████████████████████████████████████████████████
-' 🎯 SALE TYPE EVENT HANDLING
-' ████████████████████████████████████████████████████████████████████████████████
-
-Public Sub HandleSaleTypeChange(ws As Worksheet, changedRange As Range)
-    ' Handle Sale Type dropdown changes to update tax field display dynamically
-    On Error Resume Next
-
-    ' Check if the changed cell is the Sale Type dropdown (N7)
-    If Not Intersect(changedRange, ws.Range("N7")) Is Nothing Then
-        Dim saleType As String
-        saleType = Trim(ws.Range("N7").Value)
-
-        ' Validate sale type and update display
-        If saleType = "Interstate" Or saleType = "Intrastate" Then
-            Call UpdateTaxFieldsDisplay(ws, saleType)
-
-            ' Recalculate the worksheet to update formulas
-            ws.Calculate
-        End If
-    End If
-
-    On Error GoTo 0
-End Sub
-
-Public Sub RefreshSaleTypeDisplay()
-    ' Manual function to refresh Sale Type display - users can run this after changing Sale Type
-    Dim ws As Worksheet
-    Dim saleType As String
-    On Error GoTo ErrorHandler
-    
-    Set ws = ThisWorkbook.Worksheets("GST_Tax_Invoice_for_interstate")
-    saleType = Trim(ws.Range("N7").Value)
-    
-    If saleType = "Interstate" Or saleType = "Intrastate" Then
-        Call UpdateTaxFieldsDisplay(ws, saleType)
-        ws.Calculate
-        MsgBox "Tax fields updated for " & saleType & " sale type!", vbInformation, "Sale Type Updated"
-    Else
-        MsgBox "Please select either 'Interstate' or 'Intrastate' in cell N7.", vbExclamation, "Invalid Sale Type"
-    End If
-    
-    Exit Sub
-    
-ErrorHandler:
-    MsgBox "Error updating sale type: " & Err.Description, vbCritical, "Error"
 End Sub

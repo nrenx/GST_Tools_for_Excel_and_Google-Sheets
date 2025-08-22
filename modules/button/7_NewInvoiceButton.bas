@@ -65,15 +65,17 @@ Public Sub NewInvoiceButton()
     ' Clear all customer details (handle merged cells properly)
     On Error Resume Next
     ' Clear individual cells to avoid merged cell issues
-    ws.Range("C12:F15").ClearContents ' Clear Receiver details, preserving formulas in row 16
-    ws.Range("I12:K15").ClearContents ' Clear Consignee details, preserving formulas in row 16
+    ws.Range("C12:H15").ClearContents ' Clear Receiver details (expanded range), preserving formulas in row 16
+    ws.Range("K12:O15").ClearContents ' Clear Consignee details (expanded range), preserving formulas in row 16
     ws.Range("F7").Value = "By Lorry"   ' Reset Transport Mode
     ws.Range("F8").Value = ""           ' Clear Vehicle Number
     ws.Range("F10").Value = ""          ' Clear Place of Supply
+    ws.Range("N10").Value = ""          ' Clear E-Way Bill No.
+    ws.Range("N7").Value = "Interstate" ' Reset Sale Type to default
     On Error GoTo ErrorHandler
 
-    ' Clear item table data (rows 18-21, keep headers and formulas)
-    ws.Range("A18:F21").ClearContents
+    ' Clear item table data (rows 18-21, keep headers and formulas) - EXPANDED TO ALL COLUMNS
+    ws.Range("A18:O21").ClearContents
     ' Reset first Sr.No.
     ws.Range("A18").Value = 1
 
@@ -88,6 +90,8 @@ Public Sub NewInvoiceButton()
     ws.Range("K28").ClearContents  ' Total Tax
     ws.Range("K29").ClearContents  ' Total After Tax
     ws.Range("K30").ClearContents  ' Grand Total
+    ' Clear amount in words
+    ws.Range("A31:K31").ClearContents  ' Amount in words row
     On Error GoTo ErrorHandler
 
     ' Update tax calculations
