@@ -266,3 +266,114 @@ Private Function ConvertDigit(ByVal MyDigit)
         Case Else: ConvertDigit = ""
     End Select
 End Function
+
+Public Sub EnsureStateFieldsTextFormat(ws As Worksheet)
+    ' Ensure state input fields are formatted as text to prevent formula interpretation
+    ' This prevents Excel from interpreting user input like "=1" or "-1" as formulas
+    On Error Resume Next
+    
+    With ws
+        ' State field for Receiver (Row 15, Column C15)
+        .Range("C15").NumberFormat = "@"
+        
+        ' State field for Consignee (Row 15, Column K15)
+        .Range("K15").NumberFormat = "@"
+    End With
+    
+    On Error GoTo 0
+End Sub
+
+Public Sub ApplyCustomBorderFormatting(ws As Worksheet)
+    ' Apply custom border formatting to remove horizontal borders from rows 3 and 4
+    ' while maintaining vertical borders for clean visual appearance
+    On Error Resume Next
+    
+    With ws
+        ' Remove horizontal borders from row 3 (company address)
+        With .Range("A3:O3")
+            .Borders(xlEdgeTop).LineStyle = xlNone
+            .Borders(xlEdgeBottom).LineStyle = xlNone
+            .Borders(xlInsideHorizontal).LineStyle = xlNone
+            ' Ensure vertical borders remain
+            .Borders(xlInsideVertical).LineStyle = xlContinuous
+            .Borders(xlEdgeLeft).LineStyle = xlContinuous
+            .Borders(xlEdgeRight).LineStyle = xlContinuous
+        End With
+        
+        ' Remove horizontal borders from row 4 (GSTIN)
+        With .Range("A4:O4")
+            .Borders(xlEdgeTop).LineStyle = xlNone
+            .Borders(xlEdgeBottom).LineStyle = xlNone
+            .Borders(xlInsideHorizontal).LineStyle = xlNone
+            ' Ensure vertical borders remain
+            .Borders(xlInsideVertical).LineStyle = xlContinuous
+            .Borders(xlEdgeLeft).LineStyle = xlContinuous
+            .Borders(xlEdgeRight).LineStyle = xlContinuous
+        End With
+    End With
+    
+    On Error GoTo 0
+End Sub
+
+Public Sub VerifyCustomBorderFormatting(ws As Worksheet)
+    ' Verify that the custom border formatting has been applied correctly
+    ' This function checks that horizontal borders are removed from rows 3 and 4
+    ' while vertical borders remain intact
+    
+    Dim message As String
+    Dim row3HorizontalBorders As Boolean
+    Dim row4HorizontalBorders As Boolean
+    Dim row3VerticalBorders As Boolean
+    Dim row4VerticalBorders As Boolean
+    
+    On Error Resume Next
+    
+    With ws
+        ' Check if horizontal borders are removed from row 3
+        row3HorizontalBorders = (.Range("A3").Borders(xlEdgeTop).LineStyle <> xlNone) Or _
+                               (.Range("A3").Borders(xlEdgeBottom).LineStyle <> xlNone)
+        
+        ' Check if horizontal borders are removed from row 4
+        row4HorizontalBorders = (.Range("A4").Borders(xlEdgeTop).LineStyle <> xlNone) Or _
+                               (.Range("A4").Borders(xlEdgeBottom).LineStyle <> xlNone)
+        
+        ' Check if vertical borders remain in row 3
+        row3VerticalBorders = (.Range("A3").Borders(xlEdgeLeft).LineStyle = xlContinuous) And _
+                             (.Range("O3").Borders(xlEdgeRight).LineStyle = xlContinuous)
+        
+        ' Check if vertical borders remain in row 4
+        row4VerticalBorders = (.Range("A4").Borders(xlEdgeLeft).LineStyle = xlContinuous) And _
+                             (.Range("O4").Borders(xlEdgeRight).LineStyle = xlContinuous)
+    End With
+    
+    ' Build verification message
+    message = "Custom Border Formatting Verification:" & vbCrLf & vbCrLf
+    
+    If Not row3HorizontalBorders Then
+        message = message & "✅ Row 3: Horizontal borders removed correctly" & vbCrLf
+    Else
+        message = message & "❌ Row 3: Horizontal borders still present" & vbCrLf
+    End If
+    
+    If Not row4HorizontalBorders Then
+        message = message & "✅ Row 4: Horizontal borders removed correctly" & vbCrLf
+    Else
+        message = message & "❌ Row 4: Horizontal borders still present" & vbCrLf
+    End If
+    
+    If row3VerticalBorders Then
+        message = message & "✅ Row 3: Vertical borders maintained correctly" & vbCrLf
+    Else
+        message = message & "❌ Row 3: Vertical borders missing" & vbCrLf
+    End If
+    
+    If row4VerticalBorders Then
+        message = message & "✅ Row 4: Vertical borders maintained correctly" & vbCrLf
+    Else
+        message = message & "❌ Row 4: Vertical borders missing" & vbCrLf
+    End If
+    
+    MsgBox message, vbInformation, "Border Formatting Verification"
+    
+    On Error GoTo 0
+End Sub

@@ -53,9 +53,11 @@ Public Sub ClearAllInvoiceData(ws As Worksheet)
         
         ' Clear customer data (Billed to)
         .Range("C12:H15").ClearContents
+        .Range("C15").NumberFormat = "@"  ' Ensure state field remains text format
         
         ' Clear consignee data (Shipped to)
         .Range("K12:O15").ClearContents
+        .Range("K15").NumberFormat = "@"  ' Ensure state field remains text format
         
         ' Clear product data (all 6 rows)
         .Range("A18:O21").ClearContents
@@ -110,9 +112,11 @@ Public Sub ClearCustomerDataOnly(ws As Worksheet)
     With ws
         ' Clear customer data (Billed to)
         .Range("C12:H15").ClearContents
+        .Range("C15").NumberFormat = "@"  ' Ensure state field remains text format
         
         ' Clear consignee data (Shipped to)
         .Range("K12:O15").ClearContents
+        .Range("K15").NumberFormat = "@"  ' Ensure state field remains text format
     End With
     
     On Error GoTo 0

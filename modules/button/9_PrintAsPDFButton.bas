@@ -296,32 +296,36 @@ ErrorHandler:
 End Sub
 
 Public Sub OptimizeForPDFExport(ws As Worksheet)
-    ' Optimize worksheet formatting specifically for PDF export - UPDATED FOR ENHANCED LAYOUT
+    ' Optimize worksheet formatting specifically for PDF export - CUSTOM HORIZONTAL BORDER HANDLING
     Dim cell As Range
     On Error Resume Next
 
     With ws
-        ' Ensure all borders are properly set for PDF - UPDATED RANGE
-        .Range("A1:O40").Borders.LineStyle = xlContinuous
-        .Range("A1:O40").Borders.Weight = xlThin
-        .Range("A1:O40").Borders.Color = RGB(0, 0, 0)  ' Pure black for PDF
+        ' Ensure header rows 3-5 (company info) have proper borders for PDF
+        ' BUT remove horizontal borders from rows 3 and 4 as requested
+        .Range("A3:O5").Borders.LineStyle = xlContinuous
+        .Range("A3:O5").Borders.Weight = xlMedium
+        .Range("A3:O5").Borders.Color = RGB(0, 0, 0)  ' Pure black for PDF
+        
+        ' Remove horizontal borders from rows 3 and 4 for PDF
+        With .Range("A3:O3")
+            .Borders(xlEdgeTop).LineStyle = xlNone
+            .Borders(xlEdgeBottom).LineStyle = xlNone
+            .Borders(xlInsideHorizontal).LineStyle = xlNone
+        End With
+        
+        With .Range("A4:O4")
+            .Borders(xlEdgeTop).LineStyle = xlNone
+            .Borders(xlEdgeBottom).LineStyle = xlNone
+            .Borders(xlInsideHorizontal).LineStyle = xlNone
+        End With
+        
+        ' Ensure data area borders are clean for PDF
+        .Range("A7:O40").Borders.LineStyle = xlContinuous
+        .Range("A7:O40").Borders.Weight = xlThin
+        .Range("A7:O40").Borders.Color = RGB(0, 0, 0)  ' Pure black for PDF
 
-        ' REMOVE ONLY INTERNAL BORDERS FROM ROWS 3 AND 4 - PRESERVE OUTER BORDERS
-        ' Remove internal horizontal and vertical borders but keep left and right outer borders
-        .Range("A3:O3").Borders(xlInsideHorizontal).LineStyle = xlNone
-        .Range("A3:O3").Borders(xlInsideVertical).LineStyle = xlNone
-        .Range("A3:O3").Borders(xlEdgeTop).LineStyle = xlNone
-        .Range("A3:O3").Borders(xlEdgeBottom).LineStyle = xlNone
-
-        .Range("A4:O4").Borders(xlInsideHorizontal).LineStyle = xlNone
-        .Range("A4:O4").Borders(xlInsideVertical).LineStyle = xlNone
-        .Range("A4:O4").Borders(xlEdgeTop).LineStyle = xlNone
-        .Range("A4:O4").Borders(xlEdgeBottom).LineStyle = xlNone
-
-        ' Also remove the bottom borders of rows 2 to eliminate lines between header rows
-        .Range("A2:O2").Borders(xlEdgeBottom).LineStyle = xlNone
-
-        ' Optimize N/A display for PDF (make it less prominent) - UPDATED RANGE FOR TWO-ROW HEADER
+        ' Optimize N/A display for PDF (make it less prominent)
         For Each cell In .Range("I20:N24")
             If cell.Value = "N/A" Then
                 cell.Font.Color = RGB(128, 128, 128)  ' Gray instead of red for PDF
@@ -329,17 +333,17 @@ Public Sub OptimizeForPDFExport(ws As Worksheet)
             End If
         Next cell
 
-        ' Optimize yellow highlighting for PDF - UPDATED RANGE FOR ENHANCED LAYOUT
+        ' Optimize yellow highlighting for PDF
         For Each cell In .Range("A26:J28")  ' Amount in words section
             If cell.Interior.Color = RGB(255, 255, 0) Then  ' Yellow
                 cell.Interior.Color = RGB(255, 255, 200)  ' Lighter yellow for PDF
             End If
         Next cell
 
-        ' Ensure proper font rendering - UPDATED RANGE
+        ' Ensure proper font rendering
         .Range("A1:O40").Font.Name = "Segoe UI"
 
-        ' Set optimal row heights for PDF - UPDATED FOR TWO-ROW HEADER AND ENHANCED LAYOUT
+        ' Set optimal row heights for PDF
         .Rows("17:18").RowHeight = 30  ' Two-row header structure
         .Rows("19:24").RowHeight = 30  ' Item rows
         .Rows("25:40").RowHeight = 25  ' Footer rows
@@ -349,23 +353,32 @@ Public Sub OptimizeForPDFExport(ws As Worksheet)
 End Sub
 
 Public Sub RestoreWorksheetFormatting(ws As Worksheet)
-    ' Restore worksheet formatting after PDF export for normal editing
+    ' Restore worksheet formatting after PDF export - MAINTAIN CUSTOM HORIZONTAL BORDER REMOVAL
     On Error Resume Next
 
     With ws
-        ' Restore all borders for worksheet editing
-        .Range("A1:O40").Borders.LineStyle = xlContinuous
-        .Range("A1:O40").Borders.Weight = xlThin
-        .Range("A1:O40").Borders.Color = RGB(0, 0, 0)
-
-        ' Restore the original header section formatting (rows 3 and 4 should have borders for editing)
-        .Range("A3:O3").Borders.LineStyle = xlContinuous
-        .Range("A3:O3").Borders.Weight = xlThin
-        .Range("A3:O3").Borders.Color = RGB(0, 0, 0)
-
-        .Range("A4:O4").Borders.LineStyle = xlContinuous
-        .Range("A4:O4").Borders.Weight = xlThin
-        .Range("A4:O4").Borders.Color = RGB(0, 0, 0)
+        ' Ensure header rows 3-5 maintain proper borders for Excel editing
+        .Range("A3:O5").Borders.LineStyle = xlContinuous
+        .Range("A3:O5").Borders.Weight = xlMedium
+        .Range("A3:O5").Borders.Color = RGB(0, 0, 0)
+        
+        ' Remove horizontal borders from rows 3 and 4 after restoration
+        With .Range("A3:O3")
+            .Borders(xlEdgeTop).LineStyle = xlNone
+            .Borders(xlEdgeBottom).LineStyle = xlNone
+            .Borders(xlInsideHorizontal).LineStyle = xlNone
+        End With
+        
+        With .Range("A4:O4")
+            .Borders(xlEdgeTop).LineStyle = xlNone
+            .Borders(xlEdgeBottom).LineStyle = xlNone
+            .Borders(xlInsideHorizontal).LineStyle = xlNone
+        End With
+        
+        ' Restore borders for data area
+        .Range("A7:O40").Borders.LineStyle = xlContinuous
+        .Range("A7:O40").Borders.Weight = xlThin
+        .Range("A7:O40").Borders.Color = RGB(0, 0, 0)
 
         ' Restore original yellow highlighting for editing
         .Range("A26").Interior.Color = RGB(255, 255, 0)  ' Terms and Conditions header

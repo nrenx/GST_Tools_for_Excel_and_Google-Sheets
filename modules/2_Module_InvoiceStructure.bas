@@ -93,6 +93,27 @@ Public Sub CreateInvoiceSheet()
             .Borders(xlEdgeLeft).LineStyle = xlContinuous
             .Borders(xlEdgeRight).LineStyle = xlContinuous
         End With
+        
+        ' SPECIFIC MODIFICATION: Remove horizontal borders from rows 3 and 4 while keeping vertical borders
+        With .Range("A3:O3")
+            .Borders(xlEdgeTop).LineStyle = xlNone
+            .Borders(xlEdgeBottom).LineStyle = xlNone
+            .Borders(xlInsideHorizontal).LineStyle = xlNone
+            ' Keep vertical borders
+            .Borders(xlInsideVertical).LineStyle = xlContinuous
+            .Borders(xlEdgeLeft).LineStyle = xlContinuous
+            .Borders(xlEdgeRight).LineStyle = xlContinuous
+        End With
+        
+        With .Range("A4:O4")
+            .Borders(xlEdgeTop).LineStyle = xlNone
+            .Borders(xlEdgeBottom).LineStyle = xlNone
+            .Borders(xlInsideHorizontal).LineStyle = xlNone
+            ' Keep vertical borders
+            .Borders(xlInsideVertical).LineStyle = xlContinuous
+            .Borders(xlEdgeLeft).LineStyle = xlContinuous
+            .Borders(xlEdgeRight).LineStyle = xlContinuous
+        End With
         On Error GoTo 0
 
         ' Row 6: TAX-INVOICE header - PROPERLY PROPORTIONED FOR OPTIMIZED LAYOUT
@@ -377,6 +398,7 @@ Public Sub CreateInvoiceSheet()
         .Range("C15:H15").Merge
         .Range("C15").Value = ""
         .Range("C15").HorizontalAlignment = xlLeft
+        .Range("C15").NumberFormat = "@"  ' Format as text to prevent formula interpretation
 
         .Range("I15:J15").Merge
         .Range("I15").Value = "State:"
@@ -387,6 +409,7 @@ Public Sub CreateInvoiceSheet()
         .Range("K15:O15").Merge
         .Range("K15").Value = ""
         .Range("K15").HorizontalAlignment = xlLeft
+        .Range("K15").NumberFormat = "@"  ' Format as text to prevent formula interpretation
 
         ' Row 16: State Code fields - OPTIMIZED TO COLUMN O
         .Range("A16:B16").Merge
@@ -940,6 +963,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A1:O40").Borders.Color = RGB(0, 0, 0)  ' Pure black for PDF
 
         ' Apply outer border around entire invoice
+        ' FINAL STEP: Apply consistent border styling to entire invoice area
         With .Range("A1:O40")
             .Borders(xlEdgeLeft).LineStyle = xlContinuous
             .Borders(xlEdgeLeft).Weight = xlMedium
@@ -955,29 +979,21 @@ Public Sub CreateInvoiceSheet()
             .Borders(xlEdgeBottom).Color = RGB(0, 0, 0)
         End With
 
-        ' FINAL STEP: Remove ALL borders from rows 2, 3 and 4 for seamless header appearance - ENHANCED
-        ' Complete border removal to prevent black line issues in PDF export
-        On Error Resume Next
-        .Range("A2:O2").Borders(xlInsideHorizontal).LineStyle = xlNone
-        .Range("A2:O2").Borders(xlInsideVertical).LineStyle = xlNone
-        .Range("A2:O2").Borders(xlEdgeTop).LineStyle = xlNone
-        .Range("A2:O2").Borders(xlEdgeBottom).LineStyle = xlNone
-        .Range("A2:O2").Borders(xlEdgeLeft).LineStyle = xlNone
-        .Range("A2:O2").Borders(xlEdgeRight).LineStyle = xlNone
+        ' REAPPLY SPECIFIC MODIFICATIONS: Remove horizontal borders from rows 3 and 4
+        With .Range("A3:O3")
+            .Borders(xlEdgeTop).LineStyle = xlNone
+            .Borders(xlEdgeBottom).LineStyle = xlNone
+            .Borders(xlInsideHorizontal).LineStyle = xlNone
+        End With
+        
+        With .Range("A4:O4")
+            .Borders(xlEdgeTop).LineStyle = xlNone
+            .Borders(xlEdgeBottom).LineStyle = xlNone
+            .Borders(xlInsideHorizontal).LineStyle = xlNone
+        End With
 
-        .Range("A3:O3").Borders(xlInsideHorizontal).LineStyle = xlNone
-        .Range("A3:O3").Borders(xlInsideVertical).LineStyle = xlNone
-        .Range("A3:O3").Borders(xlEdgeTop).LineStyle = xlNone
-        .Range("A3:O3").Borders(xlEdgeBottom).LineStyle = xlNone
-        .Range("A3:O3").Borders(xlEdgeLeft).LineStyle = xlNone
-        .Range("A3:O3").Borders(xlEdgeRight).LineStyle = xlNone
-
-        .Range("A4:O4").Borders(xlInsideHorizontal).LineStyle = xlNone
-        .Range("A4:O4").Borders(xlInsideVertical).LineStyle = xlNone
-        .Range("A4:O4").Borders(xlEdgeTop).LineStyle = xlNone
-        .Range("A4:O4").Borders(xlEdgeBottom).LineStyle = xlNone
-        .Range("A4:O4").Borders(xlEdgeLeft).LineStyle = xlNone
-        .Range("A4:O4").Borders(xlEdgeRight).LineStyle = xlNone
+        ' Header rows maintain their borders for professional appearance
+        ' CreateHeaderRow function already sets proper borders for rows 3, 4, and 5
         On Error GoTo 0
     End With
 
@@ -998,6 +1014,12 @@ Public Sub CreateInvoiceSheet()
 
     ' Setup data validation dropdowns (including Sale Type dropdown)
     Call SetupDataValidation(ws)
+
+    ' Ensure state fields are formatted as text to prevent formula interpretation
+    Call EnsureStateFieldsTextFormat(ws)
+
+    ' Apply custom border formatting to remove horizontal borders from rows 3 and 4
+    Call ApplyCustomBorderFormatting(ws)
 
     ' Restore Excel alerts
     Application.DisplayAlerts = True

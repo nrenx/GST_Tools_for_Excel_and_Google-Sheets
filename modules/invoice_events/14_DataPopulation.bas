@@ -100,6 +100,7 @@ Public Sub SetupDataValidation(ws As Worksheet)
 
         ' State dropdown for Receiver (Row 15, Column C15:H15)
         .Range("C15").Validation.Delete
+        .Range("C15").NumberFormat = "@"  ' Format as text to prevent formula interpretation
         .Range("C15").Validation.Add Type:=xlValidateList, _
             AlertStyle:=xlValidAlertInformation, _
             Formula1:="=warehouse!$J$2:$J$37"
@@ -109,6 +110,7 @@ Public Sub SetupDataValidation(ws As Worksheet)
 
         ' State dropdown for Consignee (Row 15, Column K15:O15)
         .Range("K15").Validation.Delete
+        .Range("K15").NumberFormat = "@"  ' Format as text to prevent formula interpretation
         .Range("K15").Validation.Add Type:=xlValidateList, _
             AlertStyle:=xlValidAlertInformation, _
             Formula1:="=warehouse!$J$2:$J$37"
