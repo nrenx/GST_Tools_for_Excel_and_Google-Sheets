@@ -991,6 +991,9 @@ Public Sub CreateInvoiceSheet()
     ' Setup dynamic tax display based on default sale type
     Call SetupDynamicTaxDisplay(ws)
 
+    ' Setup data validation dropdowns (including Sale Type dropdown)
+    Call SetupDataValidation(ws)
+
     ' Restore Excel alerts
     Application.DisplayAlerts = True
 
@@ -1095,12 +1098,16 @@ ErrorHandler:
 End Sub
 
 Private Sub SetupWorksheetChangeEvents(ws As Worksheet)
-    ' Set up change monitoring for customer dropdown auto-population
-    ' Since we're in a module, we'll use a different approach
+    ' Set up change monitoring for customer dropdown auto-population and Sale Type handling
+    ' Since we're in a module, we'll ensure the worksheet change events are enabled
     On Error Resume Next
 
-    ' Note: Proper header "Details of Receiver (Billed to)" is created by CreateHeaderRow function
-    ' No additional placeholder text needed - header is already properly formatted
+    ' Enable automatic calculation to ensure formulas update properly
+    Application.Calculation = xlCalculationAutomatic
+    
+    ' Note: The actual worksheet change events for Sale Type are handled by 
+    ' the HandleSaleTypeChange function in Module_InvoiceEvents
+    ' This function can be called manually when the Sale Type changes
 
     On Error GoTo 0
 End Sub
@@ -1261,112 +1268,120 @@ Public Sub SetupDynamicTaxDisplay(ws As Worksheet)
 End Sub
 
 Public Sub UpdateTaxFieldsDisplay(ws As Worksheet, saleType As String)
-    ' Update tax fields display based on sale type selection - ENHANCED STRUCTURE (6 PRODUCT ROWS)
+    ' Update tax fields display based on sale type selection - FIXED COLUMN MAPPING
     Dim i As Long
     On Error Resume Next
 
     With ws
         If saleType = "Interstate" Then
-            ' Clear all tax fields first for all 6 product rows - UPDATED ROW RANGE
+            ' INTERSTATE: Only IGST applies, CGST and SGST are not applicable
+            
+            ' Clear all tax fields first for all 6 product rows (19-24)
             .Range("I19:N24").ClearContents
-
-            ' Set up formulas for IGST fields (active for Interstate) - UPDATED COLUMN ORDER: IGST in M,N
+            
+            ' Restore proper headers for active IGST columns (M,N)
+            .Range("M17").Value = "IGST Rate (%)"
+            .Range("M17").Font.Color = RGB(26, 26, 26)  ' Black color
+            .Range("M17").Font.Bold = True
+            .Range("M17").HorizontalAlignment = xlCenter
+            
+            .Range("N17").Value = "IGST Amount (Rs.)"
+            .Range("N17").Font.Color = RGB(26, 26, 26)  ' Black color
+            .Range("N17").Font.Bold = True
+            .Range("N17").HorizontalAlignment = xlCenter
+            
+            ' Set "Not Apply" messages in red for CGST and SGST headers
+            .Range("I17").Value = "CGST Not Apply"
+            .Range("I17").Font.Color = RGB(220, 20, 60)  ' Red color
+            .Range("I17").Font.Bold = True
+            .Range("I17").HorizontalAlignment = xlCenter
+            
+            .Range("J17").Value = "CGST Not Apply"
+            .Range("J17").Font.Color = RGB(220, 20, 60)  ' Red color
+            .Range("J17").Font.Bold = True
+            .Range("J17").HorizontalAlignment = xlCenter
+            
+            .Range("K17").Value = "SGST Not Apply"
+            .Range("K17").Font.Color = RGB(220, 20, 60)  ' Red color
+            .Range("K17").Font.Bold = True
+            .Range("K17").HorizontalAlignment = xlCenter
+            
+            .Range("L17").Value = "SGST Not Apply"
+            .Range("L17").Font.Color = RGB(220, 20, 60)  ' Red color
+            .Range("L17").Font.Bold = True
+            .Range("L17").HorizontalAlignment = xlCenter
+            
+            ' Clear content completely from CGST columns (I19-I24, J19-J24)
+            .Range("I19:I24").ClearContents
+            .Range("J19:J24").ClearContents
+            
+            ' Clear content completely from SGST columns (K19-K24, L19-L24)
+            .Range("K19:K24").ClearContents
+            .Range("L19:L24").ClearContents
+            
+            ' Set up active IGST formulas (M,N columns)
             For i = 19 To 24
                 .Range("M" & i).Formula = "=IF(AND(N7=""Interstate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ", warehouse!A:E, 5, FALSE),""""),"""")"
                 .Range("N" & i).Formula = "=IF(AND(N7=""Interstate"",H" & i & "<>"""",M" & i & "<>""""),H" & i & "*M" & i & "/100,"""")"
             Next i
 
-            ' CGST/SGST show "N/A" only for rows with product data (inactive for Interstate)
-            For i = 19 To 24
-                ' Only show N/A if there's actually a product in this row
-                If .Range("C" & i).Value <> "" Then
-                    ' CGST columns (I,J) show N/A for Interstate
-                    .Range("I" & i).Value = "N/A"
-                    .Range("I" & i).Font.Color = RGB(220, 20, 60)  ' Red color
-                    .Range("I" & i).Font.Bold = True
-                    .Range("I" & i).Font.Size = 9
-                    .Range("I" & i).HorizontalAlignment = xlCenter
-                    .Range("I" & i).VerticalAlignment = xlCenter
-
-                    .Range("J" & i).Value = "N/A"
-                    .Range("J" & i).Font.Color = RGB(220, 20, 60)  ' Red color
-                    .Range("J" & i).Font.Bold = True
-                    .Range("J" & i).Font.Size = 9
-                    .Range("J" & i).HorizontalAlignment = xlCenter
-                    .Range("J" & i).VerticalAlignment = xlCenter
-
-                    ' SGST columns (K,L) show N/A for Interstate
-                    .Range("K" & i).Value = "N/A"
-                    .Range("K" & i).Font.Color = RGB(220, 20, 60)  ' Red color
-                    .Range("K" & i).Font.Bold = True
-                    .Range("K" & i).Font.Size = 9
-                    .Range("K" & i).HorizontalAlignment = xlCenter
-                    .Range("K" & i).VerticalAlignment = xlCenter
-
-                    .Range("L" & i).Value = "N/A"
-                    .Range("L" & i).Font.Color = RGB(220, 20, 60)  ' Red color
-                    .Range("L" & i).Font.Bold = True
-                    .Range("L" & i).Font.Size = 9
-                    .Range("L" & i).HorizontalAlignment = xlCenter
-                    .Range("L" & i).VerticalAlignment = xlCenter
-                Else
-                    ' Clear the cells if no product data
-                    .Range("I" & i & ":L" & i).ClearContents
-                End If
-            Next i
-
         ElseIf saleType = "Intrastate" Then
-            ' Clear all tax fields first for all 6 product rows - UPDATED ROW RANGE
+            ' INTRASTATE: Only CGST and SGST apply, IGST is not applicable
+            
+            ' Clear all tax fields first for all 6 product rows (19-24)
             .Range("I19:N24").ClearContents
-
-            ' Set up formulas for CGST/SGST fields (active for Intrastate) - UPDATED COLUMN ORDER
+            
+            ' Restore proper headers for active CGST columns (I,J)
+            .Range("I17").Value = "CGST Rate (%)"
+            .Range("I17").Font.Color = RGB(26, 26, 26)  ' Black color
+            .Range("I17").Font.Bold = True
+            .Range("I17").HorizontalAlignment = xlCenter
+            
+            .Range("J17").Value = "CGST Amount (Rs.)"
+            .Range("J17").Font.Color = RGB(26, 26, 26)  ' Black color
+            .Range("J17").Font.Bold = True
+            .Range("J17").HorizontalAlignment = xlCenter
+            
+            ' Restore proper headers for active SGST columns (K,L)
+            .Range("K17").Value = "SGST Rate (%)"
+            .Range("K17").Font.Color = RGB(26, 26, 26)  ' Black color
+            .Range("K17").Font.Bold = True
+            .Range("K17").HorizontalAlignment = xlCenter
+            
+            .Range("L17").Value = "SGST Amount (Rs.)"
+            .Range("L17").Font.Color = RGB(26, 26, 26)  ' Black color
+            .Range("L17").Font.Bold = True
+            .Range("L17").HorizontalAlignment = xlCenter
+            
+            ' Set "Not Apply" messages in red for IGST headers
+            .Range("M17").Value = "IGST Not Apply"
+            .Range("M17").Font.Color = RGB(220, 20, 60)  ' Red color
+            .Range("M17").Font.Bold = True
+            .Range("M17").HorizontalAlignment = xlCenter
+            
+            .Range("N17").Value = "IGST Not Apply"
+            .Range("N17").Font.Color = RGB(220, 20, 60)  ' Red color
+            .Range("N17").Font.Bold = True
+            .Range("N17").HorizontalAlignment = xlCenter
+            
+            ' Clear content completely from IGST columns (M19-M24, N19-N24)
+            .Range("M19:M24").ClearContents
+            .Range("N19:N24").ClearContents
+            
+            ' Set up active CGST formulas (I,J columns) - half of total GST rate
             For i = 19 To 24
-                ' CGST formulas (I,J)
                 .Range("I" & i).Formula = "=IF(AND(N7=""Intrastate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ", warehouse!A:E, 5, FALSE)/2,""""),"""")"
                 .Range("J" & i).Formula = "=IF(AND(N7=""Intrastate"",H" & i & "<>"""",I" & i & "<>""""),H" & i & "*I" & i & "/100,"""")"
-
-                ' SGST formulas (K,L)
+            Next i
+            
+            ' Set up active SGST formulas (K,L columns) - half of total GST rate
+            For i = 19 To 24
                 .Range("K" & i).Formula = "=IF(AND(N7=""Intrastate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ", warehouse!A:E, 5, FALSE)/2,""""),"""")"
                 .Range("L" & i).Formula = "=IF(AND(N7=""Intrastate"",H" & i & "<>"""",K" & i & "<>""""),H" & i & "*K" & i & "/100,"""")"
             Next i
-
-            ' IGST shows "N/A" only for rows with product data (inactive for Intrastate) - UPDATED COLUMN ORDER: IGST in M,N
-            For i = 19 To 24
-                ' Only show N/A if there's actually a product in this row
-                If .Range("C" & i).Value <> "" Then
-                    .Range("M" & i).Value = "N/A"
-                    .Range("M" & i).Font.Color = RGB(220, 20, 60)  ' Red color
-                    .Range("M" & i).Font.Bold = True
-                    .Range("M" & i).Font.Size = 9
-                    .Range("M" & i).HorizontalAlignment = xlCenter
-                    .Range("M" & i).VerticalAlignment = xlCenter
-
-                    .Range("N" & i).Value = "N/A"
-                    .Range("N" & i).Font.Color = RGB(220, 20, 60)  ' Red color
-                    .Range("N" & i).Font.Bold = True
-                    .Range("N" & i).Font.Size = 9
-                    .Range("N" & i).HorizontalAlignment = xlCenter
-                    .Range("N" & i).VerticalAlignment = xlCenter
-                Else
-                    ' Clear the cells if no product data
-                    .Range("M" & i & ":N" & i).ClearContents
-                End If
-            Next i
-
-            ' Reset formatting for active CGST/SGST fields
-            .Range("K18:N23").Font.Color = RGB(26, 26, 26)  ' Standard black
-            .Range("K18:N23").Font.Bold = True
-            .Range("K18:N23").Font.Size = 10
-            .Range("K18:N23").HorizontalAlignment = xlRight
-            .Range("K18:N23").VerticalAlignment = xlCenter
         End If
-
-        ' Set up Total Amount formulas for all rows
-        For i = 18 To 23
-            .Range("O" & i).Formula = "=IF(H" & i & "<>"""",H" & i & "+IF(J" & i & "<>"""",J" & i & ",0)+IF(L" & i & "<>"""",L" & i & ",0)+IF(N" & i & "<>"""",N" & i & ",0),"""")"
-        Next i
-
-        ' Recalculate the worksheet
+        
+        ' Force recalculation
         .Calculate
     End With
 

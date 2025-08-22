@@ -473,11 +473,6 @@ Public Sub PrintAsPDFButton()
     Dim totalSheets As Integer
     totalSheets = ThisWorkbook.Sheets.Count
 
-    ' Debug information (can be removed in production)
-    Debug.Print "Total sheets in workbook: " & totalSheets
-    Debug.Print "Original sheet name: " & originalWs.Name
-    Debug.Print "Duplicate sheet name: " & duplicateWs.Name
-
     ' macOS-Compatible PDF Export Method
     On Error GoTo PDFExportError
 
@@ -786,7 +781,7 @@ Public Sub SetupDataValidation(ws As Worksheet)
         .Range("F7").Validation.InCellDropdown = True
         .Range("F7").Validation.ShowError = False
 
-        ' State dropdown for Receiver (Row 15, Column C15:F15)
+        ' State dropdown for Receiver (Row 15, Column C15:H15)
         .Range("C15").Validation.Delete
         .Range("C15").Validation.Add Type:=xlValidateList, _
             AlertStyle:=xlValidAlertInformation, _
@@ -795,32 +790,50 @@ Public Sub SetupDataValidation(ws As Worksheet)
         .Range("C15").Validation.InCellDropdown = True
         .Range("C15").Validation.ShowError = False
 
-        ' State dropdown for Consignee (Row 15, Column I15:K15)
-        .Range("I15").Validation.Delete
-        .Range("I15").Validation.Add Type:=xlValidateList, _
+        ' State dropdown for Consignee (Row 15, Column K15:O15)
+        .Range("K15").Validation.Delete
+        .Range("K15").Validation.Add Type:=xlValidateList, _
             AlertStyle:=xlValidAlertInformation, _
             Formula1:="=warehouse!$J$2:$J$37"
-        .Range("I15").Validation.IgnoreBlank = True
-        .Range("I15").Validation.InCellDropdown = True
-        .Range("I15").Validation.ShowError = False
+        .Range("K15").Validation.IgnoreBlank = True
+        .Range("K15").Validation.InCellDropdown = True
+        .Range("K15").Validation.ShowError = False
 
-        ' GSTIN dropdown for Receiver (Row 14, Column C14)
+        ' Customer Name dropdown for Receiver (Row 12, Column C12:H12)
+        .Range("C12").Validation.Delete
+        .Range("C12").Validation.Add Type:=xlValidateList, _
+            AlertStyle:=xlValidAlertInformation, _
+            Formula1:="=warehouse!$M$2:$M$50"
+        .Range("C12").Validation.IgnoreBlank = True
+        .Range("C12").Validation.InCellDropdown = True
+        .Range("C12").Validation.ShowError = False
+
+        ' Customer Name dropdown for Consignee (Row 12, Column K12:O12)
+        .Range("K12").Validation.Delete
+        .Range("K12").Validation.Add Type:=xlValidateList, _
+            AlertStyle:=xlValidAlertInformation, _
+            Formula1:="=warehouse!$M$2:$M$50"
+        .Range("K12").Validation.IgnoreBlank = True
+        .Range("K12").Validation.InCellDropdown = True
+        .Range("K12").Validation.ShowError = False
+
+        ' GSTIN dropdown for Receiver (Row 14, Column C14:H14)
         .Range("C14").Validation.Delete
         .Range("C14").Validation.Add Type:=xlValidateList, _
             AlertStyle:=xlValidAlertInformation, _
-            Formula1:="=warehouse!$X$2:$X$2"
+            Formula1:="=warehouse!$X$2:$X$50"
         .Range("C14").Validation.IgnoreBlank = True
         .Range("C14").Validation.InCellDropdown = True
         .Range("C14").Validation.ShowError = False
 
-        ' GSTIN dropdown for Consignee (Row 14, Column I14)
-        .Range("I14").Validation.Delete
-        .Range("I14").Validation.Add Type:=xlValidateList, _
+        ' GSTIN dropdown for Consignee (Row 14, Column K14:O14)
+        .Range("K14").Validation.Delete
+        .Range("K14").Validation.Add Type:=xlValidateList, _
             AlertStyle:=xlValidAlertInformation, _
-            Formula1:="=warehouse!$X$2:$X$2"
-        .Range("I14").Validation.IgnoreBlank = True
-        .Range("I14").Validation.InCellDropdown = True
-        .Range("I14").Validation.ShowError = False
+            Formula1:="=warehouse!$X$2:$X$50"
+        .Range("K14").Validation.IgnoreBlank = True
+        .Range("K14").Validation.InCellDropdown = True
+        .Range("K14").Validation.ShowError = False
         
         ' Description dropdown for item (Row 18, Column B)
         .Range("B18").Validation.Delete
@@ -830,6 +843,15 @@ Public Sub SetupDataValidation(ws As Worksheet)
         .Range("B18").Validation.IgnoreBlank = True
         .Range("B18").Validation.InCellDropdown = True
         .Range("B18").Validation.ShowError = False
+
+        ' Sale Type dropdown with manual text entry capability (N7:O7 merged)
+        .Range("N7").Validation.Delete
+        .Range("N7").Validation.Add Type:=xlValidateList, _
+            AlertStyle:=xlValidAlertInformation, _
+            Formula1:="=warehouse!$AA$2:$AA$3"
+        .Range("N7").Validation.IgnoreBlank = True
+        .Range("N7").Validation.InCellDropdown = True
+        .Range("N7").Validation.ShowError = False
     End With
 
     On Error GoTo 0
@@ -858,6 +880,7 @@ Public Sub CreateInvoiceButtons(ws As Worksheet)
     Call CreateButtonAtCell(ws, "R7", "Save Customer to Warehouse", "AddCustomerToWarehouseButton")
     Call CreateButtonAtCell(ws, "R9", "Save Invoice Record", "SaveInvoiceButton")
     Call CreateButtonAtCell(ws, "R11", "New Invoice", "NewInvoiceButton")
+    Call CreateButtonAtCell(ws, "R13", "🔄 Refresh All", "RefreshButton")
     ' REMOVED: "Add New Item Row" button - functionality no longer needed
     Call CreateButtonAtCell(ws, "R19", "Export as PDF", "PrintAsPDFButton")
     Call CreateButtonAtCell(ws, "R21", "Print Invoice", "PrintButton")
@@ -984,6 +1007,101 @@ Public Sub HandleSaleTypeChange(ws As Worksheet, changedRange As Range)
     End If
 
     On Error GoTo 0
+End Sub
+
+Public Sub RefreshSaleTypeDisplay()
+    ' Manual function to refresh Sale Type display - users can run this after changing Sale Type
+    Dim ws As Worksheet
+    Dim saleType As String
+    On Error GoTo ErrorHandler
+    
+    Set ws = ThisWorkbook.Worksheets("GST_Tax_Invoice_for_interstate")
+    saleType = Trim(ws.Range("N7").Value)
+    
+    If saleType = "Interstate" Or saleType = "Intrastate" Then
+        Call UpdateTaxFieldsDisplay(ws, saleType)
+        ws.Calculate
+        MsgBox "Tax fields updated for " & saleType & " sale type!", vbInformation, "Sale Type Updated"
+    Else
+        MsgBox "Please select either 'Interstate' or 'Intrastate' in cell N7.", vbExclamation, "Invalid Sale Type"
+    End If
+    
+    Exit Sub
+    
+ErrorHandler:
+    MsgBox "Error updating sale type: " & Err.Description, vbCritical, "Error"
+End Sub
+
+Public Sub RefreshButton()
+    ' Comprehensive refresh button function that handles all refresh operations
+    Dim ws As Worksheet
+    Dim saleType As String
+    Dim refreshCount As Integer
+    Dim refreshResults As String
+    On Error GoTo ErrorHandler
+    
+    Application.ScreenUpdating = False
+    refreshCount = 0
+    refreshResults = "REFRESH OPERATIONS COMPLETED:" & vbCrLf & vbCrLf
+    
+    Set ws = ThisWorkbook.Worksheets("GST_Tax_Invoice_for_interstate")
+    
+    ' 1. Refresh Sale Type Display
+    saleType = Trim(ws.Range("N7").Value)
+    If saleType = "Interstate" Or saleType = "Intrastate" Then
+        Call UpdateTaxFieldsDisplay(ws, saleType)
+        refreshResults = refreshResults & "✅ Sale Type (" & saleType & ") tax fields updated" & vbCrLf
+        refreshCount = refreshCount + 1
+    Else
+        refreshResults = refreshResults & "⚠️ Sale Type: Please select Interstate or Intrastate in N7" & vbCrLf
+    End If
+    
+    ' 2. Refresh Tax Calculations
+    Call UpdateMultiItemTaxCalculations(ws)
+    refreshResults = refreshResults & "✅ Tax calculations refreshed" & vbCrLf
+    refreshCount = refreshCount + 1
+    
+    ' 3. Refresh Data Validation Dropdowns
+    Call SetupDataValidation(ws)
+    refreshResults = refreshResults & "✅ Data validation dropdowns refreshed" & vbCrLf
+    refreshCount = refreshCount + 1
+    
+    ' 4. Refresh Customer Auto-Population (if customer selected)
+    Dim customerName As String
+    customerName = Trim(ws.Range("C12").Value)
+    If customerName <> "" Then
+        Call SetupCustomerDropdown(ws)
+        refreshResults = refreshResults & "✅ Customer dropdown refreshed" & vbCrLf
+        refreshCount = refreshCount + 1
+    End If
+    
+    ' 5. Refresh HSN Code Dropdowns
+    Call SetupHSNDropdown(ws)
+    refreshResults = refreshResults & "✅ HSN code dropdowns refreshed" & vbCrLf
+    refreshCount = refreshCount + 1
+    
+    ' 6. Force worksheet recalculation
+    ws.Calculate
+    Application.Calculate
+    refreshResults = refreshResults & "✅ Worksheet calculations updated" & vbCrLf
+    refreshCount = refreshCount + 1
+    
+    ' 7. Clean empty product rows
+    Call CleanEmptyProductRows(ws)
+    refreshResults = refreshResults & "✅ Empty product rows cleaned" & vbCrLf
+    refreshCount = refreshCount + 1
+    
+    Application.ScreenUpdating = True
+    
+    refreshResults = refreshResults & vbCrLf & "Total operations: " & refreshCount & vbCrLf & vbCrLf
+    refreshResults = refreshResults & "🎉 All systems refreshed successfully!"
+    
+    MsgBox refreshResults, vbInformation, "System Refresh Complete"
+    Exit Sub
+    
+ErrorHandler:
+    Application.ScreenUpdating = True
+    MsgBox "Error during refresh: " & Err.Description, vbCritical, "Refresh Error"
 End Sub
 
 ' ===== HELPER FUNCTIONS =====

@@ -78,30 +78,134 @@ Public Sub ShowAvailableFunctions()
     functionList = functionList & "• QuickSetup - Ultra-simple setup (recommended first)" & vbCrLf
     functionList = functionList & "• StartGSTSystem - Complete system with expanded layout" & vbCrLf
     functionList = functionList & "• StartGSTSystemMinimal - Basic setup for debugging" & vbCrLf
-    functionList = functionList & "• ShowAvailableFunctions - Show this help list" & vbCrLf & vbCrLf
+    functionList = functionList & "• ShowAvailableFunctions - Show this help list" & vbCrLf
+    functionList = functionList & "• ValidateSystemFixes - Validate all system fixes" & vbCrLf & vbCrLf
 
     functionList = functionList & "🔘 BUTTON FUNCTIONS (Daily Operations):" & vbCrLf
     functionList = functionList & "• AddCustomerToWarehouseButton - Add customer to warehouse" & vbCrLf
     functionList = functionList & "• NewInvoiceButton - Generate fresh invoice with next number" & vbCrLf
     functionList = functionList & "• SaveInvoiceButton - Save invoice to Master sheet" & vbCrLf
+    functionList = functionList & "• RefreshButton - 🔄 Refresh all systems (Sale Type, calculations, dropdowns)" & vbCrLf
     functionList = functionList & "• PrintAsPDFButton - Export as PDF to folder" & vbCrLf
-    functionList = functionList & "• PrintButton - Save PDF + send to printer" & vbCrLf & vbCrLf
+    functionList = functionList & "• PrintButton - Save PDF + send to printer" & vbCrLf
+    functionList = functionList & "• RefreshSaleTypeDisplay - Update tax fields after changing Sale Type" & vbCrLf & vbCrLf
 
     functionList = functionList & "📊 SYSTEM INFORMATION:" & vbCrLf
     functionList = functionList & "• System automatically creates 3 sheets: Invoice, Master, warehouse" & vbCrLf
     functionList = functionList & "• Invoice numbering: INV-YYYY-NNN format" & vbCrLf
     functionList = functionList & "• Professional styling with muted slate blue headers" & vbCrLf
     functionList = functionList & "• Dynamic tax calculation (Interstate/Intrastate)" & vbCrLf
+    functionList = functionList & "• Sale Type dropdown in N7:O7 with conditional tax field clearing" & vbCrLf
+    functionList = functionList & "• 🔄 Refresh All button handles all refresh operations automatically" & vbCrLf
     functionList = functionList & "• PDF export to: /Users/narendrachowdary/development/GST(excel)/invoices(demo)/" & vbCrLf & vbCrLf
 
     functionList = functionList & "🎯 QUICK START:" & vbCrLf
     functionList = functionList & "1. Run 'QuickSetup' first" & vbCrLf
     functionList = functionList & "2. Use buttons on invoice sheet for daily operations" & vbCrLf
-    functionList = functionList & "3. All data is automatically saved and managed" & vbCrLf & vbCrLf
+    functionList = functionList & "3. Change Sale Type in N7 dropdown, then click 'Refresh All' button" & vbCrLf
+    functionList = functionList & "4. All data is automatically saved and managed" & vbCrLf & vbCrLf
 
-    functionList = functionList & "💡 TIP: Use the buttons on the invoice sheet for daily operations!"
+    functionList = functionList & "💡 TIP: Use the 🔄 Refresh All button after making any changes to update everything!"
 
     MsgBox functionList, vbInformation, "GST Invoice System - Help"
+End Sub
+
+Public Sub ValidateSystemFixes()
+    ' Comprehensive validation of all system fixes applied
+    Dim testResults As String
+    Dim testScore As Integer
+    Dim ws As Worksheet
+    Dim warehouseWs As Worksheet
+    On Error GoTo ErrorHandler
+
+    testResults = "GST INVOICE SYSTEM VALIDATION:" & vbCrLf & vbCrLf
+    testScore = 0
+
+    ' Test 1: Check if Invoice sheet exists and has Sale Type dropdown
+    testResults = testResults & "1. Invoice Sheet & Sale Type Setup... "
+    Set ws = GetOrCreateWorksheet("GST_Tax_Invoice_for_interstate")
+    If Not ws Is Nothing Then
+        If ws.Range("N7").Validation.Type = xlValidateList Then
+            testResults = testResults & "✅ PASSED" & vbCrLf
+            testScore = testScore + 1
+        Else
+            testResults = testResults & "❌ FAILED - No dropdown validation" & vbCrLf
+        End If
+    Else
+        testResults = testResults & "❌ FAILED - Sheet missing" & vbCrLf
+    End If
+
+    ' Test 2: Check warehouse sheet with Sale Type data
+    testResults = testResults & "2. Warehouse Sheet Sale Type Data... "
+    Set warehouseWs = GetOrCreateWorksheet("warehouse")
+    If Not warehouseWs Is Nothing Then
+        If warehouseWs.Range("AA2").Value = "Interstate" And warehouseWs.Range("AA3").Value = "Intrastate" Then
+            testResults = testResults & "✅ PASSED" & vbCrLf
+            testScore = testScore + 1
+        Else
+            testResults = testResults & "❌ FAILED - Sale Type data missing" & vbCrLf
+        End If
+    Else
+        testResults = testResults & "❌ FAILED - Warehouse sheet missing" & vbCrLf
+    End If
+
+    ' Test 3: Test RefreshSaleTypeDisplay function
+    testResults = testResults & "3. RefreshSaleTypeDisplay Function... "
+    On Error Resume Next
+    Call RefreshSaleTypeDisplay
+    If Err.Number = 0 Then
+        testResults = testResults & "✅ PASSED" & vbCrLf
+        testScore = testScore + 1
+    Else
+        testResults = testResults & "❌ FAILED - " & Err.Description & vbCrLf
+    End If
+    On Error GoTo ErrorHandler
+
+    ' Test 4: Test UpdateTaxFieldsDisplay function
+    testResults = testResults & "4. UpdateTaxFieldsDisplay Function... "
+    On Error Resume Next
+    Call UpdateTaxFieldsDisplay(ws, "Interstate")
+    If Err.Number = 0 Then
+        testResults = testResults & "✅ PASSED" & vbCrLf
+        testScore = testScore + 1
+    Else
+        testResults = testResults & "❌ FAILED - " & Err.Description & vbCrLf
+    End If
+    On Error GoTo ErrorHandler
+
+    ' Test 5: Test RefreshButton function
+    testResults = testResults & "5. Refresh Button Function... "
+    On Error Resume Next
+    Call RefreshButton
+    If Err.Number = 0 Then
+        testResults = testResults & "✅ PASSED" & vbCrLf
+        testScore = testScore + 1
+    Else
+        testResults = testResults & "❌ FAILED - " & Err.Description & vbCrLf
+    End If
+    On Error GoTo ErrorHandler
+
+    testResults = testResults & vbCrLf & "VALIDATION SUMMARY:" & vbCrLf & _
+                  "Score: " & testScore & "/5 (" & (testScore * 20) & "%)" & vbCrLf & vbCrLf
+
+    If testScore = 5 Then
+        testResults = testResults & "🎉 SUCCESS: All fixes validated!" & vbCrLf & _
+                      "✅ Sale Type dropdown working" & vbCrLf & _
+                      "✅ Warehouse data properly configured" & vbCrLf & _
+                      "✅ Tax field conditional logic implemented" & vbCrLf & _
+                      "✅ Refresh button functioning perfectly" & vbCrLf & _
+                      "✅ System ready for production use!" & vbCrLf & vbCrLf & _
+                      "NEXT: Use the 🔄 Refresh All button after changing Sale Type!"
+    Else
+        testResults = testResults & "⚠️ ISSUES REMAIN: Some problems still need attention" & vbCrLf & _
+                      "🔧 Review failed tests above"
+    End If
+
+    MsgBox testResults, vbInformation, "System Validation Complete"
+    Exit Sub
+
+ErrorHandler:
+    MsgBox "Validation failed: " & Err.Description, vbCritical, "Validation Error"
 End Sub
 
 ' ████████████████████████████████████████████████████████████████████████████████

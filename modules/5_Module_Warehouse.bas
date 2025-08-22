@@ -235,18 +235,6 @@ Public Sub SetupCustomerDropdown(ws As Worksheet)
         .Range("C10").Interior.Color = RGB(245, 245, 245)  ' Light grey background
         .Range("C10").Font.Color = RGB(26, 26, 26)  ' Dark text
         .Range("C10").HorizontalAlignment = xlLeft
-
-        ' Sale Type dropdown with manual text entry capability (N7)
-        .Range("N7").Validation.Delete
-        .Range("N7").Validation.Add Type:=xlValidateList, _
-            AlertStyle:=xlValidAlertInformation, _
-            Formula1:="=warehouse!$AA$2:$AA$3"  ' Sale Type list
-        .Range("N7").Validation.IgnoreBlank = True
-        .Range("N7").Validation.InCellDropdown = True
-        .Range("N7").Validation.ShowError = False  ' Allow manual text entry
-        .Range("N7").Font.Bold = True
-        .Range("N7").Font.Color = RGB(220, 20, 60)  ' Red color for user input
-        .Range("N7").HorizontalAlignment = xlCenter
     End With
 
     On Error GoTo 0
