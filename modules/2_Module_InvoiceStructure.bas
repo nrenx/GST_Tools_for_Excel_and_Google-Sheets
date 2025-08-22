@@ -78,7 +78,7 @@ Public Sub CreateInvoiceSheet()
 
         ' Create header sections with premium professional styling - OPTIMIZED TO COLUMN O
         Call CreateHeaderRow(ws, 1, "A1:O1", "ORIGINAL", 12, True, RGB(47, 80, 97), RGB(255, 255, 255), 25)
-        Call CreateHeaderRow(ws, 2, "A2:O2", "KAVERI TRADERS", 24, True, RGB(47, 80, 97), RGB(255, 255, 255), 45)
+        Call CreateHeaderRow(ws, 2, "A2:O2", "KAVERI TRADERS", 24, True, RGB(47, 80, 97), RGB(255, 255, 255), 55) ' Increased for better PDF layout
         Call CreateHeaderRow(ws, 3, "A3:O3", "191, Guduru, Pagadalapalli, Idulapalli, Tirupati, Andhra Pradesh - 524409", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
         Call CreateHeaderRow(ws, 4, "A4:O4", "GSTIN: 37HERPB7733F1Z5", 16, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
         Call CreateHeaderRow(ws, 5, "A5:O5", "Email: kotidarisetty7777@gmail.com", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
@@ -306,7 +306,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A7:O10").Borders.LineStyle = xlContinuous
         .Range("A7:O10").Borders.Color = RGB(204, 204, 204)
         For i = 7 To 10
-            .Rows(i).RowHeight = 28 ' Increased height
+            .Rows(i).RowHeight = 35 ' Increased height for better PDF layout
         Next i
         On Error GoTo 0
 
@@ -576,7 +576,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A25:O25").Borders.LineStyle = xlContinuous
         .Range("A25:O25").Borders.Color = RGB(204, 204, 204)
         .Range("A25:O25").Interior.Color = RGB(234, 234, 234)
-        .Rows(25).RowHeight = 40
+        .Rows(25).RowHeight = 50 ' Increased height for better PDF layout
 
         ' Merge A25:C25 for "Total Quantity" label
         .Range("A25:C25").Merge
@@ -650,7 +650,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A26").HorizontalAlignment = xlCenter
         .Range("A26").Interior.Color = RGB(255, 255, 0)
         .Range("A26:J26").Borders.LineStyle = xlContinuous
-        .Rows(26).RowHeight = 25
+        .Rows(26).RowHeight = 32 ' Increased height for better PDF layout
 
         ' Rows 27-28: Amount in words content (merged across 2 rows)
         .Range("A27:J28").Merge
@@ -662,8 +662,8 @@ Public Sub CreateInvoiceSheet()
         .Range("A27").Interior.Color = RGB(255, 255, 230)
         .Range("A27").Borders.LineStyle = xlContinuous
         .Range("A27").WrapText = True
-        .Rows(27).RowHeight = 25 ' Increased height
-        .Rows(28).RowHeight = 25 ' Increased height
+        .Rows(27).RowHeight = 32 ' Increased height for better PDF layout
+        .Rows(28).RowHeight = 32 ' Increased height for better PDF layout
 
         ' Tax summary on the right (columns K-O, rows 26-32) - ENHANCED STRUCTURE - UPDATED FOR TWO-ROW HEADER
         ' FIXED POSITIONING: Tax summary starts at row 26 to avoid overlap
@@ -777,17 +777,17 @@ Public Sub CreateInvoiceSheet()
         .Range("O32").Font.Color = RGB(0, 0, 0)  ' Black text for contrast
 
         ' Set row heights for two-row prominence
-        .Rows(32).RowHeight = 30
-        .Rows(33).RowHeight = 30
+        .Rows(32).RowHeight = 38 ' Increased height for better PDF layout
+        .Rows(33).RowHeight = 38 ' Increased height for better PDF layout
 
-        ' Set row heights for tax summary section - UPDATED FOR TWO-ROW HEADER
-        .Rows(26).RowHeight = 20
-        .Rows(27).RowHeight = 20
-        .Rows(28).RowHeight = 20
-        .Rows(29).RowHeight = 20
-        .Rows(30).RowHeight = 20
-        .Rows(31).RowHeight = 20
-        .Rows(32).RowHeight = 20
+        ' Set row heights for tax summary section - UPDATED FOR BETTER PDF LAYOUT
+        .Rows(26).RowHeight = 32 ' Increased height for better PDF layout
+        .Rows(27).RowHeight = 30 ' Increased height for better PDF layout
+        .Rows(28).RowHeight = 30 ' Increased height for better PDF layout
+        .Rows(29).RowHeight = 30 ' Increased height for better PDF layout
+        .Rows(30).RowHeight = 30 ' Increased height for better PDF layout
+        .Rows(31).RowHeight = 30 ' Increased height for better PDF layout
+        .Rows(32).RowHeight = 38 ' Increased height for better PDF layout
 
         On Error GoTo 0
 

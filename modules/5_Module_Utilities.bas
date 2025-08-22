@@ -390,6 +390,22 @@ Public Sub VerifyPDFLayoutOptimization()
     allCorrect = True
     message = "PDF Layout Optimization Verification:" & vbCrLf & vbCrLf
     
+    ' Check Company Name Header (Row 2)
+    If ws.Rows(2).RowHeight = 55 Then
+        message = message & "✅ Company Name Header (Row 2): Optimized to 55pt" & vbCrLf
+    Else
+        message = message & "❌ Company Name Header (Row 2): Height incorrect (" & ws.Rows(2).RowHeight & "pt)" & vbCrLf
+        allCorrect = False
+    End If
+    
+    ' Check Invoice Details Section (Rows 7-10)
+    If ws.Rows(7).RowHeight = 35 And ws.Rows(10).RowHeight = 35 Then
+        message = message & "✅ Invoice Details (Rows 7-10): Optimized to 35pt" & vbCrLf
+    Else
+        message = message & "❌ Invoice Details (Rows 7-10): Height incorrect" & vbCrLf
+        allCorrect = False
+    End If
+    
     ' Check Party Details Section (Rows 12-16)
     If ws.Rows(12).RowHeight = 35 And ws.Rows(16).RowHeight = 35 Then
         message = message & "✅ Party Details (Rows 12-16): Optimized to 35pt" & vbCrLf
@@ -403,6 +419,14 @@ Public Sub VerifyPDFLayoutOptimization()
         message = message & "✅ Item Details (Rows 19-24): Optimized (19=42pt, 20-24=38pt)" & vbCrLf
     Else
         message = message & "❌ Item Details (Rows 19-24): Height incorrect" & vbCrLf
+        allCorrect = False
+    End If
+    
+    ' Check Totals and Tax Summary Section (Rows 25-33)
+    If ws.Rows(25).RowHeight = 50 And ws.Rows(26).RowHeight = 32 And ws.Rows(32).RowHeight = 38 Then
+        message = message & "✅ Totals & Tax Summary (Rows 25-33): Optimized (25=50pt, 26-31=32/30pt, 32-33=38pt)" & vbCrLf
+    Else
+        message = message & "❌ Totals & Tax Summary (Rows 25-33): Height incorrect" & vbCrLf
         allCorrect = False
     End If
     
@@ -425,7 +449,8 @@ Public Sub VerifyPDFLayoutOptimization()
     message = message & vbCrLf
     If allCorrect Then
         message = message & "🎉 All PDF layout optimizations applied successfully!" & vbCrLf & _
-                         "The invoice should now fit better on a single PDF page with reduced blank space."
+                         "The invoice should now utilize PDF page space optimally with minimal blank space." & vbCrLf & _
+                         "Comprehensive optimization includes header, details, items, totals, and signature sections."
     Else
         message = message & "⚠️ Some optimizations may need to be re-applied." & vbCrLf & _
                          "Run CreateInvoiceSheet() to apply all optimizations."
