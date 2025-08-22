@@ -78,32 +78,26 @@ Public Sub CreateInvoiceSheet()
 
         ' Create header sections with premium professional styling - OPTIMIZED TO COLUMN O
         Call CreateHeaderRow(ws, 1, "A1:O1", "ORIGINAL", 12, True, RGB(47, 80, 97), RGB(255, 255, 255), 25)
-        Call CreateHeaderRow(ws, 2, "A2:O2", "KAVERI TRADERS", 24, True, RGB(47, 80, 97), RGB(255, 255, 255), 37)
-        Call CreateHeaderRow(ws, 3, "A3:O3", "191, Guduru, Pagadalapalli, Idulapalli, Tirupati, Andhra Pradesh - 524409", 11, True, RGB(245, 245, 245), RGB(26, 26, 26), 27)
-        Call CreateHeaderRow(ws, 4, "A4:O4", "GSTIN: 37HERPB7733F1Z5", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 27)
-        Call CreateHeaderRow(ws, 5, "A5:O5", "Email: kotidarisetty7777@gmail.com", 11, True, RGB(245, 245, 245), RGB(26, 26, 26), 25)
+        Call CreateHeaderRow(ws, 2, "A2:O2", "KAVERI TRADERS", 24, True, RGB(47, 80, 97), RGB(255, 255, 255), 45)
+        Call CreateHeaderRow(ws, 3, "A3:O3", "191, Guduru, Pagadalapalli, Idulapalli, Tirupati, Andhra Pradesh - 524409", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
+        Call CreateHeaderRow(ws, 4, "A4:O4", "GSTIN: 37HERPB7733F1Z5", 16, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
+        Call CreateHeaderRow(ws, 5, "A5:O5", "Email: kotidarisetty7777@gmail.com", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
 
-        ' Remove ONLY INTERNAL borders from rows 3 and 4 - PRESERVE OUTER BORDERS
+        ' Apply seamless formatting for company header rows 2-5 (no internal borders)
         On Error Resume Next
-        ' Remove internal borders from row 3 but preserve left and right outer borders
-        .Range("A3:O3").Borders(xlInsideHorizontal).LineStyle = xlNone
-        .Range("A3:O3").Borders(xlInsideVertical).LineStyle = xlNone
-        .Range("A3:O3").Borders(xlEdgeTop).LineStyle = xlNone
-        .Range("A3:O3").Borders(xlEdgeBottom).LineStyle = xlNone
-
-        ' Remove internal borders from row 4 but preserve left and right outer borders
-        .Range("A4:O4").Borders(xlInsideHorizontal).LineStyle = xlNone
-        .Range("A4:O4").Borders(xlInsideVertical).LineStyle = xlNone
-        .Range("A4:O4").Borders(xlEdgeTop).LineStyle = xlNone
-        .Range("A4:O4").Borders(xlEdgeBottom).LineStyle = xlNone
-
-        ' Also remove bottom border of row 2 (between row 2 and 3)
-        .Range("A2:O2").Borders(xlEdgeBottom).LineStyle = xlNone
+        With .Range("A2:O5")
+            .Borders(xlInsideHorizontal).LineStyle = xlNone
+            .Borders(xlInsideVertical).LineStyle = xlNone
+            .Borders(xlEdgeTop).LineStyle = xlContinuous
+            .Borders(xlEdgeBottom).LineStyle = xlContinuous
+            .Borders(xlEdgeLeft).LineStyle = xlContinuous
+            .Borders(xlEdgeRight).LineStyle = xlContinuous
+        End With
         On Error GoTo 0
 
         ' Row 6: TAX-INVOICE header - PROPERLY PROPORTIONED FOR OPTIMIZED LAYOUT
-        Call CreateHeaderRow(ws, 6, "A6:J6", "TAX-INVOICE", 22, True, RGB(240, 240, 240), RGB(0, 0, 0), 28)
-        Call CreateHeaderRow(ws, 6, "K6:O6", "Original for Recipient" & vbLf & "Duplicate for Supplier/Transporter" & vbLf & "Triplicate for Supplier", 9, True, RGB(250, 250, 250), RGB(0, 0, 0), 45)
+        Call CreateHeaderRow(ws, 6, "A6:J6", "TAX-INVOICE", 22, True, RGB(240, 240, 240), RGB(0, 0, 0), 50)
+        Call CreateHeaderRow(ws, 6, "K6:O6", "Original for Recipient" & vbLf & "Duplicate for Supplier/Transporter" & vbLf & "Triplicate for Supplier", 9, True, RGB(250, 250, 250), RGB(0, 0, 0), 50)
 
         ' Enable text wrapping for the right section and ensure center alignment for TAX-INVOICE - PROPERLY PROPORTIONED
         On Error Resume Next
@@ -296,8 +290,8 @@ Public Sub CreateInvoiceSheet()
         On Error GoTo 0
 
         ' --- Party Details (Professional Styling) - OPTIMIZED TO COLUMN O ---
-        Call CreateHeaderRow(ws, 11, "A11:H11", "Details of Receiver (Billed to)", 11, True, RGB(245, 245, 245), RGB(26, 26, 26), 26)
-        Call CreateHeaderRow(ws, 11, "I11:O11", "Details of Consignee (Shipped to)", 11, True, RGB(245, 245, 245), RGB(26, 26, 26), 26)
+        Call CreateHeaderRow(ws, 11, "A11:H11", "Details of Receiver (Billed to)", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 45)
+        Call CreateHeaderRow(ws, 11, "I11:O11", "Details of Consignee (Shipped to)", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 45)
 
         ' Set center alignment for row 11 content (both horizontal and vertical)
         On Error Resume Next
@@ -510,8 +504,8 @@ Public Sub CreateInvoiceSheet()
         .Range("M17").VerticalAlignment = xlCenter
 
     ' Set optimal row heights for two-row header
-        .Rows(17).RowHeight = 30
-        .Rows(18).RowHeight = 30
+        .Rows(17).RowHeight = 40
+        .Rows(18).RowHeight = 40
 
         On Error GoTo 0
 
@@ -559,7 +553,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A25:O25").Borders.LineStyle = xlContinuous
         .Range("A25:O25").Borders.Color = RGB(204, 204, 204)
         .Range("A25:O25").Interior.Color = RGB(234, 234, 234)
-        .Rows(25).RowHeight = 30
+        .Rows(25).RowHeight = 40
 
         ' Merge A25:C25 for "Total Quantity" label
         .Range("A25:C25").Merge
@@ -816,19 +810,21 @@ Public Sub CreateInvoiceSheet()
         .Range("A34:E34").Merge
         .Range("A34").Value = "Transporter"
         .Range("A34").Font.Bold = True
+        .Range("A34").Font.Size = 12
         .Range("A34").HorizontalAlignment = xlCenter
         .Range("A34").Interior.Color = RGB(220, 220, 220)
 
         .Range("F34:J34").Merge
         .Range("F34").Value = "Receiver"
         .Range("F34").Font.Bold = True
+        .Range("F34").Font.Size = 12
         .Range("F34").HorizontalAlignment = xlCenter
         .Range("F34").Interior.Color = RGB(220, 220, 220)
 
         .Range("K34:O34").Merge
         .Range("K34").Value = "Certified that the particulars given above are true and correct"
         .Range("K34").Font.Bold = True
-        .Range("K34").Font.Size = 10 ' Increased font size
+        .Range("K34").Font.Size = 12 ' Increased font size
         .Range("K34").HorizontalAlignment = xlCenter
         .Range("K34").VerticalAlignment = xlCenter
         .Range("K34").WrapText = True
@@ -892,11 +888,15 @@ Public Sub CreateInvoiceSheet()
         .Range("K40").Interior.Color = RGB(211, 211, 211)
 
         ' Set specific row height for row 34 to accommodate wrapped text
-        .Rows(34).RowHeight = 35
+        .Rows(34).RowHeight = 45
 
         ' Set standard row height for remaining signature rows
         For i = 35 To 40
-            .Rows(i).RowHeight = 25 ' Increased height
+            If i = 37 Or i = 38 Then
+                .Rows(i).RowHeight = 35 ' Increased height for rows 37-38
+            Else
+                .Rows(i).RowHeight = 25 ' Standard height for other rows
+            End If
         Next i
         .Rows(39).RowHeight = 31
         On Error GoTo 0
@@ -973,7 +973,7 @@ Public Sub CreateInvoiceSheet()
         On Error GoTo 0
     End With
 
-    ' Create professional buttons for invoice operations
+    ' Create professional buttons for invoice operations (function in ButtonManagement.bas module)
     Call CreateInvoiceButtons(ws)
 
     ' Auto-populate invoice number and dates

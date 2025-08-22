@@ -1,6 +1,33 @@
 # GST Tax Invoice System - Refactored VBA Modules
 
-This directory contains the refactored VBA code for the GST Tax Invoice System. The original monolithic script has been broken down into six well-organized modules to improve readability, maintainability, and scalability.
+This directory contains the refactored VBA code for the GST Tax Invoice System. The original monolithic script has been broken down into six core modules plus eight button modules to improve readability, maintainability, and scalability.
+
+---
+
+## Import Order for Excel VBA
+
+When importing into Excel VBA, follow this exact sequence:
+
+### Core Modules (1-6):
+1. `1_Main_Setup.bas`
+2. `2_Module_InvoiceStructure.bas` 
+3. `3_Module_InvoiceEvents.bas`
+4. `4_Module_Master.bas`
+5. `5_Module_Warehouse.bas`
+6. `6_Module_Utilities.bas`
+
+### Button Modules (7-14):
+7. `7_AddCustomerToWarehouseButton.bas`
+8. `8_NewInvoiceButton.bas`
+9. `9_SaveInvoiceButton.bas`
+10. `10_PrintAsPDFButton.bas`
+11. `11_PrintButton.bas`
+12. `12_RefreshButton.bas`
+13. `13_ButtonManagement.bas`
+14. `14_PDFUtilities.bas`
+
+### Run Setup:
+- Execute `QuickSetup()` from Module 1 to initialize the complete system
 
 ---
 

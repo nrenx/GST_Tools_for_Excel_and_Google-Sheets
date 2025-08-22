@@ -81,13 +81,15 @@ Public Sub ShowAvailableFunctions()
     functionList = functionList & "• ShowAvailableFunctions - Show this help list" & vbCrLf
     functionList = functionList & "• ValidateSystemFixes - Validate all system fixes" & vbCrLf & vbCrLf
 
-    functionList = functionList & "🔘 BUTTON FUNCTIONS (Daily Operations):" & vbCrLf
+    functionList = functionList & "🔘 BUTTON FUNCTIONS (Import individual .bas files):" & vbCrLf
     functionList = functionList & "• AddCustomerToWarehouseButton - Add customer to warehouse" & vbCrLf
     functionList = functionList & "• NewInvoiceButton - Generate fresh invoice with next number" & vbCrLf
     functionList = functionList & "• SaveInvoiceButton - Save invoice to Master sheet" & vbCrLf
-    functionList = functionList & "• RefreshButton - 🔄 Refresh all systems (Sale Type, calculations, dropdowns)" & vbCrLf
+    functionList = functionList & "• RefreshButton - 🔄 Refresh all systems" & vbCrLf
     functionList = functionList & "• PrintAsPDFButton - Export as PDF to folder" & vbCrLf
     functionList = functionList & "• PrintButton - Save PDF + send to printer" & vbCrLf
+    functionList = functionList & "• CreateInvoiceButtons - Create all buttons on worksheet" & vbCrLf
+    functionList = functionList & "• CreateDirectoryIfNotExists - Helper for PDF directory creation" & vbCrLf
     functionList = functionList & "• RefreshSaleTypeDisplay - Update tax fields after changing Sale Type" & vbCrLf & vbCrLf
 
     functionList = functionList & "📊 SYSTEM INFORMATION:" & vbCrLf
@@ -100,10 +102,13 @@ Public Sub ShowAvailableFunctions()
     functionList = functionList & "• PDF export to: /Users/narendrachowdary/development/GST(excel)/invoices(demo)/" & vbCrLf & vbCrLf
 
     functionList = functionList & "🎯 QUICK START:" & vbCrLf
-    functionList = functionList & "1. Run 'QuickSetup' first" & vbCrLf
-    functionList = functionList & "2. Use buttons on invoice sheet for daily operations" & vbCrLf
-    functionList = functionList & "3. Change Sale Type in N7 dropdown, then click 'Refresh All' button" & vbCrLf
-    functionList = functionList & "4. All data is automatically saved and managed" & vbCrLf & vbCrLf
+    functionList = functionList & "1. Import ALL .bas modules (including button modules)" & vbCrLf
+    functionList = functionList & "2. Run 'QuickSetup' ONCE - this sets up everything automatically" & vbCrLf
+    functionList = functionList & "3. Use buttons on invoice sheet for daily operations" & vbCrLf
+    functionList = functionList & "4. Change Sale Type in N7 dropdown, then click 'Refresh All' button" & vbCrLf & vbCrLf
+    
+    functionList = functionList & "⚠️ IMPORTANT: Don't run individual button functions manually!" & vbCrLf
+    functionList = functionList & "Button functions are for Excel buttons and integration only." & vbCrLf & vbCrLf
 
     functionList = functionList & "💡 TIP: Use the 🔄 Refresh All button after making any changes to update everything!"
 
@@ -173,7 +178,7 @@ Public Sub ValidateSystemFixes()
     End If
     On Error GoTo ErrorHandler
 
-    ' Test 5: Test RefreshButton function
+    ' Test 5: Test RefreshButton function (from RefreshButton.bas module)
     testResults = testResults & "5. Refresh Button Function... "
     On Error Resume Next
     Call RefreshButton
@@ -181,7 +186,7 @@ Public Sub ValidateSystemFixes()
         testResults = testResults & "✅ PASSED" & vbCrLf
         testScore = testScore + 1
     Else
-        testResults = testResults & "❌ FAILED - " & Err.Description & vbCrLf
+        testResults = testResults & "❌ FAILED - " & Err.Description & " (Import RefreshButton.bas module)" & vbCrLf
     End If
     On Error GoTo ErrorHandler
 
