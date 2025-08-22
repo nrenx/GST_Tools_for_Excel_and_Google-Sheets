@@ -377,3 +377,64 @@ Public Sub VerifyCustomBorderFormatting(ws As Worksheet)
     
     On Error GoTo 0
 End Sub
+
+Public Sub VerifyPDFLayoutOptimization()
+    ' Verify that row heights have been optimized for better PDF layout
+    Dim ws As Worksheet
+    Dim message As String
+    Dim allCorrect As Boolean
+    
+    On Error GoTo ErrorHandler
+    
+    Set ws = ThisWorkbook.Sheets("GST_Tax_Invoice_for_interstate")
+    allCorrect = True
+    message = "PDF Layout Optimization Verification:" & vbCrLf & vbCrLf
+    
+    ' Check Party Details Section (Rows 12-16)
+    If ws.Rows(12).RowHeight = 35 And ws.Rows(16).RowHeight = 35 Then
+        message = message & "✅ Party Details (Rows 12-16): Optimized to 35pt" & vbCrLf
+    Else
+        message = message & "❌ Party Details (Rows 12-16): Height incorrect" & vbCrLf
+        allCorrect = False
+    End If
+    
+    ' Check Item Details Section (Rows 19-24)
+    If ws.Rows(19).RowHeight = 42 And ws.Rows(24).RowHeight = 38 Then
+        message = message & "✅ Item Details (Rows 19-24): Optimized (19=42pt, 20-24=38pt)" & vbCrLf
+    Else
+        message = message & "❌ Item Details (Rows 19-24): Height incorrect" & vbCrLf
+        allCorrect = False
+    End If
+    
+    ' Check Signature Headers (Row 34)
+    If ws.Rows(34).RowHeight = 55 Then
+        message = message & "✅ Signature Headers (Row 34): Optimized to 55pt" & vbCrLf
+    Else
+        message = message & "❌ Signature Headers (Row 34): Height incorrect (" & ws.Rows(34).RowHeight & "pt)" & vbCrLf
+        allCorrect = False
+    End If
+    
+    ' Check Signature Space (Rows 37-39)
+    If ws.Rows(37).RowHeight = 45 And ws.Rows(39).RowHeight = 45 Then
+        message = message & "✅ Signature Space (Rows 37-39): Optimized to 45pt" & vbCrLf
+    Else
+        message = message & "❌ Signature Space (Rows 37-39): Height incorrect" & vbCrLf
+        allCorrect = False
+    End If
+    
+    message = message & vbCrLf
+    If allCorrect Then
+        message = message & "🎉 All PDF layout optimizations applied successfully!" & vbCrLf & _
+                         "The invoice should now fit better on a single PDF page with reduced blank space."
+    Else
+        message = message & "⚠️ Some optimizations may need to be re-applied." & vbCrLf & _
+                         "Run CreateInvoiceSheet() to apply all optimizations."
+    End If
+    
+    MsgBox message, vbInformation, "PDF Layout Verification"
+    Exit Sub
+    
+ErrorHandler:
+    MsgBox "Error verifying PDF layout optimization: " & Err.Description, vbCritical, "Verification Error"
+    On Error GoTo 0
+End Sub

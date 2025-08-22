@@ -343,10 +343,13 @@ Public Sub OptimizeForPDFExport(ws As Worksheet)
         ' Ensure proper font rendering
         .Range("A1:O40").Font.Name = "Segoe UI"
 
-        ' Set optimal row heights for PDF
+        ' Set optimal row heights for PDF - UPDATED FOR BETTER PAGE UTILIZATION
         .Rows("17:18").RowHeight = 30  ' Two-row header structure
-        .Rows("19:24").RowHeight = 30  ' Item rows
+        .Rows("19:24").RowHeight = 38  ' Item rows - increased for better PDF layout
         .Rows("25:40").RowHeight = 25  ' Footer rows
+        .Rows("12:16").RowHeight = 35  ' Party details - increased for better PDF layout
+        .Rows(34).RowHeight = 55       ' Signature headers - increased for better PDF layout
+        .Rows("37:39").RowHeight = 45  ' Signature space - increased for better PDF layout
     End With
 
     On Error GoTo 0

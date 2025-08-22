@@ -436,7 +436,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A12:O16").Borders.LineStyle = xlContinuous
         .Range("A12:O16").Borders.Color = RGB(204, 204, 204)
         For i = 12 To 16
-            .Rows(i).RowHeight = 28 ' Increased height
+            .Rows(i).RowHeight = 35 ' Increased height for better PDF layout
         Next i
         On Error GoTo 0
 
@@ -551,7 +551,7 @@ Public Sub CreateInvoiceSheet()
                 End If
             End With
         Next i
-        .Rows(19).RowHeight = 35
+        .Rows(19).RowHeight = 42 ' Increased height for better PDF layout
 
         ' Setup automatic tax calculation formulas
         Call SetupTaxCalculationFormulas(ws)
@@ -565,7 +565,7 @@ Public Sub CreateInvoiceSheet()
             Else
                 .Range("A" & i & ":O" & i).Interior.Color = RGB(255, 255, 255)
             End If
-            .Rows(i).RowHeight = 30 ' Increased height
+            .Rows(i).RowHeight = 38 ' Increased height for better PDF layout
         Next i
         On Error GoTo 0
 
@@ -911,17 +911,17 @@ Public Sub CreateInvoiceSheet()
         .Range("K40").Interior.Color = RGB(211, 211, 211)
 
         ' Set specific row height for row 34 to accommodate wrapped text
-        .Rows(34).RowHeight = 45
+        .Rows(34).RowHeight = 55 ' Increased height for better PDF layout
 
         ' Set standard row height for remaining signature rows
         For i = 35 To 40
             If i = 37 Or i = 38 Then
-                .Rows(i).RowHeight = 35 ' Increased height for rows 37-38
+                .Rows(i).RowHeight = 45 ' Increased height for better PDF layout
             Else
                 .Rows(i).RowHeight = 25 ' Standard height for other rows
             End If
         Next i
-        .Rows(39).RowHeight = 31
+        .Rows(39).RowHeight = 45 ' Increased height for better PDF layout
         On Error GoTo 0
     End With
 
