@@ -107,12 +107,12 @@ Private Function CheckForDuplicateInvoice(masterWs As Worksheet, invoiceNumber A
         If UCase(existingInvoiceNumber) = UCase(invoiceNumber) Then
             ' Duplicate found - show professional confirmation dialog
             userResponse = MsgBox( _
-                "⚠️ DUPLICATE INVOICE DETECTED" & vbCrLf & vbCrLf & _
+                "WARNING: DUPLICATE INVOICE DETECTED" & vbCrLf & vbCrLf & _
                 "Invoice Number: " & invoiceNumber & vbCrLf & _
                 "This invoice number already exists in the system." & vbCrLf & vbCrLf & _
                 "Do you want to overwrite the existing invoice record?" & vbCrLf & vbCrLf & _
-                "• YES - Replace the existing record with current data" & vbCrLf & _
-                "• NO - Cancel save operation and keep existing record", _
+                "YES - Replace the existing record with current data" & vbCrLf & _
+                "NO - Cancel save operation and keep existing record", _
                 vbYesNo + vbQuestion + vbDefaultButton2, _
                 "Invoice Number Already Exists")
             

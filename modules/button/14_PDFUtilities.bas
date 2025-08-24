@@ -154,7 +154,7 @@ Public Sub BatchPDFExport(invoiceRange As String)
     Set ws = GetRequiredWorksheet(INVOICE_SHEET_NAME)
     
     If ws Is Nothing Then
-        batchResults = batchResults & "❌ ERROR: Invoice sheet not found" & vbCrLf
+        batchResults = batchResults & "ERROR: Invoice sheet not found" & vbCrLf
         GoTo BatchComplete
     End If
     
@@ -169,7 +169,7 @@ Public Sub BatchPDFExport(invoiceRange As String)
         batchResults = batchResults & "[OK] Exported: " & fileName & vbCrLf
         processedCount = processedCount + 1
     Else
-        batchResults = batchResults & "❌ Failed: " & fileName & vbCrLf
+        batchResults = batchResults & "Failed: " & fileName & vbCrLf
         errorCount = errorCount + 1
     End If
     

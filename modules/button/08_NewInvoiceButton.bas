@@ -68,13 +68,13 @@ Public Sub NewInvoiceButton()
     On Error Resume Next
     ' Clear individual cells to avoid merged cell issues - Use individual cell references for merged ranges
     ws.Range("C12").Value = ""  ' Customer Name (merged C12:H12)
-    ws.Range("C13").Value = ""  ' Customer Address Line 1 (merged C13:H13)
-    ws.Range("C14").Value = ""  ' Customer GSTIN (merged C14:H14)
+    ws.Range("C13").Formula = "=IFERROR(XLOOKUP(TRIM(C12), warehouse!$A:$A, warehouse!$B:$B, """", 0), """")"  ' Auto-populate address
+    ws.Range("C14").Formula = "=IFERROR(XLOOKUP(TRIM(C12), warehouse!$A:$A, warehouse!$E:$E, """", 0), """")"  ' Auto-populate GSTIN
     ws.Range("C15").Value = ""  ' Customer State (merged C15:H15)
     
     ws.Range("K12").Value = ""  ' Consignee Name (merged K12:O12)
-    ws.Range("K13").Value = ""  ' Consignee Address (merged K13:O13)
-    ws.Range("K14").Value = ""  ' Consignee GSTIN (merged K14:O14)
+    ws.Range("K13").Formula = "=IFERROR(XLOOKUP(TRIM(K12), warehouse!$A:$A, warehouse!$B:$B, """", 0), """")"  ' Auto-populate address
+    ws.Range("K14").Formula = "=IFERROR(XLOOKUP(TRIM(K12), warehouse!$A:$A, warehouse!$E:$E, """", 0), """")"  ' Auto-populate GSTIN
     ws.Range("K15").Value = ""  ' Consignee State (merged K15:O15)
     
     ws.Range("F7").Value = "By Lorry"   ' Reset Transport Mode

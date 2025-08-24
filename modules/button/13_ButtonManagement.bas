@@ -21,7 +21,7 @@ Public Sub CreateInvoiceButtons(ws As Worksheet)
     Call CreateButtonAtCell(ws, "R7", "Save Customer to Warehouse", "AddCustomerToWarehouseButton")
     Call CreateButtonAtCell(ws, "R9", "Save Invoice Record", "SaveInvoiceButton")
     Call CreateButtonAtCell(ws, "R11", "New Invoice", "NewInvoiceButton")
-    Call CreateButtonAtCell(ws, "R13", "🔄 Refresh All", "RefreshButton")
+    Call CreateButtonAtCell(ws, "R13", "Refresh All", "RefreshButton")
     ' REMOVED: "Add New Item Row" button - functionality no longer needed
     Call CreateButtonAtCell(ws, "R19", "Export as PDF", "PrintAsPDFButton")
     Call CreateButtonAtCell(ws, "R21", "Print Invoice", "PrintButton")
@@ -71,7 +71,7 @@ Private Sub AddPhase4VisualEnhancements(ws As Worksheet)
     With ws
         ' Add enhanced status indicator area
         .Range("S2:U2").Merge
-        .Range("S2").Value = "🚀 Enhanced System"
+        .Range("S2").Value = "Enhanced System"
         .Range("S2").Font.Bold = True
         .Range("S2").Font.Color = RGB(0, 100, 0)
         .Range("S2").HorizontalAlignment = xlCenter

@@ -88,7 +88,7 @@ Buttons are positioned in columns R-U with the following layout:
 - R7: Save Customer to Warehouse
 - R9: Save Invoice Record  
 - R11: New Invoice
-- R13: 🔄 Refresh All
+- R13: Refresh All
 - R19: Export as PDF
 - R21: Print Invoice
 

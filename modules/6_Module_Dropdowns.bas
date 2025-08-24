@@ -392,19 +392,19 @@ Public Sub SetupAllDropdownValidations(invoiceWs As Worksheet)
         .Range("K15").Validation.ShowError = False
         .Range("K15").Validation.InCellDropdown = True
         
-        ' Customer GSTIN dropdown (C14)
+        ' Customer GSTIN dropdown (C14) - Pull from Dropdowns sheet column O (GST Types)
         .Range("C14").Validation.Delete
         .Range("C14").Validation.Add Type:=xlValidateList, _
                                    AlertStyle:=xlValidAlertWarning, _
-                                   Formula1:="=" & WAREHOUSE_SHEET_NAME & "!$E$2:$E$1000"
+                                   Formula1:="=Dropdowns!$O$2:$O$5"
         .Range("C14").Validation.ShowError = False
         .Range("C14").Validation.InCellDropdown = True
         
-        ' Consignee GSTIN dropdown (K14)
+        ' Consignee GSTIN dropdown (K14) - Pull from Dropdowns sheet column O (GST Types)
         .Range("K14").Validation.Delete
         .Range("K14").Validation.Add Type:=xlValidateList, _
                                    AlertStyle:=xlValidAlertWarning, _
-                                   Formula1:="=" & WAREHOUSE_SHEET_NAME & "!$E$2:$E$1000"
+                                   Formula1:="=Dropdowns!$O$2:$O$5"
         .Range("K14").Validation.ShowError = False
         .Range("K14").Validation.InCellDropdown = True
         
@@ -528,7 +528,66 @@ Public Function GetDropdownSheetReference(listName As String) As String
             GetDropdownSheetReference = "=Dropdowns!$O$2:$O$5"
         Case "DESCRIPTION", "DESCRIPTION_SAMPLES"
             GetDropdownSheetReference = "=Dropdowns!$Q$2:$Q$6"
+        Case "GSTIN", "GSTIN_LIST"
+            GetDropdownSheetReference = "=Dropdowns!$O$2:$O$5"
         Case Else
             GetDropdownSheetReference = ""
     End Select
 End Function
+
+Public Sub VerifyDropdownValidations(invoiceWs As Worksheet)
+    ' Verify all dropdown validations are correctly set up
+    Dim message As String
+    Dim testResult As String
+    
+    On Error Resume Next
+    
+    message = "DROPDOWN VALIDATION VERIFICATION:" & vbCrLf & vbCrLf
+    
+    ' Test C14 (Customer GSTIN)
+    testResult = invoiceWs.Range("C14").Validation.Formula1
+    If InStr(testResult, "O$2:$O$5") > 0 Then
+        message = message & "[OK] C14 Customer GSTIN: Points to Dropdowns column O (GST Types)" & vbCrLf
+        message = message & "     Formula: " & testResult & vbCrLf & vbCrLf
+    Else
+        message = message & "[ERROR] C14 Customer GSTIN: Wrong reference" & vbCrLf
+        message = message & "     Current: " & testResult & vbCrLf
+        message = message & "     Expected: Dropdowns sheet column O" & vbCrLf & vbCrLf
+    End If
+    
+    ' Test K14 (Consignee GSTIN)
+    testResult = invoiceWs.Range("K14").Validation.Formula1
+    If InStr(testResult, "O$2:$O$5") > 0 Then
+        message = message & "[OK] K14 Consignee GSTIN: Points to Dropdowns column O (GST Types)" & vbCrLf
+        message = message & "     Formula: " & testResult & vbCrLf & vbCrLf
+    Else
+        message = message & "[ERROR] K14 Consignee GSTIN: Wrong reference" & vbCrLf
+        message = message & "     Current: " & testResult & vbCrLf
+        message = message & "     Expected: Dropdowns sheet column O" & vbCrLf & vbCrLf
+    End If
+    
+    ' Test HSN dropdown
+    testResult = invoiceWs.Range("C19").Validation.Formula1
+    If InStr(testResult, "A$2:$A$28") > 0 Then
+        message = message & "[OK] HSN Codes: Correctly points to A2:A28" & vbCrLf
+    Else
+        message = message & "[ERROR] HSN Codes: Wrong range" & vbCrLf
+        message = message & "     Current: " & testResult & vbCrLf
+    End If
+    
+    ' Test UOM dropdown  
+    testResult = invoiceWs.Range("E19").Validation.Formula1
+    If InStr(testResult, "K$2:$K$39") > 0 Then
+        message = message & "[OK] UOM Units: Correctly points to K2:K39" & vbCrLf
+    Else
+        message = message & "[ERROR] UOM Units: Wrong range" & vbCrLf
+        message = message & "     Current: " & testResult & vbCrLf
+    End If
+    
+    message = message & vbCrLf & "NOTE: GSTIN dropdowns now pull from Dropdowns sheet column O (GST Types)," & vbCrLf
+    message = message & "while actual GSTIN values are auto-populated via XLOOKUP formulas from warehouse data."
+    
+    MsgBox message, vbInformation, "Dropdown Validation Check"
+    
+    On Error GoTo 0
+End Sub

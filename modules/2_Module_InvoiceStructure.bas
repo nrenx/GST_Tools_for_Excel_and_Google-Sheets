@@ -321,7 +321,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A13").Interior.Color = RGB(245, 245, 245)
         .Range("A13").Font.Color = RGB(26, 26, 26)
         .Range("C13:H13").Merge
-        .Range("C13").Value = ""
+        .Range("C13").Formula = "=IFERROR(XLOOKUP(TRIM(C12), warehouse!$A:$A, warehouse!$B:$B, """", 0), """")"
         .Range("C13").HorizontalAlignment = xlLeft
 
         .Range("I13:J13").Merge
@@ -331,7 +331,7 @@ Public Sub CreateInvoiceSheet()
         .Range("I13").Interior.Color = RGB(245, 245, 245)
         .Range("I13").Font.Color = RGB(26, 26, 26)
         .Range("K13:O13").Merge
-        .Range("K13").Value = ""
+        .Range("K13").Formula = "=IFERROR(XLOOKUP(TRIM(K12), warehouse!$A:$A, warehouse!$B:$B, """", 0), """")"
         .Range("K13").HorizontalAlignment = xlLeft
 
         ' Row 14: GSTIN fields
@@ -342,7 +342,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A14").Interior.Color = RGB(245, 245, 245)
         .Range("A14").Font.Color = RGB(26, 26, 26)
         .Range("C14:H14").Merge
-        .Range("C14").Value = ""
+        .Range("C14").Formula = "=IFERROR(XLOOKUP(TRIM(C12), warehouse!$A:$A, warehouse!$E:$E, """", 0), """")"
         .Range("C14").HorizontalAlignment = xlLeft
 
         .Range("I14:J14").Merge
@@ -352,7 +352,7 @@ Public Sub CreateInvoiceSheet()
         .Range("I14").Interior.Color = RGB(245, 245, 245)
         .Range("I14").Font.Color = RGB(26, 26, 26)
         .Range("K14:O14").Merge
-        .Range("K14").Value = ""
+        .Range("K14").Formula = "=IFERROR(XLOOKUP(TRIM(K12), warehouse!$A:$A, warehouse!$E:$E, """", 0), """")"
         .Range("K14").HorizontalAlignment = xlLeft
 
         ' Row 15: State fields
