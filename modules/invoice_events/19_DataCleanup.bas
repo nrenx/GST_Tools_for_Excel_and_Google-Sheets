@@ -1,13 +1,9 @@
 Option Explicit
-' ===============================================================================
-' MODULE: 19_DataCleanup
-' DESCRIPTION: Handles data cleanup operations including form clearing,
-'              product row cleanup, and data reset functionality.
-' ===============================================================================
+' Module 19: Data Cleanup
+' Handles data cleanup operations including form clearing, product row cleanup,
+' and data reset functionality
 
-' ████████████████████████████████████████████████████████████████████████████████
-' 🧹 DATA CLEANUP FUNCTIONS
-' ████████████████████████████████████████████████████████████████████████████████
+' Data cleanup functions
 
 Public Sub CleanEmptyProductRows(ws As Worksheet)
     ' Clean up empty product rows to remove any #N/A values or unwanted content

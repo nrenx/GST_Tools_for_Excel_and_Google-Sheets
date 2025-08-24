@@ -1,19 +1,13 @@
 Option Explicit
-' ===============================================================================
-' MODULE: Module_Master
-' DESCRIPTION: Handles all operations related to the 'Master' sheet, including
-'              invoice record management and the invoice numbering system.
-' ===============================================================================
+' Master sheet operations, invoice records, and numbering system
 
-' ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-' 📋 MASTER SHEET & INVOICE COUNTER FUNCTIONS
-' ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+' MASTER SHEET & INVOICE COUNTER FUNCTIONS
 
 Public Sub CreateMasterSheet()
     Dim ws As Worksheet
 
     On Error Resume Next
-    Set ws = ThisWorkbook.Sheets("Master")
+    Set ws = ThisWorkbook.Sheets(MASTER_SHEET_NAME)
     If Not ws Is Nothing Then
         Application.DisplayAlerts = False
         ws.Delete
@@ -22,11 +16,11 @@ Public Sub CreateMasterSheet()
     On Error GoTo 0
 
     Set ws = ThisWorkbook.Sheets.Add(After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count))
-    ws.Name = "Master"
+    ws.Name = MASTER_SHEET_NAME
 
     With ws
-        ' ===== GST INVOICE RECORDS FOR AUDIT & RETURN FILING (A1:T1) - EXPANDED FOR NEW TAX FIELDS =====
-        ' GST-compliant headers for complete invoice records with CGST/SGST support
+        ' GST invoice records for audit & return filing (A1:U1)
+        ' GST-compliant headers for complete invoice records
         .Range("A1").Value = "Invoice_Number"
         .Range("B1").Value = "Invoice_Date"
         .Range("C1").Value = "Customer_Name"
@@ -49,7 +43,7 @@ Public Sub CreateMasterSheet()
         .Range("T1").Value = "UOM"
         .Range("U1").Value = "Date_Created"
 
-        ' Format GST audit headers - EXPANDED TO COLUMN U
+        ' Format GST audit headers
         .Range("A1:U1").Font.Bold = True
         .Range("A1:U1").Interior.Color = RGB(47, 80, 97)
         .Range("A1:U1").Font.Color = RGB(255, 255, 255)
@@ -64,7 +58,7 @@ Public Sub CreateMasterSheet()
         ' Auto-fit columns for better visibility
         .Columns.AutoFit
 
-        ' Set specific column widths for GST data - UPDATED FOR NEW TAX FIELDS
+        ' Set specific column widths for GST data
         .Columns("A").ColumnWidth = 20  ' Invoice Number
         .Columns("B").ColumnWidth = 15  ' Invoice Date
         .Columns("C").ColumnWidth = 30  ' Customer Name
@@ -105,8 +99,8 @@ Public Function GetNextInvoiceNumber() As String
     ' Ensure supporting worksheets exist
     Call EnsureAllSupportingWorksheetsExist
 
-    ' Get or create Master sheet
-    Set masterWs = GetOrCreateWorksheet("Master")
+    ' Get or create Master sheet using constants
+    Set masterWs = GetOrCreateWorksheet(MASTER_SHEET_NAME)
 
     currentYear = Year(Date)
     maxCounter = 0
@@ -117,7 +111,7 @@ Public Function GetNextInvoiceNumber() As String
     If lastRow > 1 Then ' If there are invoice records
         For i = 2 To lastRow ' Start from row 2 (after header)
             invoiceNum = Trim(masterWs.Cells(i, "A").Value)
-            If invoiceNum <> "" And InStr(invoiceNum, "INV-" & currentYear & "-") = 1 Then
+            If invoiceNum <> "" And InStr(invoiceNum, INVOICE_PREFIX & currentYear & "-") = 1 Then
                 ' Extract counter from invoice number (format: INV-YYYY-NNN)
                 maxCounter = Application.WorksheetFunction.Max(maxCounter, Val(Right(invoiceNum, 3)))
             End If
@@ -127,14 +121,14 @@ Public Function GetNextInvoiceNumber() As String
     ' Set next counter
     counter = maxCounter + 1
 
-    ' Generate new invoice number
-    newInvoiceNumber = "INV-" & currentYear & "-" & Format(counter, "000")
+    ' Generate new invoice number using constants
+    newInvoiceNumber = INVOICE_PREFIX & currentYear & "-" & Format(counter, INVOICE_NUMBER_FORMAT)
 
     GetNextInvoiceNumber = newInvoiceNumber
     Exit Function
 
 ErrorHandler:
-    GetNextInvoiceNumber = "INV-" & Year(Date) & "-001"
+    GetNextInvoiceNumber = INVOICE_PREFIX & Year(Date) & "-001"
 End Function
 
 Public Function GetCurrentInvoiceNumber() As String
@@ -150,7 +144,7 @@ Public Function GetCurrentInvoiceNumber() As String
     ' Ensure supporting worksheets exist
     Call EnsureAllSupportingWorksheetsExist
 
-    Set masterWs = GetOrCreateWorksheet("Master")
+    Set masterWs = GetOrCreateWorksheet(MASTER_SHEET_NAME)
     currentYear = Year(Date)
     maxCounter = 0
 
@@ -166,7 +160,7 @@ Public Function GetCurrentInvoiceNumber() As String
         For i = 2 To lastRow ' Start from row 2 (after header)
             invoiceNum = Trim(masterWs.Cells(i, "A").Value)
             If invoiceNum <> "" And InStr(invoiceNum, "INV-" & currentYear & "-") = 1 Then
-                ' Extract counter from invoice number (format: INV-YYYY-NNN)
+                ' Extract counter from invoice number
                 maxCounter = Application.WorksheetFunction.Max(maxCounter, Val(Right(invoiceNum, 3)))
             End If
         Next i
@@ -189,12 +183,12 @@ Public Sub ResetInvoiceCounter()
     Dim lastRow As Long
 
     response = MsgBox("WARNING: This will clear all invoice records from the Master sheet!" & vbCrLf & vbCrLf & _
-                     "The invoice counter is now based on existing records in the Master sheet." & vbCrLf & _
-                     "To reset numbering, you would need to clear the Master sheet." & vbCrLf & vbCrLf & _
+                     "The invoice counter is based on existing records in the Master sheet." & vbCrLf & _
+                     "To reset numbering, you need to clear the Master sheet." & vbCrLf & vbCrLf & _
                      "Are you sure you want to proceed?", vbYesNo + vbCritical, "Reset Invoice Counter")
 
     If response = vbYes Then
-        Set masterWs = GetOrCreateWorksheet("Master")
+        Set masterWs = GetOrCreateWorksheet(MASTER_SHEET_NAME)
 
         If Not masterWs Is Nothing Then
             ' Clear all invoice records (keep only the header row)

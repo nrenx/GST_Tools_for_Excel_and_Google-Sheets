@@ -5,9 +5,9 @@ This folder contains all button-related VBA code that was extracted from the mai
 ## 📁 Module Structure
 
 ### Core Button Functions
-- **`7_AddCustomerToWarehouseButton.bas`** - Captures customer details from invoice and saves to warehouse
-- **`8_NewInvoiceButton.bas`** - Generates fresh invoice with next sequential number and clears fields
-- **`9_SaveInvoiceButton.bas`** - Saves complete invoice record to Master sheet for GST compliance
+- **`07_AddCustomerToWarehouseButton.bas`** - Captures customer details from invoice and saves to warehouse
+- **`08_NewInvoiceButton.bas`** - Generates fresh invoice with next sequential number and clears fields
+- **`09_SaveInvoiceButton.bas`** - Saves complete invoice record to Master sheet for GST compliance
 - **`10_PrintAsPDFButton.bas`** - Exports invoice as two-page PDF (Original and Duplicate) with macOS compatibility
 - **`11_PrintButton.bas`** - Saves as PDF and sends to default printer
 - **`12_RefreshButton.bas`** - Comprehensive refresh of all systems (Sale Type, tax calculations, dropdowns)

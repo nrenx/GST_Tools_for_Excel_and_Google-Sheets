@@ -1,17 +1,13 @@
 Option Explicit
-' ===============================================================================
-' MODULE: 18_DynamicTaxDisplay
-' DESCRIPTION: Handles dynamic tax field display based on sale type, including
-'              Interstate/Intrastate tax column switching and visibility.
-' ===============================================================================
+' Module 18: Dynamic Tax Display
+' Handles dynamic tax field display based on sale type, including
+' Interstate/Intrastate tax column switching and visibility
 
-' ████████████████████████████████████████████████████████████████████████████████
-' 🎯 DYNAMIC TAX DISPLAY MANAGEMENT
-' ████████████████████████████████████████████████████████████████████████████████
+' Dynamic tax display management
 
 Public Sub SetupDynamicTaxDisplay(ws As Worksheet)
     ' Set up dynamic tax field display based on sale type
-    On Error Resume Next
+    On Error GoTo ErrorHandler
 
     With ws
         ' Set up conditional formatting for "Not Applicable" display
@@ -21,17 +17,21 @@ Public Sub SetupDynamicTaxDisplay(ws As Worksheet)
         Call UpdateTaxFieldsDisplay(ws, "Interstate")
     End With
 
-    On Error GoTo 0
+    Exit Sub
+
+ErrorHandler:
+    MsgBox "Error setting up dynamic tax display: " & Err.Description, vbCritical, "Tax Display Error"
 End Sub
 
 Public Sub UpdateTaxFieldsDisplay(ws As Worksheet, saleType As String)
-    ' Update tax fields display based on sale type selection - FIXED COLUMN MAPPING
+    ' Update tax fields display based on sale type selection
+    ' Fixed column mapping
     Dim i As Long
-    On Error Resume Next
+    On Error GoTo ErrorHandler
 
     With ws
         If saleType = "Interstate" Then
-            ' INTERSTATE: Only IGST applies, CGST and SGST are not applicable
+            ' Interstate: Only IGST applies, CGST and SGST are not applicable
             
             ' Clear all tax fields first for all 6 product rows (19-24)
             .Range("I19:N24").ClearContents
@@ -78,12 +78,12 @@ Public Sub UpdateTaxFieldsDisplay(ws As Worksheet, saleType As String)
             
             ' Set up active IGST formulas (M,N columns)
             For i = 19 To 24
-                .Range("M" & i).Formula = "=IF(AND(N7=""Interstate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ", warehouse!A:E, 5, FALSE),""""),"""")"
+                .Range("M" & i).Formula = "=IF(AND(N7=""Interstate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ",Dropdowns!$A:$F,6,FALSE),""""),"""")"
                 .Range("N" & i).Formula = "=IF(AND(N7=""Interstate"",H" & i & "<>"""",M" & i & "<>""""),H" & i & "*M" & i & "/100,"""")"
             Next i
 
         ElseIf saleType = "Intrastate" Then
-            ' INTRASTATE: Only CGST and SGST apply, IGST is not applicable
+            ' Intrastate: Only CGST and SGST apply, IGST is not applicable
             
             ' Clear all tax fields first for all 6 product rows (19-24)
             .Range("I19:N24").ClearContents
@@ -125,15 +125,15 @@ Public Sub UpdateTaxFieldsDisplay(ws As Worksheet, saleType As String)
             .Range("M19:M24").ClearContents
             .Range("N19:N24").ClearContents
             
-            ' Set up active CGST formulas (I,J columns) - half of total GST rate
+            ' Set up active CGST formulas (I,J columns) - using NEW column structure
             For i = 19 To 24
-                .Range("I" & i).Formula = "=IF(AND(N7=""Intrastate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ", warehouse!A:E, 5, FALSE)/2,""""),"""")"
+                .Range("I" & i).Formula = "=IF(AND(N7=""Intrastate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ",Dropdowns!$A:$F,4,FALSE),""""),"""")"
                 .Range("J" & i).Formula = "=IF(AND(N7=""Intrastate"",H" & i & "<>"""",I" & i & "<>""""),H" & i & "*I" & i & "/100,"""")"
             Next i
             
-            ' Set up active SGST formulas (K,L columns) - half of total GST rate
+            ' Set up active SGST formulas (K,L columns) - using NEW column structure
             For i = 19 To 24
-                .Range("K" & i).Formula = "=IF(AND(N7=""Intrastate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ", warehouse!A:E, 5, FALSE)/2,""""),"""")"
+                .Range("K" & i).Formula = "=IF(AND(N7=""Intrastate"",C" & i & "<>""""),IFERROR(VLOOKUP(C" & i & ",Dropdowns!$A:$F,5,FALSE),""""),"""")"
                 .Range("L" & i).Formula = "=IF(AND(N7=""Intrastate"",H" & i & "<>"""",K" & i & "<>""""),H" & i & "*K" & i & "/100,"""")"
             Next i
         End If
@@ -142,7 +142,10 @@ Public Sub UpdateTaxFieldsDisplay(ws As Worksheet, saleType As String)
         .Calculate
     End With
 
-    On Error GoTo 0
+    Exit Sub
+
+ErrorHandler:
+    MsgBox "Error updating tax fields display: " & Err.Description, vbCritical, "Tax Display Error"
 End Sub
 
 Public Sub RefreshTaxDisplayForCurrentSaleType()
@@ -151,8 +154,13 @@ Public Sub RefreshTaxDisplayForCurrentSaleType()
     Dim saleType As String
     On Error GoTo ErrorHandler
     
-    Set ws = ThisWorkbook.Worksheets("GST_Tax_Invoice_for_interstate")
-    saleType = Trim(ws.Range("N7").Value)
+    Set ws = GetRequiredWorksheet(INVOICE_SHEET_NAME)
+    
+    ' Exit if required worksheet is missing
+    If ws Is Nothing Then
+        Exit Sub
+    End If
+    saleType = Trim(ws.Range(SALE_TYPE_CELL).Value)
     
     If saleType = "Interstate" Or saleType = "Intrastate" Then
         Call UpdateTaxFieldsDisplay(ws, saleType)

@@ -1,20 +1,23 @@
 Option Explicit
-' ===============================================================================
-' MODULE: PrintButton
-' DESCRIPTION: Button function to save as PDF and then send to default printer
-' ===============================================================================
+' Module 11: Print Button
+' Button function to save as PDF and then send to default printer
 
 Public Sub PrintButton()
-    ' Button function: Save as PDF and then send to default printer
+    ' Save as PDF and then send to default printer
     Dim ws As Worksheet
     Dim invoiceNumber As String
     Dim response As VbMsgBoxResult
     On Error GoTo ErrorHandler
 
-    Set ws = ThisWorkbook.Worksheets("GST_Tax_Invoice_for_interstate")
+    Set ws = GetRequiredWorksheet(INVOICE_SHEET_NAME)
+    
+    ' Exit if required worksheet is missing
+    If ws Is Nothing Then
+        Exit Sub
+    End If
 
-    ' Get invoice number
-    invoiceNumber = Trim(ws.Range("C7").Value)
+    ' Get invoice number using constants
+    invoiceNumber = Trim(ws.Range(INVOICE_NUMBER_CELL).Value)
 
     If invoiceNumber = "" Then
         MsgBox "Please ensure invoice number is filled before printing.", vbExclamation, "Missing Invoice Number"

@@ -1,13 +1,7 @@
 Option Explicit
-' ===============================================================================
-' MODULE: Module_InvoiceStructure
-' DESCRIPTION: Handles the creation, formatting, and layout of the invoice sheet,
-'              as well as its core formulas and data population logic.
-' ===============================================================================
+' Invoice sheet creation, formatting, and layout
 
-' ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-' 📋 WORKSHEET CREATION FUNCTIONS
-' ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+' WORKSHEET CREATION FUNCTIONS
 
 Public Sub CreateInvoiceSheet()
     Dim ws As Worksheet
@@ -21,19 +15,19 @@ Public Sub CreateInvoiceSheet()
     ' Suppress Excel alerts to prevent merge cells warning
     Application.DisplayAlerts = False
 
-    ' --- Setup with comprehensive error handling ---
+    ' Setup with error handling
     On Error GoTo ErrorHandler
 
     ' Try to get the sheet
     Set ws = Nothing
     On Error Resume Next
-    Set ws = ThisWorkbook.Sheets("GST_Tax_Invoice_for_interstate")
+    Set ws = ThisWorkbook.Sheets(INVOICE_SHEET_NAME)
     On Error GoTo 0
 
     ' If the sheet doesn't exist, create it. If it exists, clear it completely.
     If ws Is Nothing Then
         Set ws = ThisWorkbook.Sheets.Add(After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count))
-        ws.Name = "GST_Tax_Invoice_for_interstate"
+        ws.Name = INVOICE_SHEET_NAME
     Else
         ' Complete cleanup of existing sheet
         On Error Resume Next
@@ -47,9 +41,9 @@ Public Sub CreateInvoiceSheet()
     ws.Activate
     On Error GoTo 0
 
-    ' --- Main Formatting Block ---
+    ' Main formatting 
     With ws
-        ' Set column widths safely - EXPANDED LAYOUT A-P (16 columns)
+        ' Set column widths - layout A-P (16 columns)
         On Error Resume Next
         .Columns(1).ColumnWidth = 5    ' Column A - Sr.No.
         .Columns(2).ColumnWidth = 12   ' Column B - Description of Goods/Services
@@ -76,58 +70,31 @@ Public Sub CreateInvoiceSheet()
         .Cells.Font.Color = RGB(26, 26, 26)
         On Error GoTo 0
 
-        ' Create header sections with premium professional styling - OPTIMIZED TO COLUMN O
+        ' Create header sections with professional styling
         Call CreateHeaderRow(ws, 1, "A1:O1", "ORIGINAL", 12, True, RGB(47, 80, 97), RGB(255, 255, 255), 25)
-        Call CreateHeaderRow(ws, 2, "A2:O2", "KAVERI TRADERS", 24, True, RGB(47, 80, 97), RGB(255, 255, 255), 55) ' Increased for better PDF layout
+        Call CreateHeaderRow(ws, 2, "A2:O2", "KAVERI TRADERS", 24, True, RGB(47, 80, 97), RGB(255, 255, 255), 55)
         Call CreateHeaderRow(ws, 3, "A3:O3", "191, Guduru, Pagadalapalli, Idulapalli, Tirupati, Andhra Pradesh - 524409", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
         Call CreateHeaderRow(ws, 4, "A4:O4", "GSTIN: 37HERPB7733F1Z5", 16, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
         Call CreateHeaderRow(ws, 5, "A5:O5", "Email: kotidarisetty7777@gmail.com", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
 
-        ' Apply seamless formatting for company header rows 2-5 (no internal borders)
+        ' Company header structure created with individual headers
         On Error Resume Next
-        With .Range("A2:O5")
-            .Borders(xlInsideHorizontal).LineStyle = xlNone
-            .Borders(xlInsideVertical).LineStyle = xlNone
-            .Borders(xlEdgeTop).LineStyle = xlContinuous
-            .Borders(xlEdgeBottom).LineStyle = xlContinuous
-            .Borders(xlEdgeLeft).LineStyle = xlContinuous
-            .Borders(xlEdgeRight).LineStyle = xlContinuous
-        End With
-        
-        ' SPECIFIC MODIFICATION: Remove horizontal borders from rows 3 and 4 while keeping vertical borders
-        With .Range("A3:O3")
-            .Borders(xlEdgeTop).LineStyle = xlNone
-            .Borders(xlEdgeBottom).LineStyle = xlNone
-            .Borders(xlInsideHorizontal).LineStyle = xlNone
-            ' Keep vertical borders
-            .Borders(xlInsideVertical).LineStyle = xlContinuous
-            .Borders(xlEdgeLeft).LineStyle = xlContinuous
-            .Borders(xlEdgeRight).LineStyle = xlContinuous
-        End With
-        
-        With .Range("A4:O4")
-            .Borders(xlEdgeTop).LineStyle = xlNone
-            .Borders(xlEdgeBottom).LineStyle = xlNone
-            .Borders(xlInsideHorizontal).LineStyle = xlNone
-            ' Keep vertical borders
-            .Borders(xlInsideVertical).LineStyle = xlContinuous
-            .Borders(xlEdgeLeft).LineStyle = xlContinuous
-            .Borders(xlEdgeRight).LineStyle = xlContinuous
-        End With
+        ' NOTE: All border formatting handled by centralized border management
+        ' Individual CreateHeaderRow calls handle content and background colors only
         On Error GoTo 0
 
-        ' Row 6: TAX-INVOICE header - PROPERLY PROPORTIONED FOR OPTIMIZED LAYOUT
+        ' Row 6: TAX-INVOICE header 
         Call CreateHeaderRow(ws, 6, "A6:J6", "TAX-INVOICE", 22, True, RGB(240, 240, 240), RGB(0, 0, 0), 50)
         Call CreateHeaderRow(ws, 6, "K6:O6", "Original for Recipient" & vbLf & "Duplicate for Supplier/Transporter" & vbLf & "Triplicate for Supplier", 9, True, RGB(250, 250, 250), RGB(0, 0, 0), 50)
 
-        ' Enable text wrapping for the right section and ensure center alignment for TAX-INVOICE - PROPERLY PROPORTIONED
+        ' Enable text wrapping for the right section and center alignment
         On Error Resume Next
         .Range("A6:J6").HorizontalAlignment = xlCenter
         .Range("A6:J6").VerticalAlignment = xlCenter
         .Range("K6:O6").WrapText = True
         On Error GoTo 0
 
-        ' --- Invoice Details with Merged Cells ---
+        ' Invoice details with merged cells
         On Error Resume Next
 
         ' Row 7: Invoice No., Transport Mode, Challan No.
@@ -139,7 +106,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A7").Font.Color = RGB(26, 26, 26)
         .Range("C7").Value = ""
         .Range("C7").Font.Bold = True
-        .Range("C7").Font.Color = RGB(220, 20, 60)  ' Red color for user input
+        .Range("C7").Font.Color = RGB(220, 20, 60)  ' Red for user input
         .Range("C7").HorizontalAlignment = xlCenter
         .Range("C7").VerticalAlignment = xlCenter
 
@@ -302,15 +269,15 @@ Public Sub CreateInvoiceSheet()
         .Range("N7").HorizontalAlignment = xlCenter
         .Range("N7").VerticalAlignment = xlCenter
 
-        ' Apply borders and formatting with professional color - OPTIMIZED TO COLUMN O
-        .Range("A7:O10").Borders.LineStyle = xlContinuous
-        .Range("A7:O10").Borders.Color = RGB(204, 204, 204)
+        ' Apply borders and formatting - optimized to column O
+        ' NOTE: Individual border settings moved to centralized border management
+        .Range("A7:O10").Interior.Color = RGB(245, 245, 245)  ' Background color only
         For i = 7 To 10
-            .Rows(i).RowHeight = 35 ' Increased height for better PDF layout
+            .Rows(i).RowHeight = 35
         Next i
         On Error GoTo 0
 
-        ' --- Party Details (Professional Styling) - OPTIMIZED TO COLUMN O ---
+        ' Party details sections
         Call CreateHeaderRow(ws, 11, "A11:H11", "Details of Receiver (Billed to)", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 45)
         Call CreateHeaderRow(ws, 11, "I11:O11", "Details of Consignee (Shipped to)", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 45)
 
@@ -322,10 +289,10 @@ Public Sub CreateInvoiceSheet()
         .Range("I11:O11").VerticalAlignment = xlCenter
         On Error GoTo 0
 
-        ' --- Party Details with Merged Cells ---
+        ' Party details with merged cells
         On Error Resume Next
 
-        ' Row 12: Name fields - EXPANDED TO COLUMN P
+        ' Row 12: Name fields
         .Range("A12:B12").Merge
         .Range("A12").Value = "Name:"
         .Range("A12").Font.Bold = True
@@ -346,7 +313,7 @@ Public Sub CreateInvoiceSheet()
         .Range("K12").Value = ""
         .Range("K12").HorizontalAlignment = xlLeft
 
-        ' Row 13: Address fields - OPTIMIZED TO COLUMN O
+        ' Row 13: Address fields
         .Range("A13:B13").Merge
         .Range("A13").Value = "Address:"
         .Range("A13").Font.Bold = True
@@ -367,7 +334,7 @@ Public Sub CreateInvoiceSheet()
         .Range("K13").Value = ""
         .Range("K13").HorizontalAlignment = xlLeft
 
-        ' Row 14: GSTIN fields - OPTIMIZED TO COLUMN O
+        ' Row 14: GSTIN fields
         .Range("A14:B14").Merge
         .Range("A14").Value = "GSTIN:"
         .Range("A14").Font.Bold = True
@@ -388,7 +355,7 @@ Public Sub CreateInvoiceSheet()
         .Range("K14").Value = ""
         .Range("K14").HorizontalAlignment = xlLeft
 
-        ' Row 15: State fields - OPTIMIZED TO COLUMN O
+        ' Row 15: State fields
         .Range("A15:B15").Merge
         .Range("A15").Value = "State:"
         .Range("A15").Font.Bold = True
@@ -398,7 +365,7 @@ Public Sub CreateInvoiceSheet()
         .Range("C15:H15").Merge
         .Range("C15").Value = ""
         .Range("C15").HorizontalAlignment = xlLeft
-        .Range("C15").NumberFormat = "@"  ' Format as text to prevent formula interpretation
+        .Range("C15").NumberFormat = "@"  ' Format as text
 
         .Range("I15:J15").Merge
         .Range("I15").Value = "State:"
@@ -409,9 +376,9 @@ Public Sub CreateInvoiceSheet()
         .Range("K15:O15").Merge
         .Range("K15").Value = ""
         .Range("K15").HorizontalAlignment = xlLeft
-        .Range("K15").NumberFormat = "@"  ' Format as text to prevent formula interpretation
+        .Range("K15").NumberFormat = "@"  ' Format as text
 
-        ' Row 16: State Code fields - OPTIMIZED TO COLUMN O
+        ' Row 16: State Code fields
         .Range("A16:B16").Merge
         .Range("A16").Value = "State Code:"
         .Range("A16").Font.Bold = True
@@ -419,7 +386,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A16").Interior.Color = RGB(245, 245, 245)
         .Range("A16").Font.Color = RGB(26, 26, 26)
         .Range("C16:H16").Merge
-        .Range("C16").Formula = "=VLOOKUP(C15, warehouse!J2:K37, 2, FALSE)"
+        .Range("C16").Formula = "=IFERROR(VLOOKUP(C15, Dropdowns!$H$2:$I$37, 2, FALSE), """")"
         .Range("C16").HorizontalAlignment = xlLeft
 
         .Range("I16:J16").Merge
@@ -429,24 +396,24 @@ Public Sub CreateInvoiceSheet()
         .Range("I16").Interior.Color = RGB(245, 245, 245)
         .Range("I16").Font.Color = RGB(26, 26, 26)
         .Range("K16:O16").Merge
-        .Range("K16").Formula = "=VLOOKUP(K15, warehouse!J2:K37, 2, FALSE)"
+        .Range("K16").Formula = "=IFERROR(VLOOKUP(K15, Dropdowns!$H$2:$I$37, 2, FALSE), """")"
         .Range("K16").HorizontalAlignment = xlLeft
 
-        ' Apply borders and formatting for rows 12-16 with professional color - OPTIMIZED TO COLUMN O
-        .Range("A12:O16").Borders.LineStyle = xlContinuous
-        .Range("A12:O16").Borders.Color = RGB(204, 204, 204)
+        ' Apply background formatting for rows 12-16
+        ' NOTE: Border settings handled by centralized border management
+        .Range("A12:O16").Interior.Color = RGB(245, 245, 245)  ' Background color only
         For i = 12 To 16
-            .Rows(i).RowHeight = 35 ' Increased height for better PDF layout
+            .Rows(i).RowHeight = 35
         Next i
         On Error GoTo 0
 
-        ' --- Item Table (Simplified) ---
+        ' Item table setup
         On Error Resume Next
 
-        ' TWO-ROW HEADER STRUCTURE WITH PROPER TAX COLUMN MERGING
+        ' Two-row header structure with tax column merging
         On Error Resume Next
 
-    ' STEP 1: Create individual cell headers first (before merging)
+    ' Create individual cell headers first (before merging)
     ' Row 17: Set header texts (will merge non-tax columns vertically)
     .Cells(17, 1).Value = "Sr.No."
     .Cells(17, 2).Value = "Description of Goods/Services"
@@ -475,7 +442,7 @@ Public Sub CreateInvoiceSheet()
     .Cells(18, 14).Value = "Amount (Rs.)"
     .Cells(18, 15).Value = ""
 
-        ' STEP 2: Apply formatting to all header cells
+        ' Apply formatting to all header cells
         .Range("A17:O18").Font.Bold = True
         .Range("A17:O17").Font.Size = 10
         .Range("A18:O18").Font.Size = 9
@@ -485,10 +452,11 @@ Public Sub CreateInvoiceSheet()
         .Range("A17:O18").WrapText = True
         .Range("A17:O18").HorizontalAlignment = xlCenter
         .Range("A17:O18").VerticalAlignment = xlCenter
-        .Range("A17:O18").Borders.LineStyle = xlContinuous
-        .Range("A17:O18").Borders.Color = RGB(204, 204, 204)
+        ' Apply background formatting for header rows 17-18
+        ' NOTE: Border settings handled by centralized border management
+        .Range("A17:O18").Interior.Color = RGB(230, 230, 230)  ' Background color only
 
-        ' STEP 3: Merge non-tax columns vertically across Rows 17-18 for consistent two-row header
+        ' Merge non-tax columns vertically across Rows 17-18
         .Range("A17:A18").Merge
         .Range("B17:B18").Merge
         .Range("C17:C18").Merge
@@ -506,8 +474,7 @@ Public Sub CreateInvoiceSheet()
             .VerticalAlignment = xlCenter
         End With
 
-        ' STEP 4: Create merged cells for tax columns in Row 17 (unchanged)
-        ' STEP 3: Create merged cells for tax columns in Row 17
+        ' Create merged cells for tax columns in Row 17
         ' CGST: Merge columns I,J (9,10)
         .Range("I17:J17").Merge
         .Range("I17").Value = "CGST"
@@ -532,13 +499,12 @@ Public Sub CreateInvoiceSheet()
 
         On Error GoTo 0
 
-        ' Item data - ENHANCED STRUCTURE (ROW 19, COLUMNS A-O) - UPDATED FOR TWO-ROW HEADER
+        ' Item data - enhanced structure (row 19, columns A-O)
         itemData = Array("1", "Casuarina Wood", "", "", "", "", "", "", "", "", "", "", "", "", "")
         For i = 0 To UBound(itemData)
             With .Cells(19, i + 1)
                 .Value = itemData(i)
-                .Borders.LineStyle = xlContinuous
-                .Borders.Color = RGB(204, 204, 204)
+                ' NOTE: Border settings handled by centralized border management
                 .Font.Size = 10
                 .Interior.Color = RGB(250, 250, 250)
                 If i = 0 Or i = 2 Or i = 3 Or i = 4 Then  ' Sr.No, HSN, Qty, UOM
@@ -551,32 +517,30 @@ Public Sub CreateInvoiceSheet()
                 End If
             End With
         Next i
-        .Rows(19).RowHeight = 42 ' Increased height for better PDF layout
+        .Rows(19).RowHeight = 42
 
         ' Setup automatic tax calculation formulas
         Call SetupTaxCalculationFormulas(ws)
 
-        ' Empty rows with alternating colors - ENHANCED STRUCTURE (6 PRODUCT ROWS) - UPDATED FOR TWO-ROW HEADER
+        ' Empty rows with alternating colors (6 product rows)
         For i = 20 To 24  ' Rows 20-24 (item rows 2-6), row 25 is totals
-            .Range("A" & i & ":O" & i).Borders.LineStyle = xlContinuous
-            .Range("A" & i & ":O" & i).Borders.Color = RGB(204, 204, 204)
+            ' NOTE: Border settings handled by centralized border management
             If i Mod 2 = 0 Then
                 .Range("A" & i & ":O" & i).Interior.Color = RGB(250, 250, 250)
             Else
                 .Range("A" & i & ":O" & i).Interior.Color = RGB(255, 255, 255)
             End If
-            .Rows(i).RowHeight = 38 ' Increased height for better PDF layout
+            .Rows(i).RowHeight = 38
         Next i
         On Error GoTo 0
 
-        ' --- Row 25 Total Quantity Section - ENHANCED STRUCTURE (6 PRODUCT ROWS) - UPDATED FOR TWO-ROW HEADER ---
+        ' Row 25 Total Quantity Section
         On Error Resume Next
 
-        ' Apply borders to entire row first
-        .Range("A25:O25").Borders.LineStyle = xlContinuous
-        .Range("A25:O25").Borders.Color = RGB(204, 204, 204)
+        ' Apply background formatting to entire row first
+        ' NOTE: Border settings handled by centralized border management
         .Range("A25:O25").Interior.Color = RGB(234, 234, 234)
-        .Rows(25).RowHeight = 50 ' Increased height for better PDF layout
+        .Rows(25).RowHeight = 50
 
         ' Merge A25:C25 for "Total Quantity" label
         .Range("A25:C25").Merge
@@ -607,7 +571,7 @@ Public Sub CreateInvoiceSheet()
         .Range("H25").Font.Bold = True
         .Range("H25").HorizontalAlignment = xlRight
 
-        ' Tax amount cells - ENHANCED STRUCTURE (I-N for all tax types)
+        ' Tax amount cells for all tax types (I-N)
         .Range("I25").Value = ""  ' IGST Rate
         .Range("I25").Font.Bold = True
         .Range("I25").HorizontalAlignment = xlRight
@@ -639,7 +603,7 @@ Public Sub CreateInvoiceSheet()
 
         On Error GoTo 0
 
-        ' --- Row 26-28 Total Invoice Amount in Words Section - ENHANCED STRUCTURE - UPDATED FOR TWO-ROW HEADER ---
+        ' Row 26-28 Total Invoice Amount in Words Section
         On Error Resume Next
 
         ' Row 26: Header for "Total Invoice Amount in Words"
@@ -649,7 +613,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A26").Font.Size = 13 ' Increased font size
         .Range("A26").HorizontalAlignment = xlCenter
         .Range("A26").Interior.Color = RGB(255, 255, 0)
-        .Range("A26:J26").Borders.LineStyle = xlContinuous
+        ' NOTE: Border formatting handled by centralized border management
         .Rows(26).RowHeight = 32 ' Increased height for better PDF layout
 
         ' Rows 27-28: Amount in words content (merged across 2 rows)
@@ -660,7 +624,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A27").HorizontalAlignment = xlCenter
         .Range("A27").VerticalAlignment = xlCenter
         .Range("A27").Interior.Color = RGB(255, 255, 230)
-        .Range("A27").Borders.LineStyle = xlContinuous
+        ' NOTE: Border formatting handled by centralized border management
         .Range("A27").WrapText = True
         .Rows(27).RowHeight = 32 ' Increased height for better PDF layout
         .Rows(28).RowHeight = 32 ' Increased height for better PDF layout
@@ -802,7 +766,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A29").Font.Size = 13
         .Range("A29").HorizontalAlignment = xlCenter
         .Range("A29").Interior.Color = RGB(255, 255, 0)  ' Yellow background like reference
-        .Range("A29").Borders.LineStyle = xlContinuous
+        ' NOTE: Border formatting handled by centralized border management
         .Rows(29).RowHeight = 25
 
         ' Rows 30-33: Terms and conditions content (merged across 4 rows for better spacing)
@@ -816,7 +780,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A30").HorizontalAlignment = xlLeft
         .Range("A30").VerticalAlignment = xlTop
         .Range("A30").Interior.Color = RGB(255, 255, 245)  ' Light yellow background
-        .Range("A30").Borders.LineStyle = xlContinuous
+        ' NOTE: Border formatting handled by centralized border management
         .Range("A30").WrapText = True
         For i = 30 To 33
             .Rows(i).RowHeight = 25
@@ -925,79 +889,35 @@ Public Sub CreateInvoiceSheet()
         On Error GoTo 0
     End With
 
-    ' --- Final Formatting ---
-    With ws
-        On Error Resume Next
-        ' Font settings moved to beginning of code to avoid overriding header fonts
-        On Error GoTo 0
+        ' --- Final Formatting ---
+        With ws
+            On Error Resume Next
+            ' Font settings moved to beginning of code to avoid overriding header fonts
+            On Error GoTo 0
 
-        ' Apply professional page setup - OPTIMIZED FOR ENHANCED LAYOUT AND SCALING
-        On Error Resume Next
-        With .PageSetup
-            .PrintArea = "A1:O40"  ' Set print area to include all enhanced content
-            .Orientation = xlPortrait
-            .PaperSize = xlPaperA4
-            .Zoom = False ' Let Excel handle scaling
-            .FitToPagesWide = 1
-            .FitToPagesTall = 1 ' Fit to one page vertically
-            .LeftMargin = Application.InchesToPoints(0.15)  ' Reduced margins for more content space
-            .RightMargin = Application.InchesToPoints(0.15)
-            .TopMargin = Application.InchesToPoints(0.15)
-            .BottomMargin = Application.InchesToPoints(0.15)
-            .HeaderMargin = Application.InchesToPoints(0.1)
-            .FooterMargin = Application.InchesToPoints(0.1)
-            .CenterHorizontally = True
-            .CenterVertically = True  ' Enable vertical centering for better appearance
-        End With
-        On Error GoTo 0
-
-        ' COMPREHENSIVE BORDER FIX - Apply consistent borders to entire invoice - UPDATED FOR EXTRA TERMS ROW
-        On Error Resume Next
-
-        ' First, clear all existing borders to prevent conflicts
-        .Range("A1:O40").Borders.LineStyle = xlNone
-
-        ' Apply consistent internal borders to entire invoice area
-        .Range("A1:O40").Borders.LineStyle = xlContinuous
-        .Range("A1:O40").Borders.Weight = xlThin
-        .Range("A1:O40").Borders.Color = RGB(0, 0, 0)  ' Pure black for PDF
-
-        ' Apply outer border around entire invoice
-        ' FINAL STEP: Apply consistent border styling to entire invoice area
-        With .Range("A1:O40")
-            .Borders(xlEdgeLeft).LineStyle = xlContinuous
-            .Borders(xlEdgeLeft).Weight = xlMedium
-            .Borders(xlEdgeLeft).Color = RGB(0, 0, 0)
-            .Borders(xlEdgeRight).LineStyle = xlContinuous
-            .Borders(xlEdgeRight).Weight = xlMedium
-            .Borders(xlEdgeRight).Color = RGB(0, 0, 0)
-            .Borders(xlEdgeTop).LineStyle = xlContinuous
-            .Borders(xlEdgeTop).Weight = xlMedium
-            .Borders(xlEdgeTop).Color = RGB(0, 0, 0)
-            .Borders(xlEdgeBottom).LineStyle = xlContinuous
-            .Borders(xlEdgeBottom).Weight = xlMedium
-            .Borders(xlEdgeBottom).Color = RGB(0, 0, 0)
+            ' Apply professional page setup - OPTIMIZED FOR ENHANCED LAYOUT AND SCALING
+            On Error Resume Next
+            With .PageSetup
+                .PrintArea = "A1:O40"  ' Set print area to include all enhanced content
+                .Orientation = xlPortrait
+                .PaperSize = xlPaperA4
+                .Zoom = False ' Let Excel handle scaling
+                .FitToPagesWide = 1
+                .FitToPagesTall = 1 ' Fit to one page vertically
+                .LeftMargin = Application.InchesToPoints(0.15)  ' Reduced margins for more content space
+                .RightMargin = Application.InchesToPoints(0.15)
+                .TopMargin = Application.InchesToPoints(0.15)
+                .BottomMargin = Application.InchesToPoints(0.15)
+                .HeaderMargin = Application.InchesToPoints(0.1)
+                .FooterMargin = Application.InchesToPoints(0.1)
+                .CenterHorizontally = True
+                .CenterVertically = True  ' Enable vertical centering for better appearance
+            End With
+            On Error GoTo 0
         End With
 
-        ' REAPPLY SPECIFIC MODIFICATIONS: Remove horizontal borders from rows 3 and 4
-        With .Range("A3:O3")
-            .Borders(xlEdgeTop).LineStyle = xlNone
-            .Borders(xlEdgeBottom).LineStyle = xlNone
-            .Borders(xlInsideHorizontal).LineStyle = xlNone
-        End With
-        
-        With .Range("A4:O4")
-            .Borders(xlEdgeTop).LineStyle = xlNone
-            .Borders(xlEdgeBottom).LineStyle = xlNone
-            .Borders(xlInsideHorizontal).LineStyle = xlNone
-        End With
-
-        ' Header rows maintain their borders for professional appearance
-        ' CreateHeaderRow function already sets proper borders for rows 3, 4, and 5
-        On Error GoTo 0
-    End With
-
-    ' Create professional buttons for invoice operations (function in ButtonManagement.bas module)
+        ' Apply centralized border management for consistent formatting
+        Call ApplyStandardInvoiceBorders(ws)    ' Create professional buttons for invoice operations (function in ButtonManagement.bas module)
     Call CreateInvoiceButtons(ws)
 
     ' Auto-populate invoice number and dates
@@ -1012,8 +932,14 @@ Public Sub CreateInvoiceSheet()
     ' Setup dynamic tax display based on default sale type
     Call SetupDynamicTaxDisplay(ws)
 
-    ' Setup data validation dropdowns (including Sale Type dropdown)
-    Call SetupDataValidation(ws)
+    ' Setup data validation dropdowns using new centralized Dropdowns sheet
+    Call SetupAllDropdownValidations(ws)
+
+    ' Enable automatic tax calculation based on HSN code selection
+    Call SetupAutoTaxCalculation(ws)
+
+    ' Enable automatic updates without manual refresh
+    Call EnableAutoUpdates(ws)
 
     ' Ensure state fields are formatted as text to prevent formula interpretation
     Call EnsureStateFieldsTextFormat(ws)
@@ -1049,8 +975,7 @@ Private Sub CreateHeaderRow(ws As Worksheet, rowNum As Integer, rangeAddr As Str
         .Font.Color = fontColor
         .Interior.Color = backColor
         .HorizontalAlignment = xlCenter
-        .Borders.LineStyle = xlContinuous
-        .Borders.Weight = xlMedium
+        ' NOTE: Border formatting handled by centralized border management
 
         ' Try to merge - if it fails, continue anyway
         .Merge
@@ -1063,10 +988,7 @@ Private Sub CreateHeaderRow(ws As Worksheet, rowNum As Integer, rangeAddr As Str
     On Error GoTo 0
 End Sub
 
-' ████████████████████████████████████████████████████████████████████████████████
-' 📝 REFACTORING NOTE - FUNCTIONS MOVED TO ORGANIZED MODULES
-' ████████████████████████████████████████████████████████████████████████████████
-' The following functions have been moved to separate modules for better organization:
+' Functions moved to organized modules:
 ' • AutoPopulateInvoiceFields -> 15_DataPopulation.bas
 ' • SetupWorksheetChangeEvents -> 16_WorksheetEventsSetup.bas  
 ' • SetupStateCodeChangeEvents -> 16_WorksheetEventsSetup.bas
@@ -1075,6 +997,3 @@ End Sub
 ' • SetupDynamicTaxDisplay -> 18_DynamicTaxDisplay.bas
 ' • UpdateTaxFieldsDisplay -> 18_DynamicTaxDisplay.bas
 ' • CleanEmptyProductRows -> 19_DataCleanup.bas
-'
-' These functions are automatically called during CreateInvoiceSheet() execution.
-' No manual intervention required - the system handles everything automatically.

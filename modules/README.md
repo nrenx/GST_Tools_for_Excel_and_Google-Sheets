@@ -11,20 +11,27 @@ When importing into Excel VBA, follow this exact sequence:
 ### Core Modules (1-6):
 1. `1_Main_Setup.bas`
 2. `2_Module_InvoiceStructure.bas` 
-3. `3_Module_InvoiceEvents.bas`
-4. `4_Module_Master.bas`
-5. `5_Module_Warehouse.bas`
-6. `6_Module_Utilities.bas`
+3. `3_Module_Master.bas`
+4. `4_Module_Warehouse.bas`
+5. `5_Module_Utilities.bas`
+6. `6_Module_Dropdowns.bas` (NEW - Centralized dropdown management)
 
 ### Button Modules (7-14):
-7. `7_AddCustomerToWarehouseButton.bas`
-8. `8_NewInvoiceButton.bas`
-9. `9_SaveInvoiceButton.bas`
+7. `07_AddCustomerToWarehouseButton.bas`
+8. `08_NewInvoiceButton.bas`
+9. `09_SaveInvoiceButton.bas`
 10. `10_PrintAsPDFButton.bas`
 11. `11_PrintButton.bas`
 12. `12_RefreshButton.bas`
 13. `13_ButtonManagement.bas`
 14. `14_PDFUtilities.bas`
+
+### Invoice Events Modules (15-19):
+15. `15_DataPopulation.bas`
+16. `16_WorksheetEventsSetup.bas`
+17. `17_TaxCalculationEngine.bas`
+18. `18_DynamicTaxDisplay.bas`
+19. `19_DataCleanup.bas`
 
 ### Run Setup:
 - Execute `QuickSetup()` from Module 1 to initialize the complete system
@@ -47,7 +54,7 @@ When importing into Excel VBA, follow this exact sequence:
 
 The main entry points for the system are located in the **`Main_Setup.bas`** module. To get started, you can run one of the following macros (`Alt + F8`):
 
-*   **`QuickSetup()`**: The recommended macro for first-time use. It quickly creates all necessary worksheets (`GST_Tax_Invoice_for_interstate`, `Master`, `warehouse`).
+*   **`QuickSetup()`**: The recommended macro for first-time use. It quickly creates all necessary worksheets (`GST_Tax_Invoice`, `Master`, `warehouse`).
 *   **`StartGSTSystem()`**: This macro provides the complete setup, including worksheet creation and the configuration of all data validation rules and dropdowns.
 
 ---

@@ -1,12 +1,10 @@
 Option Explicit
-' ===============================================================================
-' MODULE: PrintAsPDFButton
-' DESCRIPTION: Button function to export invoice as a two-page PDF (Original and Duplicate)
-'              with enhanced macOS compatibility
-' ===============================================================================
+' Module 10: Print as PDF Button  
+' Button function to export invoice as a two-page PDF (Original and Duplicate)
+' Enhanced macOS compatibility
 
 Public Sub PrintAsPDFButton()
-    ' Button function: Export invoice as a two-page PDF (Original and Duplicate)
+    ' Export invoice as a two-page PDF (Original and Duplicate)
     Dim originalWs As Worksheet
     Dim duplicateWs As Worksheet
     Dim invoiceNumber As String
@@ -17,13 +15,18 @@ Public Sub PrintAsPDFButton()
     Dim cell As Range
     On Error GoTo ErrorHandler
 
-    Set originalWs = ThisWorkbook.Worksheets("GST_Tax_Invoice_for_interstate")
+    Set originalWs = GetRequiredWorksheet(INVOICE_SHEET_NAME)
+    
+    ' Exit if required worksheet is missing
+    If originalWs Is Nothing Then
+        Exit Sub
+    End If
 
     ' Ensure warehouse worksheet exists to prevent file dialog errors
     Call EnsureAllSupportingWorksheetsExist
 
-    ' Get invoice number for filename
-    invoiceNumber = Trim(originalWs.Range("C7").Value)
+    ' Get invoice number for filename using constants
+    invoiceNumber = Trim(originalWs.Range(INVOICE_NUMBER_CELL).Value)
 
     If invoiceNumber = "" Then
         MsgBox "Please ensure invoice number is filled before exporting to PDF.", vbExclamation, "Missing Invoice Number"
@@ -33,15 +36,15 @@ Public Sub PrintAsPDFButton()
     ' Clean invoice number for filename
     cleanInvoiceNumber = Replace(Replace(Replace(invoiceNumber, "/", "-"), "\", "-"), ":", "-")
 
-    ' Set PDF export path with enhanced macOS validation
-    pdfPath = "/Users/narendrachowdary/development/GST(excel)/invoices(demo)/"
+    ' Set PDF export path with dynamic user detection
+    pdfPath = GetPDFExportPath()
 
     ' Validate and create directory with enhanced error handling
     On Error Resume Next
     Call CreateDirectoryIfNotExists(pdfPath)
     If Err.Number <> 0 Then
-        ' Try alternative path if main path fails
-        pdfPath = "/Users/narendrachowdary/Desktop/"
+        ' Try Desktop as fallback if main path fails
+        pdfPath = Environ("HOME") & "/Desktop/"
         Call CreateDirectoryIfNotExists(pdfPath)
         If Err.Number <> 0 Then
             MsgBox "Cannot create directory for PDF export. Using Desktop as fallback.", vbExclamation, "Directory Warning"
@@ -154,8 +157,9 @@ Public Sub PrintAsPDFButton()
 
     ' Apply PDF-optimized formatting before export
     On Error Resume Next
-    Call OptimizeForPDFExport(originalWs)
-    Call OptimizeForPDFExport(duplicateWs)
+    ' Use centralized border management from Module 19
+    Call ApplyStandardInvoiceBorders(originalWs)
+    Call ApplyStandardInvoiceBorders(duplicateWs)
     On Error GoTo PDFExportError
 
     ' Verify we only have the two invoice sheets we want to export
@@ -190,7 +194,8 @@ Public Sub PrintAsPDFButton()
 
     ' Restore worksheet formatting after PDF export
     On Error Resume Next
-    Call RestoreWorksheetFormatting(originalWs)
+    ' Use centralized border management from Module 19
+    Call ApplyStandardInvoiceBorders(originalWs)
     On Error GoTo PDFExportError
 
     ' Clean up the temporary duplicate sheet
@@ -206,7 +211,7 @@ Public Sub PrintAsPDFButton()
     originalWs.Select
 
     ' Success message with detailed information
-    MsgBox "✅ Invoice exported successfully as a 2-page PDF!" & vbCrLf & vbCrLf & _
+    MsgBox "SUCCESS: Invoice exported successfully as a 2-page PDF!" & vbCrLf & vbCrLf & _
            "📄 Page 1: ORIGINAL (for recipient)" & vbCrLf & _
            "📄 Page 2: DUPLICATE (for driver/transport)" & vbCrLf & vbCrLf & _
            "📁 File: " & cleanInvoiceNumber & ".pdf" & vbCrLf & _
@@ -295,101 +300,4 @@ ErrorHandler:
     End If
 End Sub
 
-Public Sub OptimizeForPDFExport(ws As Worksheet)
-    ' Optimize worksheet formatting specifically for PDF export - CUSTOM HORIZONTAL BORDER HANDLING
-    Dim cell As Range
-    On Error Resume Next
-
-    With ws
-        ' Ensure header rows 3-5 (company info) have proper borders for PDF
-        ' BUT remove horizontal borders from rows 3 and 4 as requested
-        .Range("A3:O5").Borders.LineStyle = xlContinuous
-        .Range("A3:O5").Borders.Weight = xlMedium
-        .Range("A3:O5").Borders.Color = RGB(0, 0, 0)  ' Pure black for PDF
-        
-        ' Remove horizontal borders from rows 3 and 4 for PDF
-        With .Range("A3:O3")
-            .Borders(xlEdgeTop).LineStyle = xlNone
-            .Borders(xlEdgeBottom).LineStyle = xlNone
-            .Borders(xlInsideHorizontal).LineStyle = xlNone
-        End With
-        
-        With .Range("A4:O4")
-            .Borders(xlEdgeTop).LineStyle = xlNone
-            .Borders(xlEdgeBottom).LineStyle = xlNone
-            .Borders(xlInsideHorizontal).LineStyle = xlNone
-        End With
-        
-        ' Ensure data area borders are clean for PDF
-        .Range("A7:O40").Borders.LineStyle = xlContinuous
-        .Range("A7:O40").Borders.Weight = xlThin
-        .Range("A7:O40").Borders.Color = RGB(0, 0, 0)  ' Pure black for PDF
-
-        ' Optimize N/A display for PDF (make it less prominent)
-        For Each cell In .Range("I20:N24")
-            If cell.Value = "N/A" Then
-                cell.Font.Color = RGB(128, 128, 128)  ' Gray instead of red for PDF
-                cell.Font.Size = 8  ' Smaller font for N/A
-            End If
-        Next cell
-
-        ' Optimize yellow highlighting for PDF
-        For Each cell In .Range("A26:J28")  ' Amount in words section
-            If cell.Interior.Color = RGB(255, 255, 0) Then  ' Yellow
-                cell.Interior.Color = RGB(255, 255, 200)  ' Lighter yellow for PDF
-            End If
-        Next cell
-
-        ' Ensure proper font rendering
-        .Range("A1:O40").Font.Name = "Segoe UI"
-
-        ' Set optimal row heights for PDF - UPDATED FOR COMPREHENSIVE LAYOUT OPTIMIZATION
-        .Rows(2).RowHeight = 55       ' Company name header - increased for better PDF layout
-        .Rows("7:10").RowHeight = 35  ' Invoice details section - increased for better PDF layout
-        .Rows("17:18").RowHeight = 30 ' Two-row header structure
-        .Rows("19:24").RowHeight = 38 ' Item rows - increased for better PDF layout
-        .Rows(25).RowHeight = 50      ' Total quantity section - increased for better PDF layout
-        .Rows("26:33").RowHeight = 32 ' Tax summary and totals - increased for better PDF layout
-        .Rows("12:16").RowHeight = 35 ' Party details - increased for better PDF layout
-        .Rows(34).RowHeight = 55      ' Signature headers - increased for better PDF layout
-        .Rows("37:39").RowHeight = 45 ' Signature space - increased for better PDF layout
-    End With
-
-    On Error GoTo 0
-End Sub
-
-Public Sub RestoreWorksheetFormatting(ws As Worksheet)
-    ' Restore worksheet formatting after PDF export - MAINTAIN CUSTOM HORIZONTAL BORDER REMOVAL
-    On Error Resume Next
-
-    With ws
-        ' Ensure header rows 3-5 maintain proper borders for Excel editing
-        .Range("A3:O5").Borders.LineStyle = xlContinuous
-        .Range("A3:O5").Borders.Weight = xlMedium
-        .Range("A3:O5").Borders.Color = RGB(0, 0, 0)
-        
-        ' Remove horizontal borders from rows 3 and 4 after restoration
-        With .Range("A3:O3")
-            .Borders(xlEdgeTop).LineStyle = xlNone
-            .Borders(xlEdgeBottom).LineStyle = xlNone
-            .Borders(xlInsideHorizontal).LineStyle = xlNone
-        End With
-        
-        With .Range("A4:O4")
-            .Borders(xlEdgeTop).LineStyle = xlNone
-            .Borders(xlEdgeBottom).LineStyle = xlNone
-            .Borders(xlInsideHorizontal).LineStyle = xlNone
-        End With
-        
-        ' Restore borders for data area
-        .Range("A7:O40").Borders.LineStyle = xlContinuous
-        .Range("A7:O40").Borders.Weight = xlThin
-        .Range("A7:O40").Borders.Color = RGB(0, 0, 0)
-
-        ' Restore original yellow highlighting for editing
-        .Range("A26").Interior.Color = RGB(255, 255, 0)  ' Terms and Conditions header
-        .Range("A29").Interior.Color = RGB(255, 255, 0)  ' Terms and Conditions header
-    End With
-
-    On Error GoTo 0
-End Sub
+' PDF utility functions are centralized in Module 14 (PDFUtilities)
