@@ -408,6 +408,11 @@ Public Sub SetupAllDropdownValidations(invoiceWs As Worksheet)
         .Range("K14").Validation.ShowError = False
         .Range("K14").Validation.InCellDropdown = True
         
+        ' Ensure E-way Bill field (N10) has no validation - manual entry only
+        .Range("N10").Validation.Delete
+        .Range("N10").Value = "Not Applicable"  ' Set default value
+        .Range("N10").Font.Color = RGB(100, 100, 100)  ' Gray color to indicate default
+        
     End With
 
     On Error GoTo 0
@@ -585,7 +590,8 @@ Public Sub VerifyDropdownValidations(invoiceWs As Worksheet)
     End If
     
     message = message & vbCrLf & "NOTE: GSTIN dropdowns now pull from Dropdowns sheet column O (GST Types)," & vbCrLf
-    message = message & "while actual GSTIN values are auto-populated via XLOOKUP formulas from warehouse data."
+    message = message & "while actual GSTIN values are auto-populated via XLOOKUP formulas from warehouse data." & vbCrLf
+    message = message & "E-way Bill field (N10) uses manual entry with default 'Not Applicable'."
     
     MsgBox message, vbInformation, "Dropdown Validation Check"
     

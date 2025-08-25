@@ -75,7 +75,7 @@ Public Sub SaveInvoiceButton()
     
     ' Display success message
     MsgBox "Invoice " & invoiceData.InvoiceNumber & " saved successfully!" & vbCrLf & _
-           "Total Amount: ₹" & Format(invoiceData.GrandTotal, "#,##0.00") & vbCrLf & _
+           "Total Amount: Rs:" & Format(invoiceData.GrandTotal, "#,##0.00") & vbCrLf & _
            "Operation completed in " & Format(operationTime, "0.00") & " seconds.", _
            vbInformation, "Invoice Saved"
     Exit Sub
@@ -307,7 +307,7 @@ Private Function ConfirmSaveOperation(invoiceData As InvoiceDataRecord) As Boole
     confirmMessage = "Confirm Invoice Save Operation" & vbCrLf & vbCrLf
     confirmMessage = confirmMessage & "Invoice Number: " & invoiceData.InvoiceNumber & vbCrLf
     confirmMessage = confirmMessage & "Customer: " & invoiceData.CustomerName & vbCrLf
-    confirmMessage = confirmMessage & "Total Amount: ₹" & Format(invoiceData.GrandTotal, "#,##0.00") & vbCrLf & vbCrLf
+    confirmMessage = confirmMessage & "Total Amount: Rs:" & Format(invoiceData.GrandTotal, "#,##0.00") & vbCrLf & vbCrLf
     confirmMessage = confirmMessage & "Do you want to save this invoice to the Master sheet?"
     
     ConfirmSaveOperation = (MsgBox(confirmMessage, vbYesNo + vbQuestion, "Confirm Save") = vbYes)

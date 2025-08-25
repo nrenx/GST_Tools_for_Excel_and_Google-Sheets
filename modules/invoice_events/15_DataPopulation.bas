@@ -51,6 +51,14 @@ Public Sub AutoPopulateInvoiceFields(ws As Worksheet)
         ' No validation - fixed value
     End With
 
+    ' Set default E-way Bill No. (Row 10, Columns N-O) - Allow manual editing
+    With ws.Range("N10")
+        .Value = "Not Applicable"
+        .HorizontalAlignment = xlCenter
+        .Font.Color = RGB(100, 100, 100)  ' Gray color to indicate default
+        ' Allow manual editing - no validation restrictions
+    End With
+
     Exit Sub
 
 ErrorHandler:

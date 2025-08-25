@@ -120,7 +120,7 @@ Public Sub InitializeGSTSystem()
            "[OK] Real-time updates configured" & vbCrLf & _
            "[OK] Professional PDF export ready" & vbCrLf & vbCrLf & _
            " Invoice sheet is active and ready for data entry!" & vbCrLf & _
-           "⏱️ System initialized in " & Format(operationTime, "0.00") & " seconds.", _
+           " System initialized in " & Format(operationTime, "0.00") & " seconds.", _
            vbInformation, "GST System Ready - Start Using!"
     Exit Sub
     

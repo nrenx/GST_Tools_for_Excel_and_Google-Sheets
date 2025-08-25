@@ -81,6 +81,13 @@ Public Sub CreateMasterSheet()
         .Columns("T").ColumnWidth = 10  ' UOM
         .Columns("U").ColumnWidth = 20  ' Date Created
 
+        ' Set professional sheet tab color
+        .Tab.Color = RGB(34, 139, 34)  ' Forest green for Master records
+        
+        ' Freeze top row for easy navigation
+        .Range("A2").Select
+        ActiveWindow.FreezePanes = True
+
     End With
 End Sub
 

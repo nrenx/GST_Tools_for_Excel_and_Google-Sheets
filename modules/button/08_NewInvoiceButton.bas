@@ -80,7 +80,7 @@ Public Sub NewInvoiceButton()
     ws.Range("F7").Value = "By Lorry"   ' Reset Transport Mode
     ws.Range("F8").Value = ""           ' Clear Vehicle Number
     ws.Range("F10").Value = ""          ' Clear Place of Supply
-    ws.Range("N10").Value = ""          ' Clear E-Way Bill No.
+    ws.Range("N10").Value = "Not Applicable"  ' Reset E-Way Bill No to default
     ws.Range("N7").Value = "Interstate" ' Reset Sale Type to default
     On Error GoTo ErrorHandler
 

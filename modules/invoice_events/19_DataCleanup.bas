@@ -44,7 +44,7 @@ Public Sub ClearAllInvoiceData(ws As Worksheet)
         .Range("J9").ClearContents     ' L.R Number
         .Range("F10").ClearContents    ' Place of Supply
         .Range("J10").ClearContents    ' P.O Number
-        .Range("N10").ClearContents    ' E-Way Bill No
+        .Range("N10").Value = "Not Applicable"  ' Reset E-Way Bill No to default
         .Range("N7").Value = "Interstate"  ' Reset to default
         
         ' Clear customer data (Billed to)

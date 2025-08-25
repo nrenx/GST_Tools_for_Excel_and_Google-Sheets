@@ -36,6 +36,9 @@ Public Sub CreateInvoiceSheet()
         On Error GoTo 0
     End If
 
+    ' Set professional sheet tab color for GST Tax Invoice
+    ws.Tab.Color = RGB(255, 69, 0)  ' Orange red for Tax Invoice sheet
+
     ' Activate the sheet safely
     On Error Resume Next
     ws.Activate
@@ -72,7 +75,7 @@ Public Sub CreateInvoiceSheet()
 
         ' Create header sections with professional styling
         Call CreateHeaderRow(ws, 1, "A1:O1", "ORIGINAL", 12, True, RGB(47, 80, 97), RGB(255, 255, 255), 25)
-        Call CreateHeaderRow(ws, 2, "A2:O2", "KAVERI TRADERS", 24, True, RGB(47, 80, 97), RGB(255, 255, 255), 55)
+        Call CreateHeaderRow(ws, 2, "A2:O2", "KAVERI TRADERS", 28, True, RGB(47, 80, 97), RGB(255, 255, 255), 55)
         Call CreateHeaderRow(ws, 3, "A3:O3", "191, Guduru, Pagadalapalli, Idulapalli, Tirupati, Andhra Pradesh - 524409", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
         Call CreateHeaderRow(ws, 4, "A4:O4", "GSTIN: 37HERPB7733F1Z5", 16, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
         Call CreateHeaderRow(ws, 5, "A5:O5", "Email: kotidarisetty7777@gmail.com", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
@@ -92,6 +95,8 @@ Public Sub CreateInvoiceSheet()
         .Range("A6:J6").HorizontalAlignment = xlCenter
         .Range("A6:J6").VerticalAlignment = xlCenter
         .Range("K6:O6").WrapText = True
+        .Range("K6:O6").HorizontalAlignment = xlCenter
+        .Range("K6:O6").VerticalAlignment = xlCenter
         On Error GoTo 0
 
         ' Invoice details with merged cells
@@ -252,8 +257,9 @@ Public Sub CreateInvoiceSheet()
         .Range("L10").Interior.Color = RGB(245, 245, 245)
         .Range("L10").Font.Color = RGB(26, 26, 26)
         .Range("N10:O10").Merge
-        .Range("N10").Value = ""
+        .Range("N10").Value = "Not Applicable"
         .Range("N10").HorizontalAlignment = xlCenter
+        .Range("N10").Font.Color = RGB(100, 100, 100)  ' Gray color to indicate default
 
         ' NEW: Sale Type field (Row 7, Columns L-O)
         .Range("L7:M7").Merge
@@ -797,15 +803,17 @@ Public Sub CreateInvoiceSheet()
         .Range("A34:E34").Merge
         .Range("A34").Value = "Transporter"
         .Range("A34").Font.Bold = True
-        .Range("A34").Font.Size = 12
+        .Range("A34").Font.Size = 14
         .Range("A34").HorizontalAlignment = xlCenter
+        .Range("A34").VerticalAlignment = xlCenter
         .Range("A34").Interior.Color = RGB(220, 220, 220)
 
         .Range("F34:J34").Merge
         .Range("F34").Value = "Receiver"
         .Range("F34").Font.Bold = True
-        .Range("F34").Font.Size = 12
+        .Range("F34").Font.Size = 14
         .Range("F34").HorizontalAlignment = xlCenter
+        .Range("F34").VerticalAlignment = xlCenter
         .Range("F34").Interior.Color = RGB(220, 220, 220)
 
         .Range("K34:O34").Merge
@@ -858,6 +866,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A40").Font.Bold = True
         .Range("A40").Font.Size = 10 ' Increased font size
         .Range("A40").HorizontalAlignment = xlCenter
+        .Range("A40").VerticalAlignment = xlCenter
         .Range("A40").Interior.Color = RGB(211, 211, 211)
 
         .Range("F40:J40").Merge
@@ -865,6 +874,7 @@ Public Sub CreateInvoiceSheet()
         .Range("F40").Font.Bold = True
         .Range("F40").Font.Size = 10 ' Increased font size
         .Range("F40").HorizontalAlignment = xlCenter
+        .Range("F40").VerticalAlignment = xlCenter
         .Range("F40").Interior.Color = RGB(211, 211, 211)
 
         .Range("K40:O40").Merge
@@ -872,6 +882,7 @@ Public Sub CreateInvoiceSheet()
         .Range("K40").Font.Bold = True
         .Range("K40").Font.Size = 10 ' Increased font size
         .Range("K40").HorizontalAlignment = xlCenter
+        .Range("K40").VerticalAlignment = xlCenter
         .Range("K40").Interior.Color = RGB(211, 211, 211)
 
         ' Set specific row height for row 34 to accommodate wrapped text
@@ -975,6 +986,7 @@ Private Sub CreateHeaderRow(ws As Worksheet, rowNum As Integer, rangeAddr As Str
         .Font.Color = fontColor
         .Interior.Color = backColor
         .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
         ' NOTE: Border formatting handled by centralized border management
 
         ' Try to merge - if it fails, continue anyway
