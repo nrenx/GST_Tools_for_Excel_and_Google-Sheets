@@ -212,10 +212,10 @@ Public Sub PrintAsPDFButton()
 
     ' Success message with detailed information
     MsgBox "SUCCESS: Invoice exported successfully as a 2-page PDF!" & vbCrLf & vbCrLf & _
-           "📄 Page 1: ORIGINAL (for recipient)" & vbCrLf & _
-           "📄 Page 2: DUPLICATE (for driver/transport)" & vbCrLf & vbCrLf & _
-           "📁 File: " & cleanInvoiceNumber & ".pdf" & vbCrLf & _
-           "📂 Location: " & pdfPath, vbInformation, "PDF Export Complete"
+           " Page 1: ORIGINAL (for recipient)" & vbCrLf & _
+           " Page 2: DUPLICATE (for driver/transport)" & vbCrLf & vbCrLf & _
+           " File: " & cleanInvoiceNumber & ".pdf" & vbCrLf & _
+           " Location: " & pdfPath, vbInformation, "PDF Export Complete"
     Exit Sub
 
 PDFExportError:

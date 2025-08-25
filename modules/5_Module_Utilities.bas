@@ -425,7 +425,7 @@ Public Sub VerifyValidationSettings()
     message = "VALIDATION SETTINGS VERIFICATION:" & vbCrLf & vbCrLf
     message = message & "[OK] ALL FIELDS SUPPORT MANUAL EDITING:" & vbCrLf & vbCrLf
 
-    message = message & "📝 DROPDOWN + MANUAL ENTRY FIELDS:" & vbCrLf
+    message = message & " DROPDOWN + MANUAL ENTRY FIELDS:" & vbCrLf
     message = message & "• Customer Name (C12) - Dropdown + Manual" & vbCrLf
     message = message & "• Receiver State (C15) - Dropdown + Manual" & vbCrLf
     message = message & "• Consignee State (I15) - Dropdown + Manual" & vbCrLf
@@ -433,7 +433,7 @@ Public Sub VerifyValidationSettings()
     message = message & "• UOM (E18:E21) - Dropdown + Manual" & vbCrLf
     message = message & "• Transport Mode (F7) - Dropdown + Manual" & vbCrLf & vbCrLf
 
-    message = message & "🔓 FULLY EDITABLE FIELDS:" & vbCrLf
+    message = message & " FULLY EDITABLE FIELDS:" & vbCrLf
     message = message & "• Invoice Number (C7) - Auto + Manual Override" & vbCrLf
     message = message & "• Invoice Date (C8) - Auto + Manual Override" & vbCrLf
     message = message & "• Date of Supply (F9, G9) - Auto + Manual Override" & vbCrLf
@@ -441,13 +441,13 @@ Public Sub VerifyValidationSettings()
     message = message & "• All Address/GSTIN fields - Fully Manual" & vbCrLf
     message = message & "• All Item details - Fully Manual" & vbCrLf & vbCrLf
 
-    message = message & "🎯 KEY FEATURES:" & vbCrLf
+    message = message & " KEY FEATURES:" & vbCrLf
     message = message & "• No restrictive validations (xlValidAlertStop removed)" & vbCrLf
     message = message & "• ShowError = False for all dropdowns" & vbCrLf
     message = message & "• Users can override ANY auto-populated value" & vbCrLf
     message = message & "• Dropdown suggestions + free text entry" & vbCrLf & vbCrLf
 
-    message = message & "💡 All validation requirements have been successfully implemented!"
+    message = message & " All validation requirements have been successfully implemented!"
 
     MsgBox message, vbInformation, "Validation Settings - All Clear [OK]"
     Exit Sub
@@ -653,55 +653,55 @@ Public Sub VerifyPDFLayoutOptimization()
     If ws.Rows(2).RowHeight = 55 Then
         message = message & "[OK] Company Name Header (Row 2): Optimized to 55pt" & vbCrLf
     Else
-        message = message & "❌ Company Name Header (Row 2): Height incorrect (" & ws.Rows(2).RowHeight & "pt)" & vbCrLf
+        message = message & "[no] Company Name Header (Row 2): Height incorrect (" & ws.Rows(2).RowHeight & "pt)" & vbCrLf
         allCorrect = False
     End If
     
     ' Check Invoice Details Section (Rows 7-10)
     If ws.Rows(7).RowHeight = 35 And ws.Rows(10).RowHeight = 35 Then
-        message = message & "✅ Invoice Details (Rows 7-10): Optimized to 35pt" & vbCrLf
+        message = message & "[ok] Invoice Details (Rows 7-10): Optimized to 35pt" & vbCrLf
     Else
-        message = message & "❌ Invoice Details (Rows 7-10): Height incorrect" & vbCrLf
+        message = message & "[no] Invoice Details (Rows 7-10): Height incorrect" & vbCrLf
         allCorrect = False
     End If
     
     ' Check Party Details Section (Rows 12-16)
     If ws.Rows(12).RowHeight = 35 And ws.Rows(16).RowHeight = 35 Then
-        message = message & "✅ Party Details (Rows 12-16): Optimized to 35pt" & vbCrLf
+        message = message & "[ok] Party Details (Rows 12-16): Optimized to 35pt" & vbCrLf
     Else
-        message = message & "❌ Party Details (Rows 12-16): Height incorrect" & vbCrLf
+        message = message & "[no] Party Details (Rows 12-16): Height incorrect" & vbCrLf
         allCorrect = False
     End If
     
     ' Check Item Details Section (Rows 19-24)
     If ws.Rows(19).RowHeight = 42 And ws.Rows(24).RowHeight = 38 Then
-        message = message & "✅ Item Details (Rows 19-24): Optimized (19=42pt, 20-24=38pt)" & vbCrLf
+        message = message & "[ok] Item Details (Rows 19-24): Optimized (19=42pt, 20-24=38pt)" & vbCrLf
     Else
-        message = message & "❌ Item Details (Rows 19-24): Height incorrect" & vbCrLf
+        message = message & "[no] Item Details (Rows 19-24): Height incorrect" & vbCrLf
         allCorrect = False
     End If
     
     ' Check Totals and Tax Summary Section (Rows 25-33)
     If ws.Rows(25).RowHeight = 50 And ws.Rows(26).RowHeight = 32 And ws.Rows(32).RowHeight = 38 Then
-        message = message & "✅ Totals & Tax Summary (Rows 25-33): Optimized (25=50pt, 26-31=32/30pt, 32-33=38pt)" & vbCrLf
+        message = message & "[ok] Totals & Tax Summary (Rows 25-33): Optimized (25=50pt, 26-31=32/30pt, 32-33=38pt)" & vbCrLf
     Else
-        message = message & "❌ Totals & Tax Summary (Rows 25-33): Height incorrect" & vbCrLf
+        message = message & "[no] Totals & Tax Summary (Rows 25-33): Height incorrect" & vbCrLf
         allCorrect = False
     End If
     
     ' Check Signature Headers (Row 34)
     If ws.Rows(34).RowHeight = 55 Then
-        message = message & "✅ Signature Headers (Row 34): Optimized to 55pt" & vbCrLf
+        message = message & "[ok] Signature Headers (Row 34): Optimized to 55pt" & vbCrLf
     Else
-        message = message & "❌ Signature Headers (Row 34): Height incorrect (" & ws.Rows(34).RowHeight & "pt)" & vbCrLf
+        message = message & "[no] Signature Headers (Row 34): Height incorrect (" & ws.Rows(34).RowHeight & "pt)" & vbCrLf
         allCorrect = False
     End If
     
     ' Check Signature Space (Rows 37-39)
     If ws.Rows(37).RowHeight = 45 And ws.Rows(39).RowHeight = 45 Then
-        message = message & "✅ Signature Space (Rows 37-39): Optimized to 45pt" & vbCrLf
+        message = message & "[ok] Signature Space (Rows 37-39): Optimized to 45pt" & vbCrLf
     Else
-        message = message & "❌ Signature Space (Rows 37-39): Height incorrect" & vbCrLf
+        message = message & "[no] Signature Space (Rows 37-39): Height incorrect" & vbCrLf
         allCorrect = False
     End If
     
@@ -711,7 +711,7 @@ Public Sub VerifyPDFLayoutOptimization()
                          "The invoice should now utilize PDF page space optimally with minimal blank space." & vbCrLf & _
                          "Comprehensive optimization includes header, details, items, totals, and signature sections."
     Else
-        message = message & "⚠️ Some optimizations may need to be re-applied." & vbCrLf & _
+        message = message & "[ok] Some optimizations may need to be re-applied." & vbCrLf & _
                          "Run CreateInvoiceSheet() to apply all optimizations."
     End If
     
@@ -742,23 +742,23 @@ Public Function ValidateUserInput(ws As Worksheet) As Boolean
     
     ' 1. Validate Invoice Number
     If Trim(ws.Range("C7").Value) = "" Then
-        validationResults = validationResults & "❌ ERROR: Invoice Number is required" & vbCrLf
+        validationResults = validationResults & "[no] ERROR: Invoice Number is required" & vbCrLf
         errorCount = errorCount + 1
     ElseIf Not ValidateInvoiceNumberFormat(ws.Range("C7").Value) Then
-        validationResults = validationResults & "⚠️ WARNING: Invoice Number format may be incorrect" & vbCrLf
+        validationResults = validationResults & "[ok] WARNING: Invoice Number format may be incorrect" & vbCrLf
         warningCount = warningCount + 1
     End If
     
     ' 2. Validate Customer Information
     If Trim(ws.Range("C12").Value) = "" Then
-        validationResults = validationResults & "❌ ERROR: Customer Name is required" & vbCrLf
+        validationResults = validationResults & "[no] ERROR: Customer Name is required" & vbCrLf
         errorCount = errorCount + 1
     End If
     
     ' 3. Validate GSTIN Format
     If Trim(ws.Range("C14").Value) <> "" Then
         If Not ValidateGSTINFormat(ws.Range("C14").Value) Then
-            validationResults = validationResults & "❌ ERROR: Invalid GSTIN format" & vbCrLf
+            validationResults = validationResults & "[no] ERROR: Invalid GSTIN format" & vbCrLf
             errorCount = errorCount + 1
         End If
     End If
@@ -767,7 +767,7 @@ Public Function ValidateUserInput(ws As Worksheet) As Boolean
     Dim saleType As String
     saleType = Trim(ws.Range("N7").Value)
     If saleType <> "Interstate" And saleType <> "Intrastate" Then
-        validationResults = validationResults & "❌ ERROR: Sale Type must be Interstate or Intrastate" & vbCrLf
+        validationResults = validationResults & "[no] ERROR: Sale Type must be Interstate or Intrastate" & vbCrLf
         errorCount = errorCount + 1
     End If
     
@@ -781,20 +781,20 @@ Public Function ValidateUserInput(ws As Worksheet) As Boolean
     
     ' 6. Validate Tax Calculations
     If Not ValidateTaxCalculations(ws) Then
-        validationResults = validationResults & "⚠️ WARNING: Tax calculations may need refresh" & vbCrLf
+        validationResults = validationResults & "[ok] WARNING: Tax calculations may need refresh" & vbCrLf
         warningCount = warningCount + 1
     End If
     
     ' Summary
     validationResults = validationResults & vbCrLf
     If errorCount = 0 And warningCount = 0 Then
-        validationResults = validationResults & "✅ ALL VALIDATIONS PASSED!" & vbCrLf
+        validationResults = validationResults & "[ok] ALL VALIDATIONS PASSED!" & vbCrLf
         ValidateUserInput = True
     ElseIf errorCount = 0 Then
-        validationResults = validationResults & "⚠️ " & warningCount & " WARNING(S) - Data is valid but may need review" & vbCrLf
+        validationResults = validationResults & "[ok] " & warningCount & " WARNING(S) - Data is valid but may need review" & vbCrLf
         ValidateUserInput = True
     Else
-        validationResults = validationResults & "❌ " & errorCount & " ERROR(S) - Please fix before proceeding" & vbCrLf
+        validationResults = validationResults & "[no] " & errorCount & " ERROR(S) - Please fix before proceeding" & vbCrLf
         ValidateUserInput = False
     End If
     
@@ -845,15 +845,15 @@ Private Function ValidateItemData(ws As Worksheet) As String
         If Trim(ws.Range("B" & i).Value) <> "" Then
             ' If description exists, validate other required fields
             If Trim(ws.Range("C" & i).Value) = "" Then
-                errorMsg = errorMsg & "❌ ERROR: HSN Code missing for item in row " & i & vbCrLf
+                errorMsg = errorMsg & "[no] ERROR: HSN Code missing for item in row " & i & vbCrLf
             End If
             
             If Not IsNumeric(ws.Range("D" & i).Value) Or ws.Range("D" & i).Value <= 0 Then
-                errorMsg = errorMsg & "❌ ERROR: Invalid quantity in row " & i & vbCrLf
+                errorMsg = errorMsg & "[no] ERROR: Invalid quantity in row " & i & vbCrLf
             End If
             
             If Not IsNumeric(ws.Range("F" & i).Value) Or ws.Range("F" & i).Value <= 0 Then
-                errorMsg = errorMsg & "❌ ERROR: Invalid rate in row " & i & vbCrLf
+                errorMsg = errorMsg & "[no] ERROR: Invalid rate in row " & i & vbCrLf
             End If
         End If
     Next i

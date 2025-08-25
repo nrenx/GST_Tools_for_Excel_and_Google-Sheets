@@ -52,8 +52,8 @@ Public Sub CreateAdvancedInvoiceButtons(ws As Worksheet)
     Call CreateInvoiceButtons(ws)
     
     ' Add Phase 4 enhanced buttons
-    Call CreateButtonAtCell(ws, "R15", "📋 Validate Input", "ValidateUserInput")
-    Call CreateButtonAtCell(ws, "R23", "📄 Batch PDF Export", "BatchPDFExport")
+    Call CreateButtonAtCell(ws, "R15", " Validate Input", "ValidateUserInput")
+    Call CreateButtonAtCell(ws, "R23", " Batch PDF Export", "BatchPDFExport")
     
     ' Add enhanced visual indicators
     Call AddPhase4VisualEnhancements(ws)

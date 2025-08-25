@@ -2,7 +2,7 @@
 
 This folder contains the refactored VBA modules extracted from the core GST system for better organization and maintainability.
 
-## 📁 Module Organization
+##  Module Organization
 
 ### 15_DataPopulation.bas
 **Purpose:** Data population and validation setup
@@ -52,7 +52,7 @@ When importing the refactored system:
 - Error handling remains consistent across all modules
 - Original function signatures are preserved for compatibility
 
-## 📋 Usage Examples
+##  Usage Examples
 
 ```vba
 ' Data Population
@@ -76,7 +76,7 @@ Call CleanEmptyProductRows(ws)
 Call ClearAllInvoiceData(ws)
 ```
 
-## 🎯 Benefits of Refactoring
+##  Benefits of Refactoring
 
 1. **Better Organization**: Functions grouped by logical functionality
 2. **Easier Maintenance**: Isolated modules for specific operations
@@ -84,7 +84,7 @@ Call ClearAllInvoiceData(ws)
 4. **Improved Readability**: Clear separation of concerns
 5. **Flexible Import**: Import only needed modules for specific functionality
 
-## ⚠️ Important Notes
+## [ok] Important Notes
 
 - All original functionality is preserved
 - Function signatures remain unchanged for compatibility

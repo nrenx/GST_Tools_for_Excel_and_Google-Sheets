@@ -119,7 +119,7 @@ Public Sub InitializeGSTSystem()
            "[OK] Automatic tax calculations active" & vbCrLf & _
            "[OK] Real-time updates configured" & vbCrLf & _
            "[OK] Professional PDF export ready" & vbCrLf & vbCrLf & _
-           "📋 Invoice sheet is active and ready for data entry!" & vbCrLf & _
+           " Invoice sheet is active and ready for data entry!" & vbCrLf & _
            "⏱️ System initialized in " & Format(operationTime, "0.00") & " seconds.", _
            vbInformation, "GST System Ready - Start Using!"
     Exit Sub
@@ -390,28 +390,28 @@ Public Sub ValidateCompleteSystem()
     If WorksheetExists(INVOICE_SHEET_NAME) Then
         validationResults = validationResults & "[OK] Invoice sheet exists" & vbCrLf
     Else
-        validationResults = validationResults & "❌ Invoice sheet missing" & vbCrLf
+        validationResults = validationResults & "[no] Invoice sheet missing" & vbCrLf
         allTestsPassed = False
     End If
     
     If WorksheetExists(MASTER_SHEET_NAME) Then
         validationResults = validationResults & "[OK] Master sheet exists" & vbCrLf
     Else
-        validationResults = validationResults & "❌ Master sheet missing" & vbCrLf
+        validationResults = validationResults & "[no] Master sheet missing" & vbCrLf
         allTestsPassed = False
     End If
     
     If WorksheetExists(WAREHOUSE_SHEET_NAME) Then
         validationResults = validationResults & "[OK] Warehouse sheet exists" & vbCrLf
     Else
-        validationResults = validationResults & "❌ Warehouse sheet missing" & vbCrLf
+        validationResults = validationResults & "[no] Warehouse sheet missing" & vbCrLf
         allTestsPassed = False
     End If
     
     If WorksheetExists(DROPDOWNS_SHEET_NAME) Then
         validationResults = validationResults & "[OK] Dropdowns sheet exists" & vbCrLf
     Else
-        validationResults = validationResults & "❌ Dropdowns sheet missing" & vbCrLf
+        validationResults = validationResults & "[no] Dropdowns sheet missing" & vbCrLf
         allTestsPassed = False
     End If
     
@@ -421,7 +421,7 @@ Public Sub ValidateCompleteSystem()
     If Len(testInvoiceNumber) > 10 And InStr(testInvoiceNumber, "INV-") = 1 Then
         validationResults = validationResults & "[OK] Invoice numbering working: " & testInvoiceNumber & vbCrLf
     Else
-        validationResults = validationResults & "❌ Invoice numbering failed" & vbCrLf
+        validationResults = validationResults & "[no] Invoice numbering failed" & vbCrLf
         allTestsPassed = False
     End If
     
@@ -432,7 +432,7 @@ Public Sub ValidateCompleteSystem()
         If ValidateInvoiceBorders(invoiceWs) Then
             validationResults = validationResults & "[OK] Border management working" & vbCrLf
         Else
-            validationResults = validationResults & "⚠️ Border formatting needs refresh" & vbCrLf
+            validationResults = validationResults & "[ok] Border formatting needs refresh" & vbCrLf
         End If
     End If
     
@@ -440,7 +440,7 @@ Public Sub ValidateCompleteSystem()
     If TestSystemConstants() Then
         validationResults = validationResults & "[OK] System constants loaded" & vbCrLf
     Else
-        validationResults = validationResults & "❌ System constants missing" & vbCrLf
+        validationResults = validationResults & "[no] System constants missing" & vbCrLf
         allTestsPassed = False
     End If
     
@@ -450,7 +450,7 @@ Public Sub ValidateCompleteSystem()
         validationResults = validationResults & "SUCCESS: ALL TESTS PASSED - System is ready for production use!"
         MsgBox validationResults, vbInformation, "System Validation - SUCCESS"
     Else
-        validationResults = validationResults & "⚠️ SOME TESTS FAILED - Please run StartGSTSystem() to fix issues."
+        validationResults = validationResults & "[ok] SOME TESTS FAILED - Please run StartGSTSystem() to fix issues."
         MsgBox validationResults, vbExclamation, "System Validation - Issues Found"
     End If
 End Sub

@@ -2,7 +2,7 @@
 
 This folder contains all button-related VBA code that was extracted from the main GST Excel modules for better organization and maintainability.
 
-## 📁 Module Structure
+##  Module Structure
 
 ### Core Button Functions
 - **`07_AddCustomerToWarehouseButton.bas`** - Captures customer details from invoice and saves to warehouse
@@ -16,7 +16,7 @@ This folder contains all button-related VBA code that was extracted from the mai
 - **`13_ButtonManagement.bas`** - Creates, manages, and removes buttons on the invoice worksheet
 - **`14_PDFUtilities.bas`** - Helper utilities for PDF export functionality and macOS compatibility
 
-## 💡 VBA Import Instructions
+##  VBA Import Instructions
 
 **IMPORTANT**: In Excel VBA, you'll need to import each `.bas` file individually:
 
@@ -99,7 +99,7 @@ Call CreateInvoiceButtons(ws)  ' Creates all buttons
 Call RemoveExistingButtons(ws) ' Removes all buttons
 ```
 
-## 📋 Benefits of Refactoring
+##  Benefits of Refactoring
 
 1. **Modularity** - Each button function is in its own file
 2. **Maintainability** - Easier to locate and modify specific button code
@@ -116,7 +116,7 @@ The button modules integrate seamlessly with the existing system:
 - Button functions continue to work exactly as before
 - Original modules are cleaner and more focused
 
-## 📝 Notes
+##  Notes
 
 - All button functions maintain their original signatures and behavior
 - Error handling and user feedback remain unchanged
