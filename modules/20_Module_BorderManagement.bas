@@ -37,7 +37,7 @@ Public Sub ApplyStandardInvoiceBorders(ws As Worksheet)
         .Columns(12).ColumnWidth = 10  ' Column L - CGST Amount
         .Columns(13).ColumnWidth = 6   ' Column M - SGST Rate
         .Columns(14).ColumnWidth = 10  ' Column N - SGST Amount
-        .Columns(15).ColumnWidth = 12  ' Column O - Total Amount
+        .Columns(15).ColumnWidth = 16  ' Column O - Total Amount - updated to 16
         
         ' STEP 1: Clear all existing borders to prevent conflicts
         .Range("A1:O40").Borders.LineStyle = xlNone

@@ -49,7 +49,7 @@ Public Sub CreateInvoiceSheet()
         ' Set column widths - layout A-P (16 columns)
         On Error Resume Next
         .Columns(1).ColumnWidth = 5    ' Column A - Sr.No.
-        .Columns(2).ColumnWidth = 12   ' Column B - Description of Goods/Services
+        .Columns(2).ColumnWidth = 12   ' Column B - Description
         .Columns(3).ColumnWidth = 12   ' Column C - HSN/SAC Code
         .Columns(4).ColumnWidth = 9    ' Column D - Quantity
         .Columns(5).ColumnWidth = 7    ' Column E - UOM
@@ -62,7 +62,7 @@ Public Sub CreateInvoiceSheet()
         .Columns(12).ColumnWidth = 10  ' Column L - CGST Amount
         .Columns(13).ColumnWidth = 6   ' Column M - SGST Rate
         .Columns(14).ColumnWidth = 10  ' Column N - SGST Amount
-        .Columns(15).ColumnWidth = 12  ' Column O - Total Amount
+        .Columns(15).ColumnWidth = 16  ' Column O - Total Amount - updated to 16
         .Columns(16).ColumnWidth = 10  ' Column P - Sale Type
         On Error GoTo 0
 
@@ -75,10 +75,10 @@ Public Sub CreateInvoiceSheet()
 
         ' Create header sections with professional styling
         Call CreateHeaderRow(ws, 1, "A1:O1", "ORIGINAL", 12, True, RGB(47, 80, 97), RGB(255, 255, 255), 25)
-        Call CreateHeaderRow(ws, 2, "A2:O2", "KAVERI TRADERS", 28, True, RGB(47, 80, 97), RGB(255, 255, 255), 55)
-        Call CreateHeaderRow(ws, 3, "A3:O3", "191, Guduru, Pagadalapalli, Idulapalli, Tirupati, Andhra Pradesh - 524409", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
-        Call CreateHeaderRow(ws, 4, "A4:O4", "GSTIN: 37HERPB7733F1Z5", 16, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
-        Call CreateHeaderRow(ws, 5, "A5:O5", "Email: kotidarisetty7777@gmail.com", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
+        Call CreateHeaderRow(ws, 2, "A2:O2", "KAVERI TRADERS", 36, True, RGB(47, 80, 97), RGB(255, 255, 255), 55)
+        Call CreateHeaderRow(ws, 3, "A3:O3", "191, Guduru, Pagadalapalli, Idulapalli, Tirupati, Andhra Pradesh - 524409", 20, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
+        Call CreateHeaderRow(ws, 4, "A4:O4", "GSTIN: 37HERPB7733F1Z5", 20, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
+        Call CreateHeaderRow(ws, 5, "A5:O5", "Email: kotidarisetty7777@gmail.com", 18, True, RGB(245, 245, 245), RGB(26, 26, 26), 35)
 
         ' Company header structure created with individual headers
         On Error Resume Next
@@ -88,7 +88,7 @@ Public Sub CreateInvoiceSheet()
 
         ' Row 6: TAX-INVOICE header 
         Call CreateHeaderRow(ws, 6, "A6:J6", "TAX-INVOICE", 22, True, RGB(240, 240, 240), RGB(0, 0, 0), 50)
-        Call CreateHeaderRow(ws, 6, "K6:O6", "Original for Recipient" & vbLf & "Duplicate for Supplier/Transporter" & vbLf & "Triplicate for Supplier", 9, True, RGB(250, 250, 250), RGB(0, 0, 0), 50)
+        Call CreateHeaderRow(ws, 6, "K6:O6", "Original for Recipient" & vbLf & "Duplicate for Supplier/Transporter" & vbLf & "Triplicate for Supplier", 12, True, RGB(250, 250, 250), RGB(0, 0, 0), 50)
 
         ' Enable text wrapping for the right section and center alignment
         On Error Resume Next
@@ -278,14 +278,29 @@ Public Sub CreateInvoiceSheet()
         ' Apply borders and formatting - optimized to column O
         ' NOTE: Individual border settings moved to centralized border management
         .Range("A7:O10").Interior.Color = RGB(245, 245, 245)  ' Background color only
+        
+        ' Set font sizes for rows 7-10 according to requirements
+        ' Rows 7-10: Columns A-B → 16pt
+        .Range("A7:B7,A8:B8,A9:B9,A10:B10").Font.Size = 16
+        ' Rows 7-10: Columns D-E → 14pt (except Transport Mode → 12pt)
+        .Range("D7:E7,D8:E8,D9:E9,D10:E10").Font.Size = 14
+        ' Transport Mode (D7) → 12pt - override the 14pt setting
+        .Range("D7").Font.Size = 12
+        ' Rows 7-8: Columns L-M → 16pt
+        .Range("L7:M7,L8:M8").Font.Size = 16
+        ' Rows 9-10: Columns L-M → 14pt
+        .Range("L9:M9,L10:M10").Font.Size = 14
+        ' Row 7: Columns N-O → 18pt
+        .Range("N7:O7").Font.Size = 18
+        
         For i = 7 To 10
             .Rows(i).RowHeight = 35
         Next i
         On Error GoTo 0
 
         ' Party details sections
-        Call CreateHeaderRow(ws, 11, "A11:H11", "Details of Receiver (Billed to)", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 45)
-        Call CreateHeaderRow(ws, 11, "I11:O11", "Details of Consignee (Shipped to)", 14, True, RGB(245, 245, 245), RGB(26, 26, 26), 45)
+        Call CreateHeaderRow(ws, 11, "A11:H11", "Details of Receiver (Billed to)", 20, True, RGB(245, 245, 245), RGB(26, 26, 26), 45)
+        Call CreateHeaderRow(ws, 11, "I11:O11", "Details of Consignee (Shipped to)", 20, True, RGB(245, 245, 245), RGB(26, 26, 26), 45)
 
         ' Set center alignment for row 11 content (both horizontal and vertical)
         On Error Resume Next
@@ -408,6 +423,13 @@ Public Sub CreateInvoiceSheet()
         ' Apply background formatting for rows 12-16
         ' NOTE: Border settings handled by centralized border management
         .Range("A12:O16").Interior.Color = RGB(245, 245, 245)  ' Background color only
+        
+        ' Set font sizes for rows 12-16 according to requirements
+        ' Rows 12-16: Columns A-B → 16pt
+        .Range("A12:B12,A13:B13,A14:B14,A15:B15,A16:B16").Font.Size = 16
+        ' Rows 12-16: Columns I-J → 12pt
+        .Range("I12:J12,I13:J13,I14:J14,I15:J15,I16:J16").Font.Size = 12
+        
         For i = 12 To 16
             .Rows(i).RowHeight = 35
         Next i
@@ -422,7 +444,7 @@ Public Sub CreateInvoiceSheet()
     ' Create individual cell headers first (before merging)
     ' Row 17: Set header texts (will merge non-tax columns vertically)
     .Cells(17, 1).Value = "Sr.No."
-    .Cells(17, 2).Value = "Description of Goods/Services"
+    .Cells(17, 2).Value = "Description"
     .Cells(17, 3).Value = "HSN/SAC Code"
     .Cells(17, 4).Value = "Quantity"
     .Cells(17, 5).Value = "UOM"
@@ -450,8 +472,20 @@ Public Sub CreateInvoiceSheet()
 
         ' Apply formatting to all header cells
         .Range("A17:O18").Font.Bold = True
-        .Range("A17:O17").Font.Size = 10
-        .Range("A18:O18").Font.Size = 9
+        ' Set specific font sizes for different columns according to requirements
+        .Range("A17:A18").Font.Size = 16  ' Sr. No.
+        .Range("B17:B18").Font.Size = 12  ' Description - updated to 12pt
+        .Range("C17:C18").Font.Size = 14  ' HSN/SAC Code - updated to 14pt
+        .Range("D17:D18").Font.Size = 12  ' Quantity
+        .Range("E17:E18").Font.Size = 16  ' UOM
+        .Range("F17:F18").Font.Size = 16  ' Rate
+        .Range("G17:G18").Font.Size = 16  ' Amount
+        .Range("H17:H18").Font.Size = 14  ' Taxable Value
+        .Range("I17:J17").Font.Size = 14  ' CGST (Row 17)
+        .Range("K17:L17").Font.Size = 14  ' SGST (Row 17)
+        .Range("M17:N17").Font.Size = 14  ' IGST (Row 17)
+        .Range("I18:N18").Font.Size = 12  ' Tax sub-headers (Row 18)
+        .Range("O17:O18").Font.Size = 14  ' Total Amount
         .Range("A17:O17").Interior.Color = RGB(245, 245, 245)
         .Range("A18:O18").Interior.Color = RGB(250, 250, 250)
         .Range("A17:O18").Font.Color = RGB(26, 26, 26)
@@ -548,10 +582,11 @@ Public Sub CreateInvoiceSheet()
         .Range("A25:O25").Interior.Color = RGB(234, 234, 234)
         .Rows(25).RowHeight = 50
 
-        ' Merge A25:C25 for "Total Quantity" label
+        ' Merge A25:C25 for "Total" label
         .Range("A25:C25").Merge
-        .Range("A25").Value = "Total Quantity"
+        .Range("A25").Value = "Total"
         .Range("A25").Font.Bold = True
+        .Range("A25").Font.Size = 26
         .Range("A25").HorizontalAlignment = xlCenter
         .Range("A25").VerticalAlignment = xlCenter
         .Range("A25").Font.Color = RGB(26, 26, 26)
@@ -616,7 +651,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A26:J26").Merge
         .Range("A26").Value = "Total Invoice Amount in Words"
         .Range("A26").Font.Bold = True
-        .Range("A26").Font.Size = 13 ' Increased font size
+        .Range("A26").Font.Size = 20 ' Updated font size
         .Range("A26").HorizontalAlignment = xlCenter
         .Range("A26").Interior.Color = RGB(255, 255, 0)
         ' NOTE: Border formatting handled by centralized border management
@@ -730,7 +765,7 @@ Public Sub CreateInvoiceSheet()
         .Range("K32:N33").Merge
         .Range("K32").Value = "Total Amount After Tax:"
         .Range("K32").Font.Bold = True
-        .Range("K32").Font.Size = 12 ' Larger font size for prominence
+        .Range("K32").Font.Size = 16 ' Updated font size for prominence
         .Range("K32").HorizontalAlignment = xlCenter
         .Range("K32").VerticalAlignment = xlCenter
         .Range("K32").Interior.Color = RGB(255, 215, 0)  ' Gold background for prominence
@@ -740,7 +775,7 @@ Public Sub CreateInvoiceSheet()
         .Range("O32:O33").Merge
         .Range("O32").Value = ""  ' Will be populated by formula
         .Range("O32").Font.Bold = True
-        .Range("O32").Font.Size = 12 ' Larger font size for prominence
+        .Range("O32").Font.Size = 16 ' Updated font size for prominence
         .Range("O32").HorizontalAlignment = xlCenter
         .Range("O32").VerticalAlignment = xlCenter
         .Range("O32").Interior.Color = RGB(255, 215, 0)  ' Gold background for prominence
@@ -769,7 +804,7 @@ Public Sub CreateInvoiceSheet()
         .Range("A29:J29").Merge
         .Range("A29").Value = "Terms and Conditions"
         .Range("A29").Font.Bold = True
-        .Range("A29").Font.Size = 13
+        .Range("A29").Font.Size = 18
         .Range("A29").HorizontalAlignment = xlCenter
         .Range("A29").Interior.Color = RGB(255, 255, 0)  ' Yellow background like reference
         ' NOTE: Border formatting handled by centralized border management
